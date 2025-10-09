@@ -88,19 +88,19 @@
           <div class="step second">
             <div class="avatar crown silver">🥈</div>
             <div class="name">Gendis</div>
-            <div class="points">2,280 Poin</div>
+            <div class="points">2 Peminjaman</div>
             <div class="block">2nd</div>
           </div>
           <div class="step first">
             <div class="avatar crown gold">👑</div>
             <div class="name">Rafif</div>
-            <div class="points">3,200 Poin</div>
+            <div class="points">3 Peminjaman</div>
             <div class="block">1st</div>
           </div>
           <div class="step third">
             <div class="avatar crown bronze">🥉</div>
             <div class="name">Naila</div>
-            <div class="points">1,980 Poin</div>
+            <div class="points">1 Peminjaman</div>
             <div class="block">3th</div>
           </div>
         </div>
@@ -168,8 +168,13 @@ export default {
 .see-all { color:#3b82f6; text-decoration: none; font-weight:600; }
 
 .grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.book-card { background: #fff; border:1px solid #eef2ff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 14px rgba(37,99,235,0.08); transition: transform .2s ease; }
-.book-card:hover { transform: translateY(-4px); }
+.book-card { background: #fff; border:2px solid #eef2ff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 14px rgba(37,99,235,0.08); transition: transform .2s ease; }
+.book-card:hover { 
+  transform: translateY(-4px); 
+  border: 2px solid #3b82f6;
+  box-shadow: 0 10px 24px rgba(37,99,235,0.2);
+  transition: all 0.5s ease-in-out;
+}
 .thumb { height: 150px; background:#f8fafc; }
 .placeholder { background-image:
   linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
@@ -189,8 +194,8 @@ export default {
 .podium { margin-top: 36px; background: linear-gradient(#ffffff 0, #e9f0ff 40%, #d8e5ff 100%); padding-top: 20px; }
 .wave { display:block; width:100%; height:90px; }
 .podium-inner { padding-bottom: 30px; }
-.podium-title { text-align:center; font-weight:900; letter-spacing:.5px; font-size: 1.6rem; color:#0f172a; margin: 0 auto 16px; }
-.podium-title span { color:#3b82f6; }
+.podium-title { text-align:center; font-weight:900; letter-spacing:.5px; font-size: 2.4rem; color:#0f172a; margin: 0 auto 16px; }
+.podium-title span { color:#3b82f6; font-weight: 700;} 
 .steps { display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items:end; }
 .step { text-align:center; position: relative; }
 .avatar { width: 70px; height: 70px; border-radius: 50%; display:grid; place-items:center; margin: 0 auto 8px; font-size: 28px; color:#fff; }
@@ -199,10 +204,10 @@ export default {
 .crown.bronze { background: linear-gradient(135deg, #f59e0b, #ea580c); }
 .name { font-weight: 700; color:#0f172a; }
 .points { color:#334155; font-size:.9rem; margin-bottom: 8px; }
-.block { background: linear-gradient(180deg,#3b82f6,#5b8df7); color:#fff; font-weight:800; border-radius: 12px 12px 0 0; width: 100%; height: 70px; display:grid; place-items:center; box-shadow: 0 10px 22px rgba(59,130,246,0.35); }
-.first .block { height: 110px; }
-.second .block { height: 90px; }
-.third .block { height: 80px; }
+.block { background: linear-gradient(180deg,#3b82f6,#5b8df7); color:#fff; font-weight:800; border-radius: 50px 50px 0 0; width: 100%; height: 70px; display:grid; place-items:center; box-shadow: 0 10px 22px rgba(59,130,246,0.35); }
+.first .block { height: 100vh; }
+.second .block { height: 85vh; }
+.third .block { height: 70vh; }
 
 
 

@@ -4,7 +4,7 @@
     <main class="main-content">
       <RouterView />
     </main>
-    <Footer /> <!-- panggil komponen Footer -->
+    <Footer />
   </div>
 </template>
 

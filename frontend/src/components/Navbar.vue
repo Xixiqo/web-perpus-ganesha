@@ -143,14 +143,22 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
-/* --- Struktur utama --- */
+/* NAVBAR PUTIH POLOS - TANPA SHADOW/BORDER APAPUN */
 .navbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: none;
+  border: none;
+  border-bottom: none;
+  border-top: none;
+}
+
+.navbar::before,
+.navbar::after {
+  display: none !important;
+  content: none !important;
 }
 
 .nav-container {
@@ -161,6 +169,7 @@ const handleLogout = async () => {
   justify-content: space-between;
   align-items: center;
   height: 70px;
+  border: none;
 }
 
 .nav-brand h2 {
@@ -174,6 +183,8 @@ const handleLogout = async () => {
   display: flex;
   gap: 1rem;
   transition: all 0.3s ease;
+  border: none;
+  box-shadow: none;
 }
 
 .nav-link {
@@ -356,8 +367,9 @@ const handleLogout = async () => {
     width: 100%;
     flex-direction: column;
     background: #ffffff;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    border: none;
+    border-top: none;
+    box-shadow: none;
     max-height: 0;
     overflow: hidden;
     opacity: 0;

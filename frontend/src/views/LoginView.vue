@@ -213,6 +213,10 @@ export default {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  background-image: url(emyu.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .left-panel::before {

@@ -50,51 +50,97 @@
       </div>
     </section>
 
-    <!-- Additional Info Section -->
     <section class="additional-info">
+      <h1 class="hero-tite">Jam Layanan</h1>
       <div class="container">
         <div class="info-grid">
           <!-- Tentang Perpustakaan -->
           <div class="info-item" data-aos="fade-right">
-            <div class="info-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
-            </div>
-            <h3>Tentang Kami</h3>
-            <p>Perpustakaan Ganesha Stembayo adalah pusat sumber belajar yang menyediakan berbagai koleksi buku dan fasilitas modern untuk mendukung kegiatan pembelajaran.</p>
+            <h3>Senin - Kamis</h3>
+            <p><strong>Buka :</strong> 07:30</p>
+            <p><strong>Istirahat :</strong> 12.00-13.00</p>
+            <p><strong>Tutup :</strong> 15.00</p>
           </div>
 
-          <!-- Jam Operasional -->
           <div class="info-item" data-aos="fade-up">
-            <div class="info-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <h3>Jam Operasional</h3>
-            <p><strong>Senin - Jumat:</strong> 07:00 - 16:00 WIB<br>
-            <strong>Sabtu:</strong> 07:00 - 12:00 WIB<br>
-            <strong>Minggu & Libur:</strong> Tutup</p>
+            <h3>Jumat</h3>
+            <p><strong>Buka :</strong> 07:30</p>
+            <p><strong>Istirahat :</strong> 11.30-12.45</p>
+            <p><strong>Tutup :</strong> 13.30</p>
           </div>
 
-          <!-- Kontak -->
           <div class="info-item" data-aos="fade-left">
-            <div class="info-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-              </svg>
-            </div>
-            <h3>Hubungi Kami</h3>
-            <p><strong>Email:</strong> perpustakaan@ganeshastembayo.sch.id<br>
-            <strong>Telepon:</strong> (0274) 123-4567<br>
-            <strong>Lokasi:</strong> Jl. Pendidikan No. 123, Yogyakarta</p>
+            <h3>Sabtu - Minggu</h3>
+            <p><strong>Tutup</strong></p>
+            <p>Libur Akhir Pekan</p>
           </div>
         </div>
       </div>
     </section>
+
+    
+  <section class="info-container">
+    <div class="contact-grid">
+        <div class="contact-card">
+          <i class="fas fa-phone"></i>
+          <h3>Telepon</h3>
+          <p>(0274) 513515</p>
+        </div>
+        <div class="contact-card">
+          <i class="fab fa-instagram"></i>
+          <h3>Instagram</h3>
+          <p>@ganeshastembayo</p>
+        </div>
+        <div class="contact-card">
+          <i class="fab fa-tiktok"></i>
+          <h3>Tiktok</h3>
+          <p>@ganeshastembayo</p>
+        </div>
+        <div class="contact-card">
+          <i class="fas fa-envelope"></i>
+          <h3>Email</h3>
+          <p>ganeshastembayo@gmail.com</p>
+        </div>
+
+      <!-- Bagian Kanan: Form -->
+      <div class="contact-right">
+        <h2>Hubungi Kami</h2>
+        <p>
+          Punya pertanyaan, saran, atau ingin mengetahui lebih banyak tentang layanan perpustakaan kami?
+          Silakan isi formulir di bawah ini, dan tim perpustakaan akan segera menghubungi Anda!
+        </p>
+
+        <form class="contact-form">
+          <label>Nama Lengkap</label>
+          <input type="text" placeholder="Masukkan nama lengkap Anda" />
+
+          <label>Email</label>
+          <input type="email" placeholder="Masukkan alamat email aktif" />
+
+          <label>Subjek</label>
+          <input type="text" placeholder="Masukkan judul subjek" />
+
+          <label>Pesan</label>
+          <textarea rows="5" placeholder="Tulis pesan Anda disini.."></textarea>
+
+          <button type="submit">Kirim Pesan</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-container">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d570.7512129506578!2d110.39261118219468!3d-7.770946100676336!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8343f8a9d%3A0x56427a46a6adb1c0!2sSTM%20Pembangunan%20YOGYAKARTA!5e1!3m2!1sid!2sid!4v1760342915041!5m2!1sid!2sid"
+        width="100%"
+        height="350"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
+  </section>
   </div>
 </template>
 
@@ -195,13 +241,20 @@ export default {
 .hero-title {
   font-size: 3rem;
   font-weight: 800;
+  text-align: center;
   color: white;
   margin-bottom: 80px;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   position: relative;
-  border: none !important;
-  border-top: none !important;
-  border-bottom: none !important;
+}
+
+.hero-tite{
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 80px;
+  position: relative;
 }
 
 .hero-title::before,
@@ -220,19 +273,6 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Content Section */
-.content-wrapper {
-  border: none !important;
-  border-top: none !important;
-  border-bottom: none !important;
-}
-
-.content-wrapper::before,
-.content-wrapper::after {
-  display: none !important;
-  content: none !important;
 }
 
 .content-section {
@@ -382,9 +422,9 @@ export default {
 
 /* Additional Info Section */
 .additional-info {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #CDD8F1;
   padding: 80px 20px;
-  color: white;
+  color: #667eea;
   border: none !important;
 }
 
@@ -397,7 +437,7 @@ export default {
 .info-item {
   text-align: center;
   padding: 32px;
-  background: rgba(255, 255, 255, 0.1);
+  background:white;
   border-radius: 20px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -421,7 +461,7 @@ export default {
 }
 
 .info-icon svg {
-  color: white;
+  color: #667eea;
 }
 
 .info-item h3 {
@@ -431,9 +471,124 @@ export default {
 }
 
 .info-item p {
+  text-align: center;
   font-size: 1rem;
   line-height: 1.7;
   opacity: 0.95;
+}
+
+/* --- Layout Umum --- */
+.info-container {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+grid-template-rows: repeat(4, 1fr);
+grid-column-gap: 32px;
+grid-row-gap: 32px;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.contact-card {
+  background-color: #f2f6ff;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 6px 16px rgba(100, 130, 255, 0.1);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(80, 120, 255, 0.2);
+}
+
+.contact-card i {
+  font-size: 24px;
+  color: #3b5bff;
+  margin-bottom: 10px;
+}
+
+.contact-card h3 {
+  margin-bottom: 5px;
+  font-size: 18px;
+  color: #2e2e2e;
+}
+
+.contact-card p {
+  color: #666;
+  font-size: 15px;
+}
+
+.contact-right {
+  grid-area: 1 / 3 / 5 / 5; 
+}
+
+.contact-right h2 {
+  font-size: 24px;
+  color: #365cff;
+  margin-bottom: 15px;
+}
+
+.contact-right p {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact-form label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccd6ff;
+  outline: none;
+  transition: 0.3s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: #3b5bff;
+  box-shadow: 0 0 6px rgba(80, 120, 255, 0.3);
+}
+
+.contact-form button {
+  background-color: #3b5bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: 600;
+}
+
+.contact-form button:hover {
+  background-color: #2e46d9;
+}
+
+/* --- MAP --- */
+.map-container {
+  margin-top: 50px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Responsive Design */
@@ -465,6 +620,12 @@ export default {
     font-size: 1.75rem;
   }
 }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+
 
 @media (max-width: 640px) {
   .hero-section {

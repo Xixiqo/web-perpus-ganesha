@@ -1,0 +1,14 @@
+// Response dari /api/categories
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Kategori 1",
+      "bookCount": 120,
+      "rating": 5.0,
+      "image": "/images/category-1.jpg",
+      "featured": false
+    },
+    // ...
+  ]
+}

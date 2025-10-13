@@ -1,17 +1,30 @@
 <template>
   <div class="cursor"></div>
   <div id="app">
-    <Navbar />
+    <!-- Navbar hanya muncul jika BUKAN di halaman login -->
+    <Navbar v-if="!isLoginPage" />
+    
     <main class="main-content">
       <RouterView />
     </main>
-    <Footer />
+    
+    <!-- Footer hanya muncul jika BUKAN di halaman login -->
+    <Footer v-if="!isLoginPage" />
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
+
+const route = useRoute()
+
+// Computed property untuk cek apakah di halaman login
+const isLoginPage = computed(() => {
+  return route.path === '/login'
+})
 
 document.addEventListener("DOMContentLoaded", () => {
   const cursor = document.querySelector(".cursor");
@@ -89,5 +102,19 @@ body {
 .main-content {
   flex: 1;
   min-height: calc(100vh - 140px); /* Navbar + Footer */
+}
+
+/* Paksa hapus semua garis dari navbar */
+nav, .navbar {
+  box-shadow: none !important;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+nav::before, nav::after,
+.navbar::before, .navbar::after {
+  display: none !important;
+  content: none !important;
 }
 </style>

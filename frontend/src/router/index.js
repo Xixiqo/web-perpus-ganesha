@@ -12,22 +12,22 @@ const router = createRouter({
     {
       path: '/informasi',
       name: 'informasi',
-      component: () => import('../views/InformasiView.vue'),
+      component: () => import('../views/users/InformasiView.vue'),
     },
     {
       path: '/cari',
       name: 'cari',
-      component: () => import('../views/CariView.vue'),
+      component: () => import('../views/users/CariView.vue'),
     },
     {
       path: '/pinjam',
       name: 'pinjam',
-      component: () => import('../views/PinjamView.vue'),
+      component: () => import('../views/users/PinjamView.vue'),
     },
     {
       path: '/artikel',
       name: 'artikel',
-      component: () => import('../views/ArtikelView.vue'),
+      component: () => import('../views/users/ArtikelView.vue'),
     },
     {
     path: '/login',
@@ -37,18 +37,13 @@ const router = createRouter({
     {
     path: '/cari',
     name: 'Cari',
-    component: () => import('@/views/CariView.vue'),
+    component: () => import('../views/users/CariView.vue'),
     meta: { requiresAuth: false }
     },
     {
-      path: '/forgot-password',
-      name: 'ForgotPassword',
-      component: () => import('@/views/Lupa.vue')
-},
-    {
       path: '/profil',
       name: 'Profil',
-      component: () => import('../views/ProfilView.vue'),
+      component: () => import('../views/users/ProfilView.vue'),
       meta: { requiresAuth: true }
     }
   ],

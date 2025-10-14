@@ -71,8 +71,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import BookCard from '../components/BookCard.vue'
-import CategoryCard from '../components/CategoryCard.vue'
+import BookCard from '../components/users/BookCard.vue'
+import CategoryCard from '../components/users/CategoryCard.vue'
 
 const router = useRouter()
 

@@ -1,14 +1,23 @@
 {
-  "name": "web-perpus-jhic",
+  "name": "web-perpus-ganesha",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend API untuk Web Perpus Ganesha",
+  "type": "commonjs",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "library",
+    "express",
+    "mysql",
+    "backend",
+    "perpus-ganesha"
+  ],
+  "author": "Ganesha Dev Team",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
@@ -16,8 +25,10 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.1",
     "mysql2": "^3.14.4",
     "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

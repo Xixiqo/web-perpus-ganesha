@@ -56,7 +56,7 @@
                 :type="showPassword ? 'text' : 'password'" 
                 id="password" 
                 v-model="password" 
-                placeholder="Masukan Kata Sandi Anda"
+                placeholder="Masukkan Kata Sandi Anda"
                 required
               >
               <button 
@@ -76,7 +76,6 @@
             </div>
           </div>
 
-          <!-- Error Message -->
           <div v-if="errorMessage" class="error-message">
             {{ errorMessage }}
           </div>
@@ -91,7 +90,6 @@
           </button>
         </form>
 
-        <!-- Back to Home -->
         <div class="back-home">
           <RouterLink to="/">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -122,59 +120,42 @@ export default {
     async handleLogin() {
       this.loading = true;
       this.errorMessage = '';
-      
       try {
-        // Ganti dengan endpoint API Anda
-        const response = await fetch('http://localhost:3000/api/auth/login', {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: this.username,
-            password: this.password
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: this.username, password: this.password })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          // Simpan token
           localStorage.setItem('token', data.token);
-          
-          // Simpan data user
           localStorage.setItem('user', JSON.stringify({
             id: data.user.id,
-            name: data.user.name,
             username: data.user.username,
-            avatar: data.user.avatar || '',
-            role: data.user.role || 'user'
+            role: data.user.role
           }));
-          
-          // Redirect ke halaman sebelumnya atau dashboard
+
           const redirectTo = this.$route.query.redirect || '/';
           this.$router.push(redirectTo);
         } else {
           this.errorMessage = data.message || 'Login gagal. Periksa username dan password Anda.';
         }
-      } catch (error) {
-        console.error('Login error:', error);
+      } catch (err) {
+        console.error(err);
         this.errorMessage = 'Terjadi kesalahan koneksi. Silakan coba lagi.';
       } finally {
         this.loading = false;
       }
     },
     handleForgotPassword() {
-      // Implementasi forgot password
       this.$router.push('/forgot-password');
     }
   },
   mounted() {
-    // Check jika user sudah login, redirect ke home
     const token = localStorage.getItem('token');
-    if (token) {
-      this.$router.push('/');
-    }
+    if (token) this.$router.push('/');
   }
 }
 </script>

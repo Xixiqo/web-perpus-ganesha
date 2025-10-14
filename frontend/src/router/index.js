@@ -39,7 +39,13 @@ const router = createRouter({
     name: 'Cari',
     component: () => import('@/views/CariView.vue'),
     meta: { requiresAuth: false }
-}
+},
+    {
+      path: '/profil',
+      name: 'Profil',
+      component: () => import('../views/ProfilView.vue'),
+      meta: { requiresAuth: true }
+    }
   ],
 })
 

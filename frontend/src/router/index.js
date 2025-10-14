@@ -44,6 +44,12 @@ const router = createRouter({
       path: '/forgot-password',
       name: 'ForgotPassword',
       component: () => import('@/views/Lupa.vue')
+},
+    {
+      path: '/profil',
+      name: 'Profil',
+      component: () => import('../views/ProfilView.vue'),
+      meta: { requiresAuth: true }
     }
   ],
 })

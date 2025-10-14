@@ -111,7 +111,7 @@ export default {
       this.error = null;
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:5000/api/user/profile', {
+        const res = await fetch('http://localhost:5000/api/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();

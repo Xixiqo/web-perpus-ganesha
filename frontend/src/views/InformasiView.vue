@@ -38,11 +38,11 @@
               <h2 class="card-title">Misi</h2>
               <ul class="misi-list">
                 <li><span class="bullet"></span>Mewujudkan Perpustakaan yang nyaman dan menyenangkan</li>
-                <li><span class="bullet"></span>Menyediakan Pelayanan Perpustakaan yang ramah dengan mengedepankan 5S</li>
                 <li><span class="bullet"></span>Menyediakan Bahan Koleksi Perpustakaan yang Representatif</li>
                 <li><span class="bullet"></span>Mengembangkan Pelayanan Perpustakaan Berbasis IT</li>
                 <li><span class="bullet"></span>Mewujudkan Pemustaka yang Berprestasi</li>
                 <li><span class="bullet"></span>Mengembangkan Koleksi Perpustakaan Sesuai Kebutuhan</li>
+                <li><span class="bullet"></span>Menyediakan Pelayanan Perpustakaan dengan mengedepankan 5S</li>
               </ul>
             </div>
           </div>
@@ -80,27 +80,31 @@
 
     
   <section class="info-container">
-    <div class="contact-grid">
-        <div class="contact-card">
+        <div class="contact">
           <i class="fas fa-phone"></i>
+          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25c1.12.37 2.32.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"></path></svg></div>
           <h3>Telepon</h3>
           <p>(0274) 513515</p>
         </div>
-        <div class="contact-card">
+        <div class="instagram">
           <i class="fab fa-instagram"></i>
+          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path><path fill="currentColor" d="M16 3a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5zm-4 5a4 4 0 1 0 0 8a4 4 0 0 0 0-8m0 2a2 2 0 1 1 0 4a2 2 0 0 1 0-4m4.5-3.5a1 1 0 1 0 0 2a1 1 0 0 0 0-2"></path></g></svg></div>
           <h3>Instagram</h3>
           <p>@ganeshastembayo</p>
         </div>
-        <div class="contact-card">
+        <div class="tiktok">
           <i class="fab fa-tiktok"></i>
+          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path></svg></div>
           <h3>Tiktok</h3>
           <p>@ganeshastembayo</p>
         </div>
-        <div class="contact-card">
+        <div class="email">
           <i class="fas fa-envelope"></i>
+          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path></svg></div>
           <h3>Email</h3>
           <p>ganeshastembayo@gmail.com</p>
         </div>
+        
 
       <!-- Bagian Kanan: Form -->
       <div class="contact-right">
@@ -126,7 +130,6 @@
           <button type="submit">Kirim Pesan</button>
         </form>
       </div>
-    </div>
 
     <!-- MAP -->
     <div class="map-container">
@@ -291,7 +294,7 @@ export default {
 .cards-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 32px;
+  gap: 64px;
   border: none !important;
 }
 
@@ -412,6 +415,7 @@ export default {
 
 .bullet {
   min-width: 10px;
+  text-align: left;
   width: 10px;
   height: 10px;
   background: #667eea;
@@ -423,9 +427,9 @@ export default {
 /* Additional Info Section */
 .additional-info {
   background: #CDD8F1;
-  padding: 80px 20px;
+  padding: 50px 20px;
   color: #667eea;
-  border: none !important;
+  padding-bottom: 90px;
 }
 
 .info-grid {
@@ -450,10 +454,8 @@ export default {
 }
 
 .info-icon {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,74 +466,118 @@ export default {
   color: #667eea;
 }
 
-.info-item h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.info-item p {
-  text-align: center;
-  font-size: 1rem;
-  line-height: 1.7;
-  opacity: 0.95;
-}
-
 /* --- Layout Umum --- */
 .info-container {
-display: grid;
-grid-template-columns: repeat(4, 1fr);
-grid-template-rows: repeat(4, 1fr);
-grid-column-gap: 32px;
-grid-row-gap: 32px;
-}
-
-.contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: flex-start;
+  grid-template-columns: 1fr 1fr 2fr; /* kiri dan kanan seimbang */
+  grid-template-areas:
+    "telepon instagram contact"
+    "tiktok email contact"
+    "map map contact";
+  gap: 32px;
+  padding: 80px 8%;
+  background: #f9fafb;
 }
 
-.contact-card {
-  background-color: #f2f6ff;
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 6px 16px rgba(100, 130, 255, 0.1);
+.info-container > div {
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.contact {
+  grid-area: telepon;
+  background: #CDD8F1;
+  padding: 32px;
+  border-radius: 10px;
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.contact-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(80, 120, 255, 0.2);
-}
-
-.contact-card i {
+.contact h3 {
+  color: #000000;
+  font-weight: 600;
   font-size: 24px;
-  color: #3b5bff;
-  margin-bottom: 10px;
 }
 
-.contact-card h3 {
-  margin-bottom: 5px;
-  font-size: 18px;
-  color: #2e2e2e;
+.contact p {
+  font-size: 16px;
+  color: #555;
+  margin-top: 8px;
+  line-height: 1.6;
 }
 
-.contact-card p {
-  color: #666;
-  font-size: 15px;
+.instagram {
+  grid-area: instagram;
+  background: #CDD8F1;
+  padding: 32px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.instagram h3 {
+  color: #000000;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.instagram p {
+  font-size: 16px;
+  color: #555;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.tiktok {
+  grid-area: tiktok; 
+  background: #CDD8F1;
+  padding: 32px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.tiktok h3 {
+  color: #000000;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.tiktok p {
+  font-size: 16px;
+  color: #555;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.email {
+  grid-area: email;
+  background: #CDD8F1;
+  padding: 32px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.email h3 {
+  color: #000000;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.email p {
+  font-size: 16px;
+  color: #555;
+  margin-top: 8px;
+  line-height: 1.6;
 }
 
 .contact-right {
-  grid-area: 1 / 3 / 5 / 5; 
+  grid-area: contact; 
+  
 }
 
 .contact-right h2 {
-  font-size: 24px;
+  font-size:24px;
   color: #365cff;
   margin-bottom: 15px;
+  font-weight: 600;
 }
 
 .contact-right p {
@@ -542,9 +588,12 @@ grid-row-gap: 32px;
 }
 
 .contact-form {
-  display: flex;
+  display: grid;
   flex-direction: column;
   gap: 15px;
+  width: 100%;
+  height: 100%;
+  align-content: start;
 }
 
 .contact-form label {
@@ -585,10 +634,11 @@ grid-row-gap: 32px;
 
 /* --- MAP --- */
 .map-container {
-  margin-top: 50px;
+  margin-top: 16px;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  grid-area: map;
 }
 
 /* Responsive Design */
@@ -620,10 +670,6 @@ grid-row-gap: 32px;
     font-size: 1.75rem;
   }
 }
-
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
 
 
 
@@ -727,7 +773,7 @@ grid-row-gap: 32px;
   }
 
   .cards-wrapper {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; 
     gap: 24px;
   }
 }

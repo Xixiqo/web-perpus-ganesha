@@ -56,7 +56,7 @@
                 :type="showPassword ? 'text' : 'password'" 
                 id="password" 
                 v-model="password" 
-                placeholder="••••••••"
+                placeholder="Masukan Kata Sandi Anda"
                 required
               >
               <button 
@@ -213,7 +213,7 @@ export default {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background-image: url(emyu.jpg);
+  background-image: url(back-icon.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

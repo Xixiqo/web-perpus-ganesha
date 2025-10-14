@@ -1,0 +1,24 @@
+@import './base.css';
+
+/* Neutral global styles: avoid opinionated layouts that conflict with app components */
+#app {
+  /* Let pages control their own layout; keep only basic font weight */
+  font-weight: normal;
+  min-height: 100vh;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: #667eea;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  padding: 2px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: rgba(102, 126, 234, 0.12);
+  }
+}
+
+/* Remove previous body flex/grid and #app grid rules to prevent layout breakage */

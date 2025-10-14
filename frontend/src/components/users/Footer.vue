@@ -53,7 +53,7 @@ const currentYear = new Date().getFullYear()
 
 <style scoped>
 .footer {
-  background: #0f172a;
+  background: #fafafa;
   color: #e5e7eb;
   margin-top: 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -71,14 +71,14 @@ const currentYear = new Date().getFullYear()
 }
 
 .col h4 {
-  color: #fff;
+  color: #2C64E3;
   margin-bottom: 10px;
   font-size: 1.1rem;
 }
 
 .col p,
 .col li {
-  color: #cbd5e1;
+  color: #131313;
   font-size: 0.95rem;
   line-height: 1.5;
   margin-bottom: 6px;
@@ -90,7 +90,7 @@ const currentYear = new Date().getFullYear()
 }
 
 .footer-link {
-  color: #93c5fd;
+  color: #2C64E3;
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.3s ease;

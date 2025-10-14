@@ -9,6 +9,14 @@ import { fileURLToPath } from "url";
 // 🧩 Load .env file
 dotenv.config();
 
+console.log("Loaded ENV:", {
+  DB_HOST: process.env.DB_HOST,
+  DB_USER: process.env.DB_USER,
+  DB_PASSWORD: process.env.DB_PASSWORD ? "****" : "(empty)",
+  DB_NAME: process.env.DB_NAME,
+  DB_PORT: process.env.DB_PORT
+});
+
 // Setup __dirname karena kita pakai module system
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -12,13 +12,19 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // 🔑 Middleware verifikasi token
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
+  if (!authHeader)
+    return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
 
   const token = authHeader.split(" ")[1];
-  if (!token) return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
+  if (!token)
+    return res.status(401).json({ success: false, message: "Token tidak ditemukan" });
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ success: false, message: "Token tidak valid atau sudah kadaluarsa" });
+    if (err)
+      return res.status(403).json({
+        success: false,
+        message: "Token tidak valid atau sudah kadaluarsa",
+      });
     req.user = decoded;
     console.log("JWT verified for profile:", decoded);
     next();
@@ -39,14 +45,13 @@ router.get("/", authenticateToken, async (req, res) => {
         a.nama,
         a.jenis_kelamin,
         a.tanggal_lahir,
-        a.member_expired,
+        a.member_expired AS status_membership,
         a.institute,
         a.major,
         a.angkatan,
-        a.tipe_keanggotaan,
-        a.no_telp,
-        a.created_at,
-        a.updated_at,
+        a.tipe_keanggotaan AS membership,
+        a.no_telp AS telepon,
+        a.created_at AS tanggal_bergabung,
         u.username,
         u.role
       FROM anggota a
@@ -54,17 +59,26 @@ router.get("/", authenticateToken, async (req, res) => {
       WHERE a.user_id = ?
     `;
 
+    // ❗ Gunakan promise() untuk await
     const [rows] = await db.query(query, [userId]);
     console.log("Profile rows:", rows);
 
     if (!rows.length) {
-      return res.status(404).json({ success: false, message: "Profil tidak ditemukan. Pastikan data anggota sudah lengkap." });
+      return res.status(404).json({
+        success: false,
+        message: "Profil tidak ditemukan. Pastikan data anggota sudah lengkap.",
+      });
     }
 
-    res.json({ success: true, data: rows[0] });
+    // Kirim data yang sudah sesuai dengan field frontend
+    res.json(rows[0]);
   } catch (err) {
     console.error("Error fetching profile:", err);
-    res.status(500).json({ success: false, message: "Terjadi kesalahan saat mengambil data profil", error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat mengambil data profil",
+      error: err.message,
+    });
   }
 });
 

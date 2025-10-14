@@ -4,16 +4,20 @@
     <div 
       class="thumb" 
       :class="{ 'placeholder': !book.cover }"
-      :style="book.cover ? `background-image: url(${book.cover})` : ''"
+      :style="book.cover ? `background-image: url(/covers/${book.cover})` : ''"
     ></div>
     
     <!-- Meta Info -->
     <div class="meta">
-      <h4>{{ book.title || `Judul Buku ${index}` }}</h4>
-      <p class="author">{{ book.category || 'Kategori' }} • {{ book.author || 'Penulis' }}</p>
-      <div class="rating small">
-        <span class="stars">{{ renderStars(book.rating || 4.2) }}</span>
-        <span class="score">{{ book.rating || 4.2 }}</span>
+      <h4>{{ book.judul || `Judul Buku ${index}` }}</h4>
+      <p class="author">{{ book.kategori || 'Kategori' }} • {{ book.pembuat || 'Penulis' }}</p>
+      <div class="info">
+        <span class="publisher">{{ book.penerbit || 'Penerbit' }}</span>
+        <span class="year">{{ book.tahun_rilis || '2024' }}</span>
+      </div>
+      <div class="stock" :class="getStockClass(book.stok)">
+        <span class="stock-icon">📚</span>
+        <span>{{ book.stok ? `${book.stok} tersedia` : 'Tersedia' }}</span>
       </div>
     </div>
   </div>
@@ -39,14 +43,11 @@ const handleClick = () => {
   emit('click', props.book)
 }
 
-const renderStars = (rating) => {
-  const fullStars = Math.floor(rating)
-  const hasHalfStar = rating % 1 >= 0.5
-  let stars = '⭐'.repeat(fullStars)
-  if (hasHalfStar && fullStars < 5) {
-    stars += '✨'
-  }
-  return stars
+const getStockClass = (stok) => {
+  if (!stok) return ''
+  if (stok >= 10) return 'stock-high'
+  if (stok >= 5) return 'stock-medium'
+  return 'stock-low'
 }
 </script>
 
@@ -69,7 +70,7 @@ const renderStars = (rating) => {
 }
 
 .thumb {
-  height: 150px;
+  height: 200px;
   background: #f8fafc;
   background-size: cover;
   background-position: center;
@@ -87,13 +88,14 @@ const renderStars = (rating) => {
 }
 
 .meta {
-  padding: 0.8rem;
+  padding: 0.9rem;
 }
 
 .meta h4 {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 700;
   color: #111827;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -102,21 +104,70 @@ const renderStars = (rating) => {
 .meta .author {
   font-size: 0.8rem;
   color: #64748b;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.rating.small {
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.publisher {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.year {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: #eff6ff;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.stock {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
-.rating.small .stars {
-  font-size: 0.9rem;
+.stock-icon {
+  font-size: 1rem;
 }
 
-.rating.small .score {
-  font-size: 0.85rem;
-  color: #475569;
+.stock-high {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.stock-medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.stock-low {
+  background: #fee2e2;
+  color: #991b1b;
 }
 </style>

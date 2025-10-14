@@ -30,16 +30,21 @@ const router = createRouter({
       component: () => import('../views/ArtikelView.vue'),
     },
     {
-     path: '/login',
-     name: 'Login',
-     component: () => import('@/views/LoginView.vue')
-   },
-   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/LoginView.vue')
+    },
+    {
     path: '/cari',
     name: 'Cari',
     component: () => import('@/views/CariView.vue'),
     meta: { requiresAuth: false }
-}
+    },
+    {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: () => import('@/views/Lupa.vue')
+    }
   ],
 })
 

@@ -6,10 +6,10 @@
       <div class="hero-content">
         <h1 class="hero-title">Visi & Misi</h1>
 
-        <!-- Visi & Misi Content (dipindah ke dalam hero section) -->
+        <!-- Visi & Misi Content -->
         <div class="container content-wrapper">
           <div class="cards-wrapper">
-            <!-- Card Visi - Slide from Left -->
+            <!-- Card Visi -->
             <div class="info-card visi-card" :class="{ 'slide-in-left': isVisible }">
               <div class="card-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -25,7 +25,7 @@
               </p>
             </div>
 
-            <!-- Card Misi - Slide from Right -->
+            <!-- Card Misi -->
             <div class="info-card misi-card" :class="{ 'slide-in-right': isVisible }">
               <div class="card-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -50,26 +50,26 @@
       </div>
     </section>
 
+    <!-- Jam Layanan -->
     <section class="additional-info">
       <h1 class="hero-tite">Jam Layanan</h1>
       <div class="container">
         <div class="info-grid">
-          <!-- Tentang Perpustakaan -->
-          <div class="info-item" data-aos="fade-right">
+          <div class="info-item">
             <h3>Senin - Kamis</h3>
             <p><strong>Buka :</strong> 07:30</p>
             <p><strong>Istirahat :</strong> 12.00-13.00</p>
             <p><strong>Tutup :</strong> 15.00</p>
           </div>
 
-          <div class="info-item" data-aos="fade-up">
+          <div class="info-item">
             <h3>Jumat</h3>
             <p><strong>Buka :</strong> 07:30</p>
             <p><strong>Istirahat :</strong> 11.30-12.45</p>
             <p><strong>Tutup :</strong> 13.30</p>
           </div>
 
-          <div class="info-item" data-aos="fade-left">
+          <div class="info-item">
             <h3>Sabtu - Minggu</h3>
             <p><strong>Tutup</strong></p>
             <p>Libur Akhir Pekan</p>
@@ -78,35 +78,68 @@
       </div>
     </section>
 
-    
-  <section class="info-container">
-        <div class="contact">
-          <i class="fas fa-phone"></i>
-          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25c1.12.37 2.32.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"></path></svg></div>
+    <!-- Contact Information -->
+    <section class="info-container">
+      <!-- Kontak Kiri -->
+      <div class="contact-left">
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25c1.12.37 2.32.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"></path>
+            </svg>
+          </div>
           <h3>Telepon</h3>
           <p>(0274) 513515</p>
         </div>
-        <div class="instagram">
-          <i class="fab fa-instagram"></i>
-          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path><path fill="currentColor" d="M16 3a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5zm-4 5a4 4 0 1 0 0 8a4 4 0 0 0 0-8m0 2a2 2 0 1 1 0 4a2 2 0 0 1 0-4m4.5-3.5a1 1 0 1 0 0 2a1 1 0 0 0 0-2"></path></g></svg></div>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+              <g fill="none">
+                <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path>
+                <path fill="currentColor" d="M16 3a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5zm-4 5a4 4 0 1 0 0 8a4 4 0 0 0 0-8m0 2a2 2 0 1 1 0 4a2 2 0 0 1 0-4m4.5-3.5a1 1 0 1 0 0 2a1 1 0 0 0 0-2"></path>
+              </g>
+            </svg>
+          </div>
           <h3>Instagram</h3>
           <p>@ganeshastembayo</p>
         </div>
-        <div class="tiktok">
-          <i class="fab fa-tiktok"></i>
-          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path></svg></div>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path>
+            </svg>
+          </div>
           <h3>Tiktok</h3>
           <p>@ganeshastembayo</p>
         </div>
-        <div class="email">
-          <i class="fas fa-envelope"></i>
-          <div class="info-icon"><svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path></svg></div>
+
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path>
+            </svg>
+          </div>
           <h3>Email</h3>
           <p>ganeshastembayo@gmail.com</p>
         </div>
-        
 
-      <!-- Bagian Kanan: Form -->
+        <!-- MAP - Mengambil 2 kolom penuh -->
+        <div class="map-container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d570.7512129506578!2d110.39261118219468!3d-7.770946100676336!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8343f8a9d%3A0x56427a46a6adb1c0!2sSTM%20Pembangunan%20YOGYAKARTA!5e1!3m2!1sid!2sid!4v1760342915041!5m2!1sid!2sid"
+            width="100%"
+            height="350"
+            style="border:0; border-radius: 12px;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- Form Hubungi Kami -->
       <div class="contact-right">
         <h2>Hubungi Kami</h2>
         <p>
@@ -114,36 +147,23 @@
           Silakan isi formulir di bawah ini, dan tim perpustakaan akan segera menghubungi Anda!
         </p>
 
-        <form class="contact-form">
+        <form class="contact-form" @submit.prevent="handleSubmit">
           <label>Nama Lengkap</label>
-          <input type="text" placeholder="Masukkan nama lengkap Anda" />
+          <input type="text" placeholder="Masukkan nama lengkap Anda" required />
 
           <label>Email</label>
-          <input type="email" placeholder="Masukkan alamat email aktif" />
+          <input type="email" placeholder="Masukkan alamat email aktif" required />
 
           <label>Subjek</label>
-          <input type="text" placeholder="Masukkan judul subjek" />
+          <input type="text" placeholder="Masukkan judul subjek" required />
 
           <label>Pesan</label>
-          <textarea rows="5" placeholder="Tulis pesan Anda disini.."></textarea>
+          <textarea rows="8" placeholder="Tulis pesan Anda disini.." required></textarea>
 
           <button type="submit">Kirim Pesan</button>
         </form>
       </div>
-
-    <!-- MAP -->
-    <div class="map-container">
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d570.7512129506578!2d110.39261118219468!3d-7.770946100676336!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8343f8a9d%3A0x56427a46a6adb1c0!2sSTM%20Pembangunan%20YOGYAKARTA!5e1!3m2!1sid!2sid!4v1760342915041!5m2!1sid!2sid"
-        width="100%"
-        height="350"
-        style="border:0;"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-      ></iframe>
-    </div>
-  </section>
+    </section>
   </div>
 </template>
 
@@ -156,20 +176,15 @@ export default {
     }
   },
   mounted() {
-    // Initialize AOS (Animate On Scroll) if available
     if (typeof AOS !== 'undefined') {
       AOS.init({
         duration: 800,
         once: true
       });
     }
-
-    // Add scroll event listener for card animation
     window.addEventListener('scroll', this.handleScroll);
-    // JANGAN check on mount - biarkan tersembunyi sampai user scroll
   },
   beforeUnmount() {
-    // Clean up event listener
     window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
@@ -178,13 +193,13 @@ export default {
       if (cardsWrapper) {
         const rect = cardsWrapper.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        
-        // Trigger animation hanya ketika user scroll dan cards mulai masuk viewport
-        // Card harus scroll lebih ke bawah dulu baru muncul (50% visible)
         if (rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3) {
           this.isVisible = true;
         }
       }
+    },
+    handleSubmit() {
+      alert('Pesan berhasil dikirim!');
     }
   }
 }
@@ -213,15 +228,6 @@ export default {
   border: none !important;
 }
 
-.hero-section hr,
-.hero-section .divider,
-.hero-section::before,
-.hero-section::after {
-  display: none !important;
-  content: none !important;
-  border: none !important;
-}
-
 .hero-overlay {
   position: absolute;
   top: 0;
@@ -229,7 +235,6 @@ export default {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(30, 60, 114, 0.6) 50%, rgba(0, 0, 0, 0.7) 100%);
-  border: none !important;
 }
 
 .hero-content {
@@ -238,7 +243,6 @@ export default {
   color: white;
   width: 100%;
   max-width: 1200px;
-  border: none !important;
 }
 
 .hero-title {
@@ -248,72 +252,38 @@ export default {
   color: white;
   margin-bottom: 80px;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  position: relative;
 }
 
-.hero-tite{
+.hero-tite {
   font-size: 3rem;
   font-weight: 800;
   text-align: center;
   color: #667eea;
   margin-bottom: 80px;
-  position: relative;
-}
-
-.hero-title::before,
-.hero-title::after {
-  display: none !important;
-  content: none !important;
-  border: none !important;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.content-section {
-  padding: 60px 20px;
-  position: relative;
-  margin-top: -320px;
-  border: none !important;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  border: none !important;
 }
 
 .cards-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 64px;
-  border: none !important;
 }
 
-/* Card Animation Styles */
+/* Card Animation */
 .info-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   transition: all 0.4s ease;
-  position: relative;
-  border: none !important;
-  
-  /* Initial hidden state */
   opacity: 0;
   transform: translateX(0);
 }
 
-/* Visi Card - Slide from Left */
 .info-card.visi-card {
   transform: translateX(-100px);
 }
@@ -322,17 +292,15 @@ export default {
   animation: slideInFromLeft 0.8s ease-out forwards;
 }
 
-/* Misi Card - Slide from Right */
 .info-card.misi-card {
   transform: translateX(100px);
 }
 
 .info-card.misi-card.slide-in-right {
   animation: slideInFromRight 0.8s ease-out forwards;
-  animation-delay: 0.2s; /* Slight delay for stagger effect */
+  animation-delay: 0.2s;
 }
 
-/* Keyframe Animations */
 @keyframes slideInFromLeft {
   0% {
     opacity: 0;
@@ -374,8 +342,6 @@ export default {
 
 .card-icon svg {
   color: white;
-  width: 32px;
-  height: 32px;
 }
 
 .card-title {
@@ -384,7 +350,6 @@ export default {
   font-weight: 700;
   color: #667eea;
   margin-bottom: 16px;
-  border: none !important;
 }
 
 .card-description {
@@ -409,13 +374,8 @@ export default {
   color: #4b5563;
 }
 
-.misi-list li:last-child {
-  margin-bottom: 0;
-}
-
 .bullet {
   min-width: 10px;
-  text-align: left;
   width: 10px;
   height: 10px;
   background: #667eea;
@@ -424,11 +384,10 @@ export default {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
 }
 
-/* Additional Info Section */
+/* Jam Layanan */
 .additional-info {
   background: #CDD8F1;
   padding: 50px 20px;
-  color: #667eea;
   padding-bottom: 90px;
 }
 
@@ -441,340 +400,192 @@ export default {
 .info-item {
   text-align: center;
   padding: 32px;
-  background:white;
+  background: white;
   border-radius: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 .info-item:hover {
-  background: rgba(255, 255, 255, 0.15);
   transform: translateY(-5px);
 }
 
-.info-icon {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
-}
-
-.info-icon svg {
-  color: #667eea;
-}
-
-/* --- Layout Umum --- */
+/* Contact Section - FIXED LAYOUT */
 .info-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr; /* kiri dan kanan seimbang */
-  grid-template-areas:
-    "telepon instagram contact"
-    "tiktok email contact"
-    "map map contact";
+  grid-template-columns: 1fr 1.2fr;
   gap: 32px;
   padding: 80px 8%;
   background: #f9fafb;
+  align-items: start;
 }
 
-.info-container > div {
+.contact-left {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.contact-item {
+  background: #CDD8F1;
+  padding: 24px;
   border-radius: 12px;
-  padding: 16px;
-}
-
-.contact {
-  grid-area: telepon;
-  background: #CDD8F1;
-  padding: 32px;
-  border-radius: 10px;
   text-align: center;
+  transition: all 0.3s ease;
 }
 
-.contact h3 {
+.contact-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.contact-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  color: #667eea;
+}
+
+.contact-item h3 {
   color: #000000;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 20px;
+  margin-bottom: 8px;
 }
 
-.contact p {
-  font-size: 16px;
+.contact-item p {
+  font-size: 15px;
   color: #555;
-  margin-top: 8px;
-  line-height: 1.6;
+  margin: 0;
 }
 
-.instagram {
-  grid-area: instagram;
-  background: #CDD8F1;
-  padding: 32px;
-  border-radius: 10px;
-  text-align: center;
+/* MAP - Mengambil 2 kolom penuh */
+.map-container {
+  grid-column: 1 / -1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-.instagram h3 {
-  color: #000000;
-  font-weight: 600;
-  font-size: 24px;
-}
-
-.instagram p {
-  font-size: 16px;
-  color: #555;
-  margin-top: 8px;
-  line-height: 1.6;
-}
-
-.tiktok {
-  grid-area: tiktok; 
-  background: #CDD8F1;
-  padding: 32px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.tiktok h3 {
-  color: #000000;
-  font-weight: 600;
-  font-size: 24px;
-}
-
-.tiktok p {
-  font-size: 16px;
-  color: #555;
-  margin-top: 8px;
-  line-height: 1.6;
-}
-
-.email {
-  grid-area: email;
-  background: #CDD8F1;
-  padding: 32px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.email h3 {
-  color: #000000;
-  font-weight: 600;
-  font-size: 24px;
-}
-
-.email p {
-  font-size: 16px;
-  color: #555;
-  margin-top: 8px;
-  line-height: 1.6;
-}
-
+/* Contact Right - FULL HEIGHT */
 .contact-right {
-  grid-area: contact; 
-  
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .contact-right h2 {
-  font-size:24px;
-  color: #365cff;
-  margin-bottom: 15px;
-  font-weight: 600;
+  font-size: 28px;
+  color: #667eea;
+  margin-bottom: 12px;
+  font-weight: 700;
 }
 
 .contact-right p {
   font-size: 15px;
   color: #555;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
   line-height: 1.6;
 }
 
 .contact-form {
-  display: grid;
+  display: flex;
   flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  height: 100%;
-  align-content: start;
+  gap: 16px;
+  flex: 1;
 }
 
 .contact-form label {
   font-weight: 600;
   color: #333;
   font-size: 14px;
+  margin-bottom: -8px;
 }
 
 .contact-form input,
 .contact-form textarea {
-  padding: 12px;
+  padding: 12px 16px;
   border-radius: 10px;
-  border: 1px solid #ccd6ff;
+  border: 2px solid #e5e7eb;
   outline: none;
   transition: 0.3s;
+  font-family: inherit;
+  font-size: 14px;
 }
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-  border-color: #3b5bff;
-  box-shadow: 0 0 6px rgba(80, 120, 255, 0.3);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 120px;
+  flex: 1;
 }
 
 .contact-form button {
-  background-color: #3b5bff;
+  background:#667eea;
   color: white;
   border: none;
-  padding: 12px;
+  padding: 14px;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
   font-weight: 600;
+  font-size: 15px;
+  margin-top: auto;
 }
 
 .contact-form button:hover {
-  background-color: #2e46d9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* --- MAP --- */
-.map-container {
-  margin-top: 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  grid-area: map;
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 968px) {
   .hero-title {
-    font-size: 3rem;
-  }
-
-  .hero-section {
-    height: 80vh;
-    min-height: 500px;
-    padding-top: 80px;
-  }
-
-  .content-section {
-    margin-top: -200px;
-    padding: 60px 20px;
+    font-size: 2.5rem;
   }
 
   .cards-wrapper {
     grid-template-columns: 1fr;
   }
 
-  .info-card {
-    padding: 36px 28px;
-  }
-
-  .card-title {
-    font-size: 1.75rem;
+  .info-container {
+    grid-template-columns: 1fr;
   }
 }
-
-
 
 @media (max-width: 640px) {
   .hero-section {
-    height: 70vh;
-    min-height: 400px;
-    background-attachment: scroll;
-    padding-top: 60px;
+    padding: 150px 20px 200px;
   }
 
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .content-section {
-    padding: 40px 16px;
-    margin-top: -150px;
-  }
-
-  .info-card {
-    padding: 28px 20px;
-  }
-
-  /* Adjust animation distance for mobile */
-  .info-card.visi-card {
-    transform: translateX(-50px);
-  }
-
-  .info-card.misi-card {
-    transform: translateX(50px);
-  }
-
-  @keyframes slideInFromLeft {
-    0% {
-      opacity: 0;
-      transform: translateX(-50px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes slideInFromRight {
-    0% {
-      opacity: 0;
-      transform: translateX(50px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  .card-icon {
-    width: 64px;
-    height: 64px;
-  }
-
-  .card-icon svg {
-    width: 32px;
-    height: 32px;
-  }
-
-  .card-title {
-    font-size: 1.5rem;
-  }
-
-  .card-description,
-  .misi-list li {
-    font-size: 1rem;
-  }
-
-  .additional-info {
-    padding: 60px 16px;
-  }
-
-  .info-grid {
-    gap: 24px;
-  }
-
-  .info-item {
-    padding: 24px 16px;
-  }
-
-  .info-icon {
-    width: 64px;
-    height: 64px;
-  }
-
-  .info-icon svg {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-@media (max-width: 480px) {
   .hero-title {
     font-size: 2rem;
+    margin-bottom: 60px;
   }
 
-  .cards-wrapper {
-    grid-template-columns: 1fr; 
-    gap: 24px;
+  .info-container {
+    padding: 40px 5%;
+  }
+
+  .contact-left {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-right {
+    padding: 24px;
   }
 }
 </style>

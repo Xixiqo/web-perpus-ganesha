@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Navbar from '../components/users/Navbar.vue'
 import Footer from '../components/users/Footer.vue'
@@ -22,11 +22,9 @@ import Footer from '../components/users/Footer.vue'
 const route = useRoute()
 
 // Computed property untuk cek apakah di halaman login
-const isLoginPage = computed(() => {
-  return route.path === '/login'
-})
+const isLoginPage = computed(() => route.path === '/login')
 
-document.addEventListener("DOMContentLoaded", () => {
+onMounted(() => {
   const cursor = document.querySelector(".cursor");
   let mouseX = 0, mouseY = 0;
   let currentX = 0, currentY = 0;
@@ -71,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   background: radial-gradient(circle, rgba(102,126,234,0.45) 0%, rgba(102,126,234,0.05) 70%, transparent 100%);
   filter: blur(12px);
   pointer-events: none;
-  transform: translate(-50%, -50%); /* agar glow tepat di tengah pointer */
+  transform: translate(-50%, -50%);
   z-index: 9999;
   transition: width 0.2s ease, height 0.2s ease, background 0.3s ease, filter 0.3s ease;
 }
@@ -101,7 +99,7 @@ body {
 
 .main-content {
   flex: 1;
-  min-height: calc(100vh - 140px); /* Navbar + Footer */
+  min-height: calc(100vh - 140px);
 }
 
 /* Paksa hapus semua garis dari navbar */

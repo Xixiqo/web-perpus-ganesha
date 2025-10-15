@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeBetter from '../views/HomeView.vue'
+import HomeBetter from '@/views/HomeView.vue'
 import admin from '../views/admin/Dashboard.vue'
-  import HomeBetter from '../views/users/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

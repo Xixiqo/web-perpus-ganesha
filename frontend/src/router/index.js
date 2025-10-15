@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeBetter from '../views/HomeView.vue'
 import admin from '../views/admin/Dashboard.vue'
+  import HomeBetter from '../views/users/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,12 +25,11 @@ const router = createRouter({
       path: '/pinjam',
       name: 'pinjam',
       component: () => import('../views/users/PinjamView.vue'),
-      meta: { requiresAuth: false } // ⬅️ tambahkan ini
     },
     {
-      path: '/artikel',
-      name: 'artikel',
-      component: () => import('../views/users/ArtikelView.vue'),
+      path: '/article',
+      name: 'article',
+      component: () => import('../views/users/ArticleView.vue'),
     },
     {
      path: '/login',
@@ -41,7 +41,7 @@ const router = createRouter({
     name: 'Cari',
     component: () => import('@/views/users/CariView.vue'),
     meta: { requiresAuth: false }
-},
+    },
     {
       path: '/profil',
       name: 'Profil',
@@ -52,6 +52,17 @@ const router = createRouter({
       path: '/admin',
       name: 'Admin',
       component: admin,
+    },
+    {
+      path: '/detail',
+      name: 'detail',
+      component: () => import('../views/users/DetailView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/slider',
+      name: 'slider',
+      component: () => import('../views/users/slider-smntr.vue'),
       meta: { requiresAuth: true }
     },
   ],

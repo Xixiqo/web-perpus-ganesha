@@ -12,41 +12,56 @@ const router = createRouter({
     {
       path: '/informasi',
       name: 'informasi',
-      component: () => import('../views/users/InformasiView.vue'),
+      component: () => import('../views/InformasiView.vue'),
     },
     {
       path: '/cari',
       name: 'cari',
-      component: () => import('../views/users/CariView.vue'),
+      component: () => import('../views/CariView.vue'),
     },
     {
       path: '/pinjam',
       name: 'pinjam',
-      component: () => import('../views/users/PinjamView.vue'),
+      component: () => import('../views/PinjamView.vue'),
+      meta: { requiresAuth: false } // ⬅️ tambahkan ini
     },
     {
       path: '/artikel',
       name: 'artikel',
-      component: () => import('../views/users/ArtikelView.vue'),
+      component: () => import('../views/ArtikelView.vue'),
     },
     {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/LoginView.vue')
-    },
-    {
+     path: '/login',
+     name: 'Login',
+     component: () => import('@/views/LoginView.vue')
+   },
+   {
     path: '/cari',
     name: 'Cari',
-    component: () => import('../views/users/CariView.vue'),
+    component: () => import('@/views/CariView.vue'),
     meta: { requiresAuth: false }
-    },
+},
     {
       path: '/profil',
       name: 'Profil',
-      component: () => import('../views/users/ProfilView.vue'),
+      component: () => import('../views/ProfilView.vue'),
       meta: { requiresAuth: true }
     }
   ],
+})
+
+// 🔒 Proteksi halaman yang butuh login
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+
+  if (to.meta.requiresAuth && !token) {
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath } // simpan tujuan semula
+    })
+  } else {
+    next()
+  }
 })
 
 export default router

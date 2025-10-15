@@ -21,10 +21,6 @@ console.log("🧩 ENV TEST:", {
   DB_PORT: process.env.DB_PORT,
 });
 
-import express from "express";
-import cors from "cors";
-import fs from "fs";
-
 // === app setup ===
 const app = express();
 app.use(cors({ origin: process.env.CORS_ORIGIN || "*", credentials: true }));

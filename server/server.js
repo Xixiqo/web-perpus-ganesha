@@ -1,4 +1,5 @@
 // server.js
+import db from "./config/db.js"; 
 import express from "express";
 import cors from "cors";
 import fs from "fs";

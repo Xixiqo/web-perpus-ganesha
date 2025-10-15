@@ -38,7 +38,7 @@
     <section class="container section">
       <div class="section-header">
         <h3>Rekomendasi Koleksi</h3>
-        <a href="#" class="see-all">Lihat semua</a>
+        <a href="./cari" class="see-all">Lihat semua</a>
       </div>
       <div class="grid">
         <div class="book-card" v-for="n in 8" :key="'rec-'+n">
@@ -59,7 +59,7 @@
     <section class="container section">
       <div class="section-header">
         <h3>Pilih Buku Berdasarkan</h3>
-        <a href="#" class="see-all">Lihat lainnya</a>
+        <a href="./cari" class="see-all">Lihat lainnya</a>
       </div>
       <div class="grid">
         <div class="book-card" v-for="n in 6" :key="'cat-'+n">

@@ -4,7 +4,7 @@
       <!-- Left Panel -->
       <div class="left-panel">
         <div class="logo-container">
-          <img src="/logo.jpeg" alt="Logo Perpustakaan Ganesha Stembayo" class="logo">
+          <img src="/logo.png" alt="Logo Perpustakaan Ganesha Stembayo" class="logo">
         </div>
         <h1 class="library-name">Ganesha Stembayo</h1>
         <div class="illustration">
@@ -80,8 +80,9 @@
             {{ errorMessage }}
           </div>
 
+          <!-- Forgot Password Link -->
           <div class="forgot-password">
-            <a href="#" @click.prevent="handleForgotPassword">Lupa Kata Sandi?</a>
+            <a href="#" @click.prevent="showModal = true">Lupa Kata Sandi?</a>
           </div>
 
           <button type="submit" class="btn-login" :disabled="loading">
@@ -92,15 +93,91 @@
 
         <div class="back-home">
           <RouterLink to="/">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
             Kembali ke Beranda
           </RouterLink>
         </div>
       </div>
     </div>
+
+    <!-- Modal Overlay (di luar login-container) -->
+    <Transition name="modal-fade">
+      <div v-if="showModal" class="modal-overlay" @click="closeModal">
+        <div class="modal-container" @click.stop>
+          <!-- Icon -->
+          <div class="modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+
+          <!-- Content -->
+          <h2 class="modal-title">Lupa Kata Sandi?</h2>
+          <p class="modal-description">
+            Jangan khawatir! Kami siap membantu Anda untuk mereset kata sandi akun perpustakaan Anda.
+          </p>
+
+          <div class="modal-options">
+            <!-- Option 1 -->
+            <div class="option-card">
+              <div class="option-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="option-content">
+                <h3>Kunjungi Pustakawan</h3>
+                <p>Datang langsung ke perpustakaan dan temui pustakawan kami untuk bantuan reset kata sandi.</p>
+              </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="option-card">
+              <div class="option-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div class="option-content">
+                <h3>Hubungi via Email</h3>
+                <p>Kirim permintaan reset kata sandi Anda ke:</p>
+                <a href="mailto:info@ganeshastembayo.sch.id" class="email-link">
+                  info@ganeshastembayo.sch.id
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Note -->
+          <div class="modal-note">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>Pastikan Anda menyertakan nomor induk atau informasi identitas Anda saat menghubungi kami.</span>
+          </div>
+
+          <!-- Close Button -->
+          <button class="modal-close-btn" @click="closeModal">
+            Mengerti
+          </button>
+
+          <!-- X Button -->
+          <button class="modal-x-btn" @click="closeModal" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -113,10 +190,14 @@ export default {
       password: '',
       showPassword: false,
       loading: false,
-      errorMessage: ''
+      errorMessage: '',
+      showModal: false
     }
   },
   methods: {
+    closeModal() {
+      this.showModal = false;
+    },
     async handleLogin() {
       this.loading = true;
       this.errorMessage = '';
@@ -149,9 +230,6 @@ export default {
         this.loading = false;
       }
     },
-    handleForgotPassword() {
-      this.$router.push('/forgot-password');
-    }
   },
   mounted() {
     const token = localStorage.getItem('token');
@@ -373,6 +451,234 @@ export default {
   text-decoration: underline;
 }
 
+/* Modal Transitions */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active .modal-container,
+.modal-fade-leave-active .modal-container {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-fade-enter-from .modal-container,
+.modal-fade-leave-to .modal-container {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+/* Modal Container */
+.modal-container {
+  background: white;
+  border-radius: 24px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal Icon */
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: #2C64E3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-icon svg {
+  color: white;
+}
+
+/* Modal Title */
+.modal-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+/* Modal Description */
+.modal-description {
+  font-size: 1rem;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Options */
+.modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.option-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.option-card:hover {
+  border-color: #667eea;
+  background: #f9fafb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.option-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: #2C64E3;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-icon svg {
+  color: white;
+}
+
+.option-content {
+  flex: 1;
+}
+
+.option-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.option-content p {
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.email-link {
+  display: inline-block;
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.email-link:hover {
+  color: #4F84F9;
+  text-decoration: underline;
+}
+
+/* Note */
+.modal-note {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.modal-note svg {
+  flex-shrink: 0;
+  color: #f59e0b;
+  margin-top: 2px;
+}
+
+.modal-note span {
+  font-size: 0.875rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+/* Close Button */
+.modal-close-btn {
+  width: 100%;
+  padding: 0.875rem;
+  background: #2C64E3;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background: #1e40af;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.modal-close-btn:active {
+  transform: translateY(0);
+}
+
+/* X Button */
+.modal-x-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 36px;
+  height: 36px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-x-btn:hover {
+  background: #e5e7eb;
+  transform: rotate(90deg);
+}
+
+.modal-x-btn svg {
+  color: #6b7280;
+}
+
 .btn-login {
   width: 100%;
   padding: 16px;
@@ -474,7 +780,7 @@ export default {
     min-height: 250px;
   }
 
-   .logo-container {
+  .logo-container {
     width: 120px;
     height: 120px;
   }
@@ -507,6 +813,27 @@ export default {
   .btn-login {
     padding: 14px;
     font-size: 15px;
+  }
+
+  .modal-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+  }
+
+  .modal-description {
+    font-size: 0.9rem;
+  }
+
+  .option-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .option-icon {
+    margin: 0 auto;
   }
 }
 </style>

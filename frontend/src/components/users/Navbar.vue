@@ -11,7 +11,7 @@
       <!-- Brand dengan Logo (pindah ke tengah di mobile) -->
       <div class="nav-brand">
         <img 
-          src="../../assets/logo.svg" 
+          src="../../public/logo.png" 
           alt="Logo Ganesha" 
           class="logo-img"
         />
@@ -152,7 +152,6 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
-/* NAVBAR PUTIH POLOS - TANPA SHADOW/BORDER APAPUN */
 .navbar {
   background: #ffffff;
   position: sticky;
@@ -228,14 +227,14 @@ const handleLogout = async () => {
   left: 0;
   width: 0%;
   height: 2px;
-  background-color: #667eea;
+  background-color: var(--primary);
   transition: width 0.3s ease, opacity 0.3s ease;
   opacity: 0;
 }
 
 /* Saat hover */
 .nav-link:hover {
-  color: #667eea;
+  color: var(--primary);
 }
 
 .nav-link:hover::after {
@@ -245,7 +244,7 @@ const handleLogout = async () => {
 
 /* Saat router-link aktif */
 .nav-link.router-link-exact-active {
-  color: #667eea;
+  color: var(--primary);
 }
 
 .nav-link.router-link-exact-active::after {
@@ -330,7 +329,7 @@ const handleLogout = async () => {
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  width: 5000px;
+  width: 250px;
   padding: 8px;
   animation: slideDown 0.3s ease;
 }
@@ -359,7 +358,7 @@ const handleLogout = async () => {
 
 .dropdown-item:hover {
   background: #f3f4f6;
-  color: #667eea;
+  color: var(--primary);
 }
 
 .dropdown-item.logout {

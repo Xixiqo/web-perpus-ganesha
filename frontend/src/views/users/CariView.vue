@@ -335,7 +335,7 @@ export default {
 }
 
 .search-box svg {
-  color: #667eea;
+  color: var(--primary);
   flex-shrink: 0;
   width: 20px;
   height: 20px;
@@ -362,7 +362,7 @@ export default {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #667eea;
+  background: var(--primary);
   color: white;
   border: none;
   display: flex;
@@ -428,7 +428,7 @@ export default {
 
 .apply-button {
   padding: 8px 16px;
-  background: #667eea;
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -478,7 +478,7 @@ export default {
   width: 40px;
   height: 40px;
   border: 4px solid #e5e7eb;
-  border-top-color: #667eea;
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -504,7 +504,7 @@ export default {
 
 .pagination-button {
   padding: 10px 20px;
-  background: #667eea;
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 8px;

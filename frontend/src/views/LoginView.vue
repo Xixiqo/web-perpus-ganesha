@@ -554,7 +554,7 @@ export default {
 }
 
 .option-card:hover {
-  border-color: #667eea;
+  border-color: var(--primary);
   background: #f9fafb;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
@@ -595,7 +595,7 @@ export default {
 
 .email-link {
   display: inline-block;
-  color: #667eea;
+  color: var(--primary);
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;

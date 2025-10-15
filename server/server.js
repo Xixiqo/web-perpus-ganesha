@@ -39,11 +39,13 @@ app.get("/api/categories", (req, res) => {
   res.json(data);
 });
 
+<<<<<<< HEAD
 import booksRoutes from "./api/books.js";
 app.use("/api/books", booksRoutes);
-
 // ==== Jalankan server ====
-// Start the server
+=======
+// Jalankan server
+>>>>>>> 02383eebaaa21d22825d02ee4eec36fa8328eaf3
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);

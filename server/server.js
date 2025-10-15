@@ -1,7 +1,9 @@
-// server.js
 import { fileURLToPath } from "url";
 import path from "path";
 import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import fs from "fs";
 
 // 🧩 Tentukan lokasi file .env secara eksplisit
 const __filename = fileURLToPath(import.meta.url);
@@ -17,10 +19,6 @@ console.log("🧩 ENV TEST:", {
   DB_PORT: process.env.DB_PORT,
 });
 
-import express from "express";
-import cors from "cors";
-import fs from "fs";
-
 // === app setup ===
 const app = express();
 app.use(cors({ origin: process.env.CORS_ORIGIN || "*", credentials: true }));
@@ -29,9 +27,11 @@ app.use(express.json());
 // Routes
 import authRoutes from "./api/auth.js";
 import profileRoutes from "./api/profile.js";
+import booksRoutes from "./api/books.js";
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/books", booksRoutes);
 
 app.get("/api/categories", (req, res) => {
   const filePath = path.join(__dirname, "api/categories.json");
@@ -39,13 +39,7 @@ app.get("/api/categories", (req, res) => {
   res.json(data);
 });
 
-<<<<<<< HEAD
-import booksRoutes from "./api/books.js";
-app.use("/api/books", booksRoutes);
-// ==== Jalankan server ====
-=======
 // Jalankan server
->>>>>>> 02383eebaaa21d22825d02ee4eec36fa8328eaf3
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);

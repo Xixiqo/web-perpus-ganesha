@@ -1,4 +1,3 @@
-// controllers/booksController.js
 import db from "../config/db.js";
 
 export const getBooks = (req, res) => {

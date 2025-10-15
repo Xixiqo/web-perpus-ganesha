@@ -47,6 +47,8 @@ app.get("/api/categories", (req, res) => {
   res.json(data);
 });
 
+import booksRoutes from "./api/books.js";
+app.use("/api/books", booksRoutes);
 // ==== Jalankan server ====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

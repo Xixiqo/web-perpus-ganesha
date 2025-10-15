@@ -11,7 +11,7 @@
       <!-- Brand dengan Logo (pindah ke tengah di mobile) -->
       <div class="nav-brand">
         <img 
-          src="/logo.png" 
+          src="../../assets/logo.svg" 
           alt="Logo Ganesha" 
           class="logo-img"
         />

@@ -28,10 +28,12 @@ app.use(express.json());
 import authRoutes from "./api/auth.js";
 import profileRoutes from "./api/profile.js";
 import booksRoutes from "./api/books.js";
+import searchRoutes from "./api/search.js";
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
-app.use("/api/books", booksRoutes);
+app.use("/api", booksRoutes); // Mengubah ini untuk menangani semua route buku
+app.use("/api/search", searchRoutes); // Route untuk pencarian
 
 app.get("/api/categories", (req, res) => {
   const filePath = path.join(__dirname, "api/categories.json");

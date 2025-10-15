@@ -1,24 +1,28 @@
 <template>
   <nav class="navbar">
     <div class="nav-container">
-      <!-- Brand -->
-      <div class="nav-brand">
-        <h2>Ganesha</h2>
-      </div>
-      
-      <!-- Tombol menu mobile -->
+      <!-- Tombol menu mobile (pindah ke kiri) -->
       <button class="menu-btn" @click="toggleMenu">
         <span class="bar" />
         <span class="bar" />
         <span class="bar" />
       </button>
       
+      <!-- Brand dengan Logo (pindah ke tengah di mobile) -->
+      <div class="nav-brand">
+        <img 
+          src="/logo.png" 
+          alt="Logo Ganesha" 
+          class="logo-img"
+        />
+        <h2>Ganesha Stembayo</h2>
+      </div>
+      
       <!-- Link navigasi -->
       <div :class="['nav-links', { active: menuOpen }]">
         <RouterLink to="/" class="nav-link" @click="closeMenu">Beranda</RouterLink>
         <RouterLink to="/informasi" class="nav-link" @click="closeMenu">Informasi</RouterLink>
         <RouterLink to="/cari" class="nav-link" @click="closeMenu">Pencarian</RouterLink>
-        <RouterLink to="/pinjam" class="nav-link" @click="closeMenu">Peminjaman</RouterLink>
         <RouterLink to="/article" class="nav-link" @click="closeMenu">Artikel</RouterLink>
       </div>
       
@@ -26,13 +30,8 @@
       <div class="nav-right">
         <!-- Jika belum login -->
         <RouterLink v-if="!isLoggedIn" to="/login" class="user-chip-link">
-          <div class="user-chip">
-            <img
-              class="avatar"
-              src="https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg"
-              alt="avatar"
-            />
-            <span>Login!</span>
+          <div class="btn-login">
+            <span>Login</span>
           </div>
         </RouterLink>
         
@@ -41,10 +40,10 @@
           <div class="user-chip logged-in" @click="toggleUserMenu">
             <img
               class="avatar"
-              :src="user.avatar || 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'"
-              :alt="user.name"
+              :src="user?.avatar || 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'"
+              :alt="user?.name || 'User'"
             />
-            <span>{{ user.name }}</span>
+            <span>{{ user?.name || 'User' }}</span>
             <svg 
               class="dropdown-icon" 
               :class="{ open: userMenuOpen }"
@@ -101,7 +100,7 @@ const router = useRouter()
 const menuOpen = ref(false)
 const userMenuOpen = ref(false)
 const isLoggedIn = ref(false)
-const user = ref({ name: '', avatar: '', id: '' })
+const user = ref(null)
 
 onMounted(() => {
   checkLoginStatus()
@@ -115,9 +114,19 @@ onUnmounted(() => {
 const checkLoginStatus = () => {
   const token = localStorage.getItem('token')
   const userData = localStorage.getItem('user')
+  
   if (token && userData) {
-    isLoggedIn.value = true
-    user.value = JSON.parse(userData)
+    try {
+      isLoggedIn.value = true
+      user.value = JSON.parse(userData)
+    } catch (error) {
+      console.error('Error parsing user data:', error)
+      isLoggedIn.value = false
+      user.value = null
+    }
+  } else {
+    isLoggedIn.value = false
+    user.value = null
   }
 }
 
@@ -136,7 +145,7 @@ const handleLogout = async () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   isLoggedIn.value = false
-  user.value = { name: '', avatar: '', id: '' }
+  user.value = null
   userMenuOpen.value = false
   router.push('/')
 }
@@ -172,10 +181,24 @@ const handleLogout = async () => {
   border: none;
 }
 
+/* Logo dan Brand */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
 .nav-brand h2 {
-  color: #667eea;
+  color: #131313;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1rem;
+  margin: 0;
 }
 
 /* --- Link utama --- */
@@ -253,9 +276,30 @@ const handleLogout = async () => {
   transform: translateY(-2px);
 }
 
+.btn-login {
+  background: #2C64E3;
+  border-radius: 20px;
+  padding: 8px 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fafafa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-login span {
+  font-weight: 600;
+}
+
+.btn-login:hover {
+  background: #1e40af;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+  scale: 1.02;
+}
+
 .user-chip.logged-in {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #131313;
 }
 
 .user-chip .avatar {
@@ -286,7 +330,7 @@ const handleLogout = async () => {
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  min-width: 220px;
+  width: 5000px;
   padding: 8px;
   animation: slideDown 0.3s ease;
 }
@@ -344,6 +388,7 @@ const handleLogout = async () => {
   border: none;
   cursor: pointer;
   padding: 0;
+  order: -1; /* Pindah ke paling kiri */
 }
 
 .menu-btn .bar {
@@ -360,6 +405,31 @@ const handleLogout = async () => {
     display: flex;
   }
   
+  /* Container mobile: hamburger - logo - profile */
+  .nav-container {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* Hamburger di kiri */
+  .menu-btn {
+    order: 1;
+  }
+  
+  /* Logo di tengah */
+  .nav-brand {
+    order: 2;
+    justify-self: center;
+  }
+  
+  /* Profile di kanan */
+  .nav-right {
+    order: 3;
+    justify-self: end;
+  }
+  
   .nav-links {
     position: absolute;
     top: 70px;
@@ -373,6 +443,8 @@ const handleLogout = async () => {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
+    order: 4;
+    grid-column: 1 / -1;
   }
   
   .nav-links.active {
@@ -400,6 +472,19 @@ const handleLogout = async () => {
   
   .dropdown-icon {
     display: none;
+  }
+  
+  .dropdown-menu {
+    width: 280px;
+  }
+  
+  .logo-img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .nav-brand h2 {
+    font-size: 1.25rem;
   }
 }
 </style>

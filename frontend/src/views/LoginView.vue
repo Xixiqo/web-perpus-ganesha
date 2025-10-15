@@ -155,7 +155,16 @@ export default {
   },
   mounted() {
     const token = localStorage.getItem('token');
-    if (token) this.$router.push('/');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (token && user) {
+      // jika role pustakawan (admin), langsung ke /admin
+      if (user.role === 'pustakawan') {
+        this.$router.push('/admin');
+      } else {
+        this.$router.push('/');
+      }
+    }
   }
 }
 </script>

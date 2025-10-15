@@ -64,4 +64,17 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+// Masuk Admin Page
+router.beforeEach((to, from, next) => {
+  if (to.path.startsWith('/admin')) {
+    const token = localStorage.getItem('token')
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    if (!token || !user || user.role !== 'pustakawan') {
+      return next('/login?redirect=' + to.fullPath)
+    }
+  }
+  next()
+})
+
 export default router

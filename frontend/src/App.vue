@@ -1,23 +1,30 @@
 <template>
   <div class="cursor"></div>
   <div id="app">
-    <!-- Navbar hanya muncul jika BUKAN di halaman login -->
-    <Navbar v-if="!isLoginPage" />
+    <!-- Navbar & Footer hanya untuk user -->
+    <Navbar v-if="!isLoginPage && !isAdminPage" />
     
-    <main class="main-content">
-      <RouterView />
-    </main>
+    <div class="main-layout">
+      <!-- Sidebar hanya untuk admin -->
+      <Sidebar v-if="isAdminPage" />
+
+      <!-- Konten utama -->
+      <main class="main-content">
+        <RouterView />
+      </main>
+    </div>
     
-    <!-- Footer hanya muncul jika BUKAN di halaman login -->
-    <Footer v-if="!isLoginPage" />
+    <Footer v-if="!isLoginPage && !isAdminPage" />
   </div>
 </template>
+
 
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Navbar from './components/users/Navbar.vue'
 import Footer from './components/users/Footer.vue'
+
 
 const route = useRoute()
 

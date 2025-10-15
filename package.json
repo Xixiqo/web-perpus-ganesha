@@ -2,7 +2,7 @@
   "name": "web-perpus-ganesha",
   "version": "1.0.0",
   "description": "Backend API untuk Web Perpus Ganesha",
-  "type": "commonjs",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

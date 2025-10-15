@@ -204,7 +204,7 @@ export default {
 }
 
 .view-all-link {
-  color: #667eea;
+  color: var(--primary);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -241,7 +241,7 @@ export default {
 }
 
 .category-item.featured {
-  border: 2px solid #667eea;
+  border: 2px solid var(--primary);
 }
 
 /* Image */

@@ -258,7 +258,7 @@ export default {
   font-size: 3rem;
   font-weight: 800;
   text-align: center;
-  color: #667eea;
+  color: var(--primary);
   margin-bottom: 80px;
 }
 
@@ -331,7 +331,7 @@ export default {
 .card-icon {
   width: 64px;
   height: 64px;
-  background: #667eea;
+  background: var(--primary);
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -348,7 +348,7 @@ export default {
   text-align: left;
   font-size: 1.6rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--primary);
   margin-bottom: 16px;
 }
 
@@ -378,7 +378,7 @@ export default {
   min-width: 10px;
   width: 10px;
   height: 10px;
-  background: #667eea;
+  background: var(--primary);
   border-radius: 50%;
   margin-top: 5px;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
@@ -447,7 +447,7 @@ export default {
   justify-content: center;
   background: white;
   border-radius: 50%;
-  color: #667eea;
+  color: var(--primary);
 }
 
 .contact-item h3 {
@@ -484,7 +484,7 @@ export default {
 
 .contact-right h2 {
   font-size: 28px;
-  color: #667eea;
+  color: var(--primary);
   margin-bottom: 12px;
   font-weight: 700;
 }
@@ -523,7 +523,7 @@ export default {
 
 .contact-form input:focus,
 .contact-form textarea:focus {
-  border-color: #667eea;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -534,7 +534,7 @@ export default {
 }
 
 .contact-form button {
-  background:#667eea;
+  background: var(--primary);
   color: white;
   border: none;
   padding: 14px;

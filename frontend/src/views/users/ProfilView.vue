@@ -328,18 +328,89 @@
               <p class="text-xs text-gray-500 mt-1">Menggunakan bahasa antarmuka.</p>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Mode Disleksia</label>
-              <p class="text-sm text-gray-600 mb-3">Mengubah ukuran dan jenis teks agar nyaman dibaca oleh pengguna dengan gangguan disleksia.</p>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  v-model="preferences.dyslexiaMode"
-                  @change="savePreferences"
-                  class="sr-only peer"
-                >
-                <div class="toggle-switch"></div>
-              </label>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mode Disleksia</label>
+                <p class="text-sm text-gray-600 mb-3">Mengubah tampilan teks agar lebih mudah dibaca oleh pengguna dengan gangguan disleksia.</p>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    v-model="preferences.dyslexiaMode"
+                    @change="savePreferences"
+                    class="sr-only peer"
+                  >
+                  <div class="toggle-switch"></div>
+                </label>
+              </div>
+
+              <!-- Pengaturan Disleksia tambahan yang muncul ketika mode disleksia aktif -->
+              <div v-if="preferences.dyslexiaMode" class="pl-4 border-l-2 border-blue-200 space-y-4">
+                <!-- Ukuran Font -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Ukuran Teks</label>
+                  <div class="flex items-center gap-4">
+                    <input 
+                      type="range" 
+                      v-model="preferences.dyslexiaFontSize"
+                      min="14"
+                      max="24"
+                      step="1"
+                      @change="savePreferences"
+                      class="w-full"
+                    >
+                    <span class="text-sm text-gray-600">{{ preferences.dyslexiaFontSize }}px</span>
+                  </div>
+                </div>
+
+                <!-- Jarak Baris -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Jarak Antar Baris</label>
+                  <div class="flex items-center gap-4">
+                    <input 
+                      type="range" 
+                      v-model="preferences.dyslexiaLineSpacing"
+                      min="1"
+                      max="2"
+                      step="0.1"
+                      @change="savePreferences"
+                      class="w-full"
+                    >
+                    <span class="text-sm text-gray-600">{{ preferences.dyslexiaLineSpacing }}x</span>
+                  </div>
+                </div>
+
+                <!-- Jenis Font -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Font</label>
+                  <select 
+                    v-model="preferences.dyslexiaFontFamily"
+                    @change="savePreferences"
+                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="OpenDyslexic">OpenDyslexic</option>
+                    <option value="Lexia">Lexia</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Verdana">Verdana</option>
+                  </select>
+                </div>
+
+                <!-- Preview Teks -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                  <div 
+                    class="p-4 bg-white border border-gray-200 rounded-lg"
+                    :style="{
+                      fontSize: preferences.dyslexiaFontSize + 'px',
+                      lineHeight: preferences.dyslexiaLineSpacing,
+                      fontFamily: preferences.dyslexiaFontFamily
+                    }"
+                  >
+                    Contoh teks dengan pengaturan yang dipilih.
+                    <br>
+                    Perpustakaan Ganesha menyediakan berbagai macam buku.
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -624,12 +695,22 @@ export default {
       isSaving: false,
       updateMessage: '',
       updateSuccess: false,
+      showDyslexiaConfirm: false,
       
       // Preferences
       preferences: {
         language: 'id',
-        dyslexiaMode: false,
-        showLeaderboard: false
+        dyslexiaMode: false, // Mode disleksia default tidak aktif
+        dyslexiaFontSize: 16, // Ukuran font default
+        dyslexiaLineSpacing: 1.5, // Jarak baris default
+        dyslexiaFontFamily: 'Arial', // Font default
+        showLeaderboard: true
+      },
+      // Pengaturan optimal disleksia yang akan diterapkan saat mode diaktifkan
+      optimalDyslexiaSettings: {
+        fontSize: 18,
+        lineSpacing: 1.8,
+        fontFamily: 'OpenDyslexic'
       },
       preferencesMessage: '',
       
@@ -847,19 +928,135 @@ export default {
       const saved = localStorage.getItem('preferences');
       if (saved) {
         try {
-          this.preferences = JSON.parse(saved);
+          const savedPrefs = JSON.parse(saved);
+          // Merge saved preferences with defaults
+          this.preferences = {
+            ...this.preferences,
+            ...savedPrefs
+          };
+          
+          // Jika mode disleksia aktif, terapkan pengaturan
+          if (this.preferences.dyslexiaMode) {
+            this.applyDyslexiaSettings();
+          }
         } catch (e) {
           console.error('Error loading preferences:', e);
         }
       }
     },
     
-    savePreferences() {
-      localStorage.setItem('preferences', JSON.stringify(this.preferences));
-      this.preferencesMessage = 'Preferensi berhasil disimpan!';
+    toggleDyslexiaMode() {
+      if (this.preferences.dyslexiaMode) {
+        // Jika diaktifkan, terapkan pengaturan optimal
+        this.preferences.dyslexiaFontSize = this.optimalDyslexiaSettings.fontSize;
+        this.preferences.dyslexiaLineSpacing = this.optimalDyslexiaSettings.lineSpacing;
+        this.preferences.dyslexiaFontFamily = this.optimalDyslexiaSettings.fontFamily;
+        this.applyDyslexiaSettings();
+        this.showDyslexiaConfirm = true;
+        setTimeout(() => {
+          this.showDyslexiaConfirm = false;
+        }, 5000);
+      } else {
+        // Jika dinonaktifkan, kembalikan ke pengaturan default
+        this.removeDyslexiaSettings();
+      }
+      this.savePreferences();
+    },
+    
+    applyDyslexiaSettings() {
+      // Terapkan pengaturan disleksia ke seluruh dokumen
+      document.documentElement.style.setProperty('--dyslexia-font-family', this.preferences.dyslexiaFontFamily);
+      document.documentElement.style.setProperty('--dyslexia-font-size', this.preferences.dyslexiaFontSize + 'px');
+      document.documentElement.style.setProperty('--dyslexia-line-spacing', this.preferences.dyslexiaLineSpacing);
+      document.body.classList.add('dyslexia-friendly');
+      
+      // Terapkan pengaturan warna latar dan kontras yang optimal
+      document.documentElement.style.setProperty('--background-color', '#FFFFF0'); // Cream color
+      document.documentElement.style.setProperty('--text-color', '#333333');
+      
+      // Tambahkan class untuk styling global
+      document.body.classList.add('high-contrast');
+    },
+    
+    removeDyslexiaSettings() {
+      // Hapus semua pengaturan disleksia
+      document.documentElement.style.removeProperty('--dyslexia-font-family');
+      document.documentElement.style.removeProperty('--dyslexia-font-size');
+      document.documentElement.style.removeProperty('--dyslexia-line-spacing');
+      document.documentElement.style.removeProperty('--background-color');
+      document.documentElement.style.removeProperty('--text-color');
+      
+      // Hapus class styling
+      document.body.classList.remove('dyslexia-friendly');
+      document.body.classList.remove('high-contrast');
+    },
+    
+    async savePreferences() {
+      try {
+        // Simpan ke localStorage
+        localStorage.setItem('preferences', JSON.stringify(this.preferences));
+        
+        // Pastikan mode disleksia selalu aktif
+        this.preferences.dyslexiaMode = true;
+        
+        // Terapkan pengaturan disleksia
+        this.applyDyslexiaSettings();
+        
+        // Kirim ke server untuk sinkronisasi (jika ada)
+        const token = localStorage.getItem('token');
+        if (token) {
+          await fetch('http://localhost:5000/api/profile/preferences', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.preferences)
+          });
+        }
+        
+        this.preferencesMessage = 'Preferensi berhasil disimpan!';
+        
+        // Terapkan notifikasi jika diaktifkan
+        if (this.notifications.borrowing || this.notifications.returning || this.notifications.events) {
+          this.requestNotificationPermission();
+        }
+      } catch (error) {
+        console.error('Error saving preferences:', error);
+        this.preferencesMessage = 'Terjadi kesalahan saat menyimpan preferensi';
+      }
+      
       setTimeout(() => {
         this.preferencesMessage = '';
       }, 2000);
+    },
+    
+    requestNotificationPermission() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            // Aktifkan service worker untuk notifikasi background
+            this.registerServiceWorker();
+          }
+        });
+      }
+    },
+    
+    async registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/service-worker.js');
+          console.log('ServiceWorker registration successful');
+          
+          // Kirim pengaturan notifikasi ke service worker
+          registration.active?.postMessage({
+            type: 'UPDATE_NOTIFICATIONS',
+            notifications: this.notifications
+          });
+        } catch (error) {
+          console.error('ServiceWorker registration failed:', error);
+        }
+      }
     },
     
     loadNotifications() {
@@ -966,6 +1163,22 @@ export default {
   
   mounted() {
     this.fetchProfile();
+    
+    // Apply saved dyslexia settings on mount
+    if (this.preferences.dyslexiaMode) {
+      document.documentElement.style.setProperty('--dyslexia-font-family', this.preferences.dyslexiaFontFamily);
+      document.documentElement.style.setProperty('--dyslexia-font-size', this.preferences.dyslexiaFontSize + 'px');
+      document.documentElement.style.setProperty('--dyslexia-line-spacing', this.preferences.dyslexiaLineSpacing);
+      document.body.classList.add('dyslexia-friendly');
+    }
+  },
+  
+  beforeUnmount() {
+    // Clean up dyslexia settings when component is destroyed
+    document.documentElement.style.removeProperty('--dyslexia-font-family');
+    document.documentElement.style.removeProperty('--dyslexia-font-size');
+    document.documentElement.style.removeProperty('--dyslexia-line-spacing');
+    document.body.classList.remove('dyslexia-friendly');
   },
 };
 </script>
@@ -1247,5 +1460,92 @@ select {
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #2563eb;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: #1d4ed8;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.dyslexia-friendly {
+  font-family: var(--dyslexia-font-family, 'OpenDyslexic');
+  font-size: var(--dyslexia-font-size, 18px);
+  line-height: var(--dyslexia-line-spacing, 1.8);
+  letter-spacing: 0.5px;
+  word-spacing: 1px;
+  background-color: var(--background-color, #FFFFF0);
+  color: var(--text-color, #333333);
+}
+
+/* Pengaturan global untuk mode disleksia */
+.dyslexia-friendly * {
+  font-family: inherit;
+  line-height: inherit;
+}
+
+/* Pengaturan khusus untuk heading dalam mode disleksia */
+.dyslexia-friendly h1,
+.dyslexia-friendly h2,
+.dyslexia-friendly h3 {
+  margin-bottom: 1.2em;
+  font-weight: 600;
+}
+
+/* Pengaturan paragraf untuk kemudahan membaca */
+.dyslexia-friendly p {
+  margin-bottom: 1.5em;
+  max-width: 80ch;
+}
+
+/* Pengaturan kontras tinggi */
+.high-contrast {
+  --link-color: #0000EE;
+  --visited-link-color: #551A8B;
+}
+
+.high-contrast a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.high-contrast a:visited {
+  color: var(--visited-link-color);
+}
+
+/* Animasi yang lebih lembut untuk mengurangi distraksi */
+.dyslexia-friendly * {
+  transition: all 0.3s ease-out;
+}
+
+/* Pengaturan untuk input dan tombol */
+.dyslexia-friendly input,
+.dyslexia-friendly button {
+  font-size: inherit;
+  padding: 0.8em 1.2em;
 }
 </style>

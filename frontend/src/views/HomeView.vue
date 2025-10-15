@@ -197,14 +197,14 @@ onMounted(async () => {
 }
 
 .see-all {
-  color: #3b82f6;
+  color: var(--primary);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s;
 }
 
 .see-all:hover {
-  color: #2563eb;
+  color: var(--primary);
 }
 
 .grid {

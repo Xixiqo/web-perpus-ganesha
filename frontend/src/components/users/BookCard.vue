@@ -1,129 +1,179 @@
 <template>
   <div class="book-card" @click="handleClick">
-    <!-- Thumbnail -->
-    <div 
-      class="thumb" 
-      :class="{ 'placeholder': !book.cover }"
-      :style="book.cover ? `background-image: url(/covers/${book.cover})` : ''"
-    ></div>
-    
-    <!-- Meta Info -->
-    <div class="meta">
-      <h4>{{ book.judul || `Judul Buku ${index}` }}</h4>
-      <p class="author">{{ book.kategori || 'Kategori' }} • {{ book.pembuat || 'Penulis' }}</p>
-      <div class="info">
-        <span class="publisher">{{ book.penerbit || 'Penerbit' }}</span>
-        <span class="year">{{ book.tahun_rilis || '2024' }}</span>
+    <!-- Thumbnail/Cover -->
+    <div class="cover-wrapper">
+      <img 
+        v-if="book.cover" 
+        :src="`/covers/${book.cover}`" 
+        :alt="book.judul"
+        class="cover-image"
+        @error="handleImageError"
+      >
+      <div v-else class="cover-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
       </div>
-      <div class="stock" :class="getStockClass(book.stok)">
+    </div>
+    
+    <!-- Book Info -->
+    <div class="book-info">
+      <!-- Judul Buku -->
+      <h3 class="book-title">{{ book.judul || 'Judul Buku' }}</h3>
+      
+      <!-- Kategori & Penulis -->
+      <p class="book-meta">
+        {{ book.kategori || 'Kategori' }} • {{ book.pembuat || 'Penulis' }}
+      </p>
+
+      <!-- Status Stok -->
+      <div class="stock-status" :class="stockStatusClass">
         <span class="stock-icon">📚</span>
-        <span>{{ book.stok ? `${book.stok} tersedia` : 'Tersedia' }}</span>
+        <span class="stock-text">{{ stockText }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, computed } from 'vue'
 
 const props = defineProps({
   book: {
     type: Object,
+    required: true,
     default: () => ({})
   },
   index: {
     type: Number,
-    default: 1
+    default: 0
   }
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'book-selected'])
 
 const handleClick = () => {
   emit('click', props.book)
+  emit('book-selected', props.book)
 }
 
-const getStockClass = (stok) => {
-  if (!stok) return ''
-  if (stok >= 10) return 'stock-high'
-  if (stok >= 5) return 'stock-medium'
-  return 'stock-low'
+const handleImageError = (e) => {
+  e.target.style.display = 'none'
 }
+
+// Computed untuk status stok
+const stockStatusClass = computed(() => {
+  const stok = props.book.stok || 0
+  
+  if (stok === 0) return 'stock-unavailable'
+  if (stok >= 10) return 'stock-available'
+  if (stok >= 5) return 'stock-limited'
+  return 'stock-low'
+})
+
+const stockText = computed(() => {
+  const stok = props.book.stok || 0
+  
+  if (stok === 0) return 'Tidak Tersedia'
+  if (stok === 1) return '1 Tersedia'
+  return `${stok} Tersedia`
+})
 </script>
 
 <style scoped>
 .book-card {
-  background: #fff;
-  border: 2px solid #eef2ff;
-  border-radius: 12px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
-  transition: transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .book-card:hover {
-  transform: translateY(-4px);
-  border: 2px solid #3b82f6;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
-  transition: all 0.5s ease-in-out;
+  transform: translateY(-6px);
+  border-color: #3b82f6;
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.25);
 }
 
-.thumb {
-  height: 200px;
-  background: #f8fafc;
-  background-size: cover;
-  background-position: center;
+/* Cover Image */
+.cover-wrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+  overflow: hidden;
 }
 
-.placeholder {
-  background-image: 
-    linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
-    linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
-    linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-  background-color: #f8fafc;
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.meta {
-  padding: 0.9rem;
+.book-card:hover .cover-image {
+  transform: scale(1.05);
 }
 
-.meta h4 {
-  font-size: 1rem;
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+.cover-placeholder svg {
+  color: #9ca3af;
+  opacity: 0.5;
+}
+
+/* Book Info */
+.book-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.book-title {
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #111827;
-  margin-bottom: 6px;
-  white-space: nowrap;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 2.8em;
 }
 
-.meta .author {
-  font-size: 0.8rem;
-  color: #64748b;
-  margin-bottom: 8px;
+.book-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f1f5f9;
+  text-overflow: ellipsis;
 }
 
 .publisher {
-  font-size: 0.75rem;
-  color: #94a3b8;
+  font-size: 0.8rem;
+  color: #9ca3af;
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -131,43 +181,107 @@ const getStockClass = (stok) => {
 }
 
 .year {
-  font-size: 0.75rem;
-  color: #3b82f6;
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 2px 8px;
+  color: #3b82f6;
+  padding: 4px 10px;
   background: #eff6ff;
   border-radius: 6px;
-  margin-left: 8px;
+  flex-shrink: 0;
 }
 
-.stock {
+/* Stock Status */
+.stock-status {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: auto;
 }
 
 .stock-icon {
   font-size: 1rem;
 }
 
-.stock-high {
-  background: #d1fae5;
-  color: #065f46;
+.stock-text {
+  flex: 1;
 }
 
-.stock-medium {
+/* Stock Status Colors */
+.stock-available {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.stock-limited {
   background: #fef3c7;
   color: #92400e;
+  border: 1px solid #fde68a;
 }
 
 .stock-low {
   background: #fee2e2;
   color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.stock-unavailable {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cover-wrapper {
+    height: 200px;
+  }
+
+  .book-title {
+    font-size: 0.95rem;
+  }
+
+  .book-meta {
+    font-size: 0.8rem;
+  }
+
+  .book-info {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cover-wrapper {
+    height: 180px;
+  }
+
+  .book-title {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .book-meta {
+    font-size: 0.75rem;
+  }
+
+  .publisher,
+  .year {
+    font-size: 0.75rem;
+  }
+
+  .stock-status {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .book-info {
+    padding: 12px;
+    gap: 6px;
+  }
 }
 </style>

@@ -3,6 +3,9 @@ import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 import db from "./db.js"; // ✅ pastikan file db.js juga pakai export default
+import booksRoute from "./routes/books.js";
+app.use("/api/books", booksRoute);
+
 
 // __dirname tidak tersedia di ESM, jadi kita buat manual:
 import { fileURLToPath } from "url";

@@ -34,13 +34,13 @@ const router = createRouter({
      path: '/login',
      name: 'Login',
      component: () => import('@/views/LoginView.vue')
-   },
-   {
+    },
+    {
     path: '/cari',
     name: 'Cari',
     component: () => import('@/views/users/CariView.vue'),
     meta: { requiresAuth: false }
-},
+    },
     {
       path: '/profil',
       name: 'Profil',

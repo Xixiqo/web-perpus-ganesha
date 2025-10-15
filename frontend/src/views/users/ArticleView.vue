@@ -326,7 +326,7 @@ const bidangHitsArticles = ref(featuredArticles.value.slice(3, 6))
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #2563eb;
+  color: var(--primary);
   width: 18px;
   height: 18px;
   pointer-events: none;
@@ -426,7 +426,7 @@ const bidangHitsArticles = ref(featuredArticles.value.slice(3, 6))
 .page-arrow {
   border: none;
   background: transparent;
-  color: #2563eb;
+  color: var(--primary);
   font-size: 18px;
   padding: 6px 10px;
   cursor: pointer;

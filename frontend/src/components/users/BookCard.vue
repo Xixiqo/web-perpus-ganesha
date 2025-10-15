@@ -97,7 +97,7 @@ const stockText = computed(() => {
 
 .book-card:hover {
   transform: translateY(-6px);
-  border-color: #3b82f6;
+  border-color: var(--primary);
   box-shadow: 0 12px 28px rgba(59, 130, 246, 0.25);
 }
 

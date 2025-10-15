@@ -96,7 +96,7 @@ const formattedDate = computed(() => {
 }
 
 .article-list-item:hover h4 {
-  color: #2563eb;
+  color: var(--primary);
 }
 
 .article-meta {

@@ -11,5 +11,5 @@
 </template>
 
 <script setup>
-import StatCard from '@/components/admin/statcard.vue'
+import StatCard from '@/components/admin/StatCard.vue'
 </script>

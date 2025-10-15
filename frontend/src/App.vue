@@ -24,7 +24,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Navbar from './components/users/Navbar.vue'
 import Footer from './components/users/Footer.vue'
-
+import Sidebar from './components/admin/SideBar.vue'
 
 const route = useRoute()
 
@@ -32,6 +32,10 @@ const route = useRoute()
 const isLoginPage = computed(() => {
   return route.path === '/login'
 })
+const isAdminPage = computed(() => {
+  return route.path.startsWith('/admin')
+})
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const cursor = document.querySelector(".cursor");

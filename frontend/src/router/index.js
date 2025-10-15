@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-  import HomeBetter from '../views/HomeView.vue'
+import HomeBetter from '../views/HomeView.vue'
+import admin from '../views/admin/Dashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,7 +47,13 @@ const router = createRouter({
       name: 'Profil',
       component: () => import('../views/users/ProfilView.vue'),
       meta: { requiresAuth: true }
-    }
+    },
+    {
+      path: '/admin',
+      name: 'Admin',
+      component: admin,
+      meta: { requiresAuth: true }
+    },
   ],
 })
 

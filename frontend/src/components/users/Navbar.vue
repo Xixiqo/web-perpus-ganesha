@@ -19,7 +19,7 @@
         <RouterLink to="/informasi" class="nav-link" @click="closeMenu">Informasi</RouterLink>
         <RouterLink to="/cari" class="nav-link" @click="closeMenu">Pencarian</RouterLink>
         <RouterLink to="/pinjam" class="nav-link" @click="closeMenu">Peminjaman</RouterLink>
-        <RouterLink to="/artikel" class="nav-link" @click="closeMenu">Artikel</RouterLink>
+        <RouterLink to="/article" class="nav-link" @click="closeMenu">Artikel</RouterLink>
       </div>
       
       <!-- User Section -->

@@ -1,8 +1,252 @@
-/* Registrasi font OpenDyslexic */
+/* fonts.css - Konfigurasi Font Mode Disleksia */
+
+/* Registrasi font OpenDyslexic dari Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');
+
+/* Font alternatif untuk disleksia */
 @font-face {
-  font-family: 'OpenDyslexic';
-  src: url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-family: 'Lexia Readable';
+  src: url('/fonts/LexiaReadable.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
+}
+
+/* Default font untuk aplikasi normal */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ============================================
+   MODE DISLEKSIA - Pengaturan Global
+   ============================================ */
+
+/* Terapkan ke seluruh dokumen ketika mode aktif */
+html.dyslexia-mode,
+html.dyslexia-mode body {
+  font-family: 'OpenDyslexic', sans-serif !important;
+  font-size: 18px !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.5px !important;
+  word-spacing: 1px !important;
+  background-color: #FFFFF0 !important; /* Cream background */
+  color: #333333 !important;
+}
+
+/* Terapkan ke semua elemen */
+html.dyslexia-mode * {
+  font-family: 'OpenDyslexic', sans-serif !important;
+  line-height: inherit !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Heading dalam mode disleksia */
+html.dyslexia-mode h1,
+html.dyslexia-mode h2,
+html.dyslexia-mode h3,
+html.dyslexia-mode h4,
+html.dyslexia-mode h5,
+html.dyslexia-mode h6 {
+  font-weight: 700 !important;
+  margin-bottom: 1.2em !important;
+  line-height: 1.4 !important;
+}
+
+/* Paragraf */
+html.dyslexia-mode p {
+  margin-bottom: 1.5em !important;
+  max-width: 80ch !important;
+}
+
+/* Link */
+html.dyslexia-mode a {
+  color: #0000EE !important;
+  text-decoration: underline !important;
+  transition: all 0.2s ease;
+}
+
+html.dyslexia-mode a:visited {
+  color: #551A8B !important;
+}
+
+html.dyslexia-mode a:hover,
+html.dyslexia-mode a:focus {
+  background-color: #FFFF99 !important; /* Yellow highlight */
+  text-decoration: underline !important;
+}
+
+/* List */
+html.dyslexia-mode ul,
+html.dyslexia-mode ol {
+  margin-bottom: 1.5em !important;
+  padding-left: 2em !important;
+}
+
+html.dyslexia-mode li {
+  margin-bottom: 0.8em !important;
+}
+
+/* Input dan form elements */
+html.dyslexia-mode input,
+html.dyslexia-mode select,
+html.dyslexia-mode textarea {
+  font-family: 'OpenDyslexic', sans-serif !important;
+  font-size: 18px !important;
+  padding: 0.8em 1.2em !important;
+  border-width: 2px !important;
+  line-height: 1.8 !important;
+}
+
+html.dyslexia-mode input:focus,
+html.dyslexia-mode select:focus,
+html.dyslexia-mode textarea:focus {
+  border-color: #0000EE !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 238, 0.1) !important;
+}
+
+/* Button */
+html.dyslexia-mode button {
+  font-family: 'OpenDyslexic', sans-serif !important;
+  font-size: 18px !important;
+  padding: 0.8em 1.5em !important;
+  font-weight: 700 !important;
+  border-width: 2px !important;
+}
+
+/* Code block */
+html.dyslexia-mode code,
+html.dyslexia-mode pre {
+  font-family: 'Courier New', monospace !important;
+  font-size: 16px !important;
+  background-color: #F0F0F0 !important;
+  padding: 1em !important;
+  border-radius: 4px !important;
+}
+
+/* Table */
+html.dyslexia-mode table {
+  border-collapse: collapse !important;
+  margin-bottom: 1.5em !important;
+}
+
+html.dyslexia-mode th,
+html.dyslexia-mode td {
+  padding: 1em !important;
+  border: 2px solid #999999 !important;
+  text-align: left !important;
+}
+
+html.dyslexia-mode th {
+  background-color: #E6E6FA !important; /* Light purple */
+  font-weight: 700 !important;
+}
+
+/* Blockquote */
+html.dyslexia-mode blockquote {
+  border-left: 4px solid #0000EE !important;
+  padding-left: 1.5em !important;
+  margin-left: 0 !important;
+  margin-bottom: 1.5em !important;
+  font-style: italic !important;
+  color: #555555 !important;
+}
+
+/* Kontras tinggi untuk elemen interaktif */
+html.dyslexia-mode button,
+html.dyslexia-mode input[type="button"],
+html.dyslexia-mode input[type="submit"] {
+  background-color: #0000EE !important;
+  color: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+}
+
+html.dyslexia-mode button:hover,
+html.dyslexia-mode input[type="button"]:hover,
+html.dyslexia-mode input[type="submit"]:hover {
+  background-color: #551A8B !important;
+}
+
+html.dyslexia-mode button:focus,
+html.dyslexia-mode input[type="button"]:focus,
+html.dyslexia-mode input[type="submit"]:focus {
+  outline: 3px solid #FFFF99 !important;
+  outline-offset: 2px !important;
+}
+
+/* Disable animasi yang terlalu cepat untuk mengurangi distraksi */
+html.dyslexia-mode * {
+  animation-duration: 0.5s !important;
+  transition-duration: 0.3s !important;
+}
+
+/* Label dan teks kecil */
+html.dyslexia-mode label {
+  display: block !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5em !important;
+  color: #333333 !important;
+}
+
+html.dyslexia-mode small,
+html.dyslexia-mode .text-xs,
+html.dyslexia-mode .text-sm {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* Pesan/Alert */
+html.dyslexia-mode .alert,
+html.dyslexia-mode [role="alert"] {
+  border: 2px solid !important;
+  padding: 1em !important;
+  margin-bottom: 1.5em !important;
+  border-radius: 4px !important;
+}
+
+html.dyslexia-mode .alert-success {
+  background-color: #E6F7ED !important;
+  border-color: #27AE60 !important;
+  color: #1E5631 !important;
+}
+
+html.dyslexia-mode .alert-error,
+html.dyslexia-mode .alert-danger {
+  background-color: #FADDD1 !important;
+  border-color: #E74C3C !important;
+  color: #922B21 !important;
+}
+
+html.dyslexia-mode .alert-info {
+  background-color: #D6EAF8 !important;
+  border-color: #3498DB !important;
+  color: #154360 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  html.dyslexia-mode body {
+    font-size: 16px !important;
+  }
+
+  html.dyslexia-mode h1 {
+    font-size: 24px !important;
+  }
+
+  html.dyslexia-mode h2 {
+    font-size: 20px !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  html.dyslexia-mode {
+    background-color: #FFFFFF !important;
+  }
+
+  html.dyslexia-mode body {
+    color: #000000 !important;
+    font-size: 14px !important;
+  }
 }

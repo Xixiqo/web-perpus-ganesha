@@ -71,7 +71,7 @@ const currentYear = new Date().getFullYear()
 }
 
 .col h4 {
-  color: #2C64E3;
+  color: var(--primary);
   margin-bottom: 10px;
   font-size: 1.1rem;
 }
@@ -90,7 +90,7 @@ const currentYear = new Date().getFullYear()
 }
 
 .footer-link {
-  color: #2C64E3;
+  color: var(--primary);
   text-decoration: none;
   font-weight: 500;
   transition: opacity 0.3s ease;

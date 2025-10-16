@@ -2,6 +2,14 @@
   <div class="book-card" @click="handleClick">
     <!-- Thumbnail/Cover -->
     <div class="cover-wrapper">
+      <!-- Stock Badge -->
+      <div 
+        class="stock-badge" 
+        :class="{ 'not-available': bookStock === 0 }"
+      >
+        {{ bookStock === 0 ? 'Tidak Tersedia' : `Stok: ${bookStock}` }}
+      </div>
+      
       <img 
         v-if="book.cover" 
         :src="`/covers/${book.cover}`" 
@@ -26,12 +34,6 @@
       <p class="book-meta">
         {{ book.kategori || 'Kategori' }} • {{ book.pembuat || 'Penulis' }}
       </p>
-
-      <!-- Status Stok -->
-      <div class="stock-status" :class="stockStatusClass">
-        <span class="stock-icon">📚</span>
-        <span class="stock-text">{{ stockText }}</span>
-      </div>
     </div>
   </div>
 </template>
@@ -51,6 +53,9 @@ const props = defineProps({
   }
 })
 
+// Debug: Log book data when component receives it
+console.log('BookCard received book:', props.book);
+
 const emit = defineEmits(['click', 'book-selected'])
 
 const handleClick = () => {
@@ -62,23 +67,14 @@ const handleImageError = (e) => {
   e.target.style.display = 'none'
 }
 
-// Computed untuk status stok
-const stockStatusClass = computed(() => {
-  const stok = props.book.stok || 0
-  
-  if (stok === 0) return 'stock-unavailable'
-  if (stok >= 10) return 'stock-available'
-  if (stok >= 5) return 'stock-limited'
-  return 'stock-low'
+// Computed property untuk stok buku
+const bookStock = computed(() => {
+  // Pastikan nilai stok adalah number
+  const stock = parseInt(props.book.stok);
+  return isNaN(stock) ? 0 : stock;
 })
 
-const stockText = computed(() => {
-  const stok = props.book.stok || 0
-  
-  if (stok === 0) return 'Tidak Tersedia'
-  if (stok === 1) return '1 Tersedia'
-  return `${stok} Tersedia`
-})
+
 </script>
 
 <style scoped>
@@ -97,7 +93,7 @@ const stockText = computed(() => {
 
 .book-card:hover {
   transform: translateY(-6px);
-  border-color: #3b82f6;
+  border-color: var(--primary);
   box-shadow: 0 12px 28px rgba(59, 130, 246, 0.25);
 }
 
@@ -108,6 +104,25 @@ const stockText = computed(() => {
   height: 250px;
   background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
   overflow: hidden;
+}
+
+.stock-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(59, 130, 246, 0.3); /* Blue with opacity */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stock-badge.not-available {
+  background-color: rgba(239, 68, 68, 0.3); /* Red with opacity */
 }
 
 .cover-image {
@@ -190,50 +205,7 @@ const stockText = computed(() => {
   flex-shrink: 0;
 }
 
-/* Stock Status */
-.stock-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-top: auto;
-}
 
-.stock-icon {
-  font-size: 1rem;
-}
-
-.stock-text {
-  flex: 1;
-}
-
-/* Stock Status Colors */
-.stock-available {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-}
-
-.stock-limited {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
-}
-
-.stock-low {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
-.stock-unavailable {
-  background: #f3f4f6;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -251,6 +223,11 @@ const stockText = computed(() => {
 
   .book-info {
     padding: 14px;
+  }
+
+  .stock-badge {
+    font-size: 0.7rem;
+    padding: 3px 6px;
   }
 }
 
@@ -272,11 +249,6 @@ const stockText = computed(() => {
   .publisher,
   .year {
     font-size: 0.75rem;
-  }
-
-  .stock-status {
-    font-size: 0.8rem;
-    padding: 6px 10px;
   }
 
   .book-info {

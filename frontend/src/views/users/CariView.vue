@@ -40,9 +40,9 @@
             <input v-model="selectedCategory" type="radio" value="">
             Semua Kategori
           </label>
-          <label v-for="cat in categories" :key="cat.id">
-            <input v-model="selectedCategory" type="radio" :value="cat.id">
-            {{ cat.name }}
+          <label v-for="category in categories" :key="category.id">
+            <input v-model="selectedCategory" type="radio" :value="category.id">
+            {{ category.name }}
           </label>
         </div>
         <button @click="applyFilter" class="apply-button">Terapkan Filter</button>
@@ -64,7 +64,20 @@
             <BookCard 
               v-for="book in paginatedBooks"
               :key="book.id"
-              :book="book"
+              :book="{
+                id: book.id,
+                kode_buku: book.kode_buku,
+                judul: book.judul,
+                pembuat: book.pembuat,
+                penerbit: book.penerbit,
+                tahun_rilis: book.tahun_rilis,
+                isbn_issn: book.isbn_issn,
+                kategori: book.kategori,
+                sinopsis: book.sinopsis,
+                stok: book.stok,
+                bahasa_buku: book.bahasa_buku,
+                cover: book.cover
+              }"
               @book-selected="onBookSelected"
             />
           </div>
@@ -101,7 +114,8 @@
             <path d="m21 21-4.35-4.35"></path>
           </svg>
           <p v-if="searchQuery">Tidak ada buku yang ditemukan untuk "{{ searchQuery }}"</p>
-          <p v-else>Mulai dengan mencari buku yang Anda inginkan</p>
+          <p v-else-if="selectedCategory">Tidak ada buku dalam kategori ini</p>
+          <p v-else>Tidak ada buku yang tersedia saat ini</p>
         </div>
       </div>
     </section>
@@ -146,37 +160,58 @@ export default {
 
     async handleSearch() {
       this.currentPage = 1;
-
-      // Jika search query kosong, tampilkan semua buku
-      if (!this.searchQuery.trim()) {
-        await this.fetchBooks();
-        return;
-      }
-
       this.loading = true;
+      console.log('Starting search with query:', this.searchQuery);
 
       try {
-        const params = new URLSearchParams({
-          query: this.searchQuery,
-          ...(this.selectedCategory && { category: this.selectedCategory })
-        });
-
-        const response = await fetch(
-          `/api/books/search?${params}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Gagal mencari buku');
+        const baseUrl = 'http://localhost:5000/api/search';
+        const params = new URLSearchParams();
+        
+        if (this.searchQuery.trim()) {
+          params.append('query', this.searchQuery.trim());
+        }
+        
+        if (this.selectedCategory) {
+          params.append('category', this.selectedCategory);
         }
 
-        const data = await response.json();
-        this.books = data.books || data || [];
-        this.totalBooks = this.books.length;
+        const endpoint = `${baseUrl}/books${params.toString() ? `?${params.toString()}` : ''}`;
+        console.log('Fetching from endpoint:', endpoint);
+
+        const response = await fetch(endpoint, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Gagal mencari buku: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('Received data:', result);
+
+        if (result.success) {
+          // Format buku sesuai dengan data yang ada
+          this.books = result.data.map(book => ({
+            id: book.id,
+            kode: book.kode_buku,
+            judul: book.judul,
+            penulis: book.pembuat,
+            penerbit: book.penerbit,
+            tahun: book.tahun_rilis,
+            isbn: book.isbn_issn,
+            kategori: book.kategori,
+            sinopsis: book.sinopsis,
+            stok: book.stok,
+            bahasa: book.bahasa_buku,
+            cover: book.cover ? `/cover/${book.cover}` : '/cover/default.jpg'
+          }));
+          this.totalBooks = result.total;
+        } else {
+          throw new Error(result.message || 'Gagal mengambil data buku');
+        }
       } catch (error) {
         console.error('Search error:', error);
         this.books = [];
@@ -196,9 +231,10 @@ export default {
       this.loading = true;
 
       try {
-        const response = await fetch('/api/books', {
+        const response = await fetch('http://localhost:5000/api/search/books', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
           }
         });
 
@@ -206,9 +242,31 @@ export default {
           throw new Error('Gagal mengambil data buku');
         }
 
-        const data = await response.json();
-        this.books = data.books || data || [];
-        this.totalBooks = this.books.length;
+        const result = await response.json();
+        console.log('Raw book data:', result); // Debugging
+        if (result.success) {
+          // Format data buku
+          this.books = result.data.map(book => {
+            console.log('Processing book:', book); // Debugging
+            return {
+              id: book.id,
+              kode: book.kode_buku,
+              judul: book.judul,
+              penulis: book.pembuat,
+              penerbit: book.penerbit,
+              tahun: book.tahun_rilis,
+              isbn: book.isbn_issn,
+              kategori: book.kategori,
+              sinopsis: book.sinopsis,
+              stok: book.stok,
+              bahasa: book.bahasa_buku,
+              cover: book.cover ? `/cover/${book.cover}` : '/cover/default.jpg'
+            };
+          });
+          this.totalBooks = result.total;
+        } else {
+          throw new Error(result.message || 'Gagal mengambil data buku');
+        }
       } catch (error) {
         console.error('Fetch books error:', error);
         this.books = [];
@@ -220,18 +278,24 @@ export default {
 
     async fetchCategories() {
       try {
-        const response = await fetch('/api/categories', {
+        const response = await fetch('http://localhost:5000/api/search/categories', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
           }
         });
 
         if (response.ok) {
-          const data = await response.json();
-          this.categories = data.categories || data || [];
+          const result = await response.json();
+          if (result.success) {
+            this.categories = result.data;
+          } else {
+            throw new Error(result.message || 'Gagal mengambil kategori');
+          }
         }
       } catch (error) {
         console.error('Fetch categories error:', error);
+        this.categories = [];
       }
     },
 

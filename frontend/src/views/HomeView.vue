@@ -238,7 +238,7 @@ onMounted(async () => {
 }
 
 .podium-title span {
-  color: #3b82f6;
+  color: var(--primary);
   font-weight: 700;
 }
 
@@ -289,7 +289,7 @@ onMounted(async () => {
 }
 
 .block {
-  background: linear-gradient(180deg, #3b82f6, #5b8df7);
+  background: var(--primary);
   color: #fff;
   font-weight: 800;
   border-radius: 50px 50px 0 0;

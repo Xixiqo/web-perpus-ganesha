@@ -25,7 +25,7 @@ const routes = [
       {
         path: 'pinjam',
         name: 'pinjam',
-        component: () => import('../views/users/PinjamView.vue'),
+        component: () => import('../views/users/RiwayatView.vue'),
       },
       {
         path: 'article',
@@ -49,6 +49,12 @@ const routes = [
         name: 'kategori',
         component: () => import('../views/users/KategoriView.vue'),
       },
+      {
+        path: 'riwayat',
+        name: 'riwayat',
+        component: () => import('../views/users/RiwayatView.vue'),
+        meta: { requiresAuth: true },
+      }
     ],
   },
   {

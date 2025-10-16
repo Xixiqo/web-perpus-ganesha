@@ -39,7 +39,7 @@ import authRoutes from "./api/auth.js";
 import profileRoutes from "./api/profile.js";
 import booksRoutes from "./api/books.js";
 import searchRoutes from "./api/search.js";
-import peminjamanRoutes from "./api/peminjaman.js";
+import peminjamanRoutes from "./api/riwayat.js";
 import categoriesRoutes from "./api/categories.js";
 import adminBooksRoutes from "./api/admin/books.js";
 
@@ -47,7 +47,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/books", booksRoutes);
 app.use("/api/search", searchRoutes);
-app.use("/api/peminjaman", peminjamanRoutes);
+app.use("/api/riwayat", peminjamanRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/admin/books", adminBooksRoutes);
 

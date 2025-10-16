@@ -153,7 +153,7 @@ export default {
     if (!this.isLoggedIn) return
 
     try {
-      const response = await axios.get('http://localhost:5000/api/peminjaman', {
+      const response = await axios.get('http://localhost:5000/api/riwayat', {
         headers: { Authorization: `Bearer ${token}` }
       })
       this.books = response.data

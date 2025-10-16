@@ -3,9 +3,9 @@
     <div class="footer-container">
       <!-- Bagian kiri: Deskripsi -->
       <div class="col">
-        <h4>Gerbang Berdaya</h4>
+        <h4>Perpustakaan Ganesha Stembayo</h4>
         <p>
-          JHIC Digital Library. Akses koleksi digital untuk semua warga sekolah.
+          Akses koleksi buku untuk semua warga sekolah.
           Baca lebih banyak, belajar lebih cepat.
         </p>
       </div>
@@ -14,9 +14,7 @@
       <div class="col">
         <h4>Alamat</h4>
         <ul>
-          <li>Jl. Pendidikan No. 1</li>
-          <li>Jakarta</li>
-          <li>Indonesia</li>
+          <li>Jl. STM Pembangunan, Mrican, Caturtunggal, Kec. Depok, Kabupaten Sleman, Daerah Istimewa Yogyakarta 55281</li>
         </ul>
       </div>
 

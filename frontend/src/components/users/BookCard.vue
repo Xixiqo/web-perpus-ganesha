@@ -39,26 +39,20 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue'
+import { ref, defineProps, defineEmits, computed } from 'vue'
 
 const props = defineProps({
   book: {
     type: Object,
     required: true,
     default: () => ({})
-  },
-  index: {
-    type: Number,
-    default: 0
   }
 })
 
-// Only log if in development mode
-if (process.env.NODE_ENV === 'development') {
-  console.debug('BookCard data:', props.book);
-}
-
 const emit = defineEmits(['click', 'book-selected'])
+
+// Flag untuk menandai apakah error sudah terjadi
+const imageErrorHandled = ref(false)
 
 const handleClick = () => {
   emit('click', props.book)
@@ -66,29 +60,25 @@ const handleClick = () => {
 }
 
 const handleImageError = (e) => {
-  // Replace broken image with a neutral placeholder
+  if (imageErrorHandled.value) return  // jika sudah di-handle, jangan ulangi
+  imageErrorHandled.value = true
   e.target.onerror = null
   e.target.src = `${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/uploads/placeholder-cover.png`
 }
 
-// Build the full cover URL from backend uploads folder
 const getCoverUrl = (filename) => {
   if (!filename) return `${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/uploads/placeholder-cover.png`
   const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-  // If filename already looks like a full URL, return as-is
   if (/^https?:\/\//i.test(filename)) return filename
   return `${base}/uploads/${filename}`
 }
 
-// Computed property untuk stok buku
 const bookStock = computed(() => {
-  // Pastikan nilai stok adalah number
-  const stock = parseInt(props.book.stok);
-  return isNaN(stock) ? 0 : stock;
+  const stock = parseInt(props.book.stok)
+  return isNaN(stock) ? 0 : stock
 })
-
-
 </script>
+
 
 <style scoped>
 .book-card {

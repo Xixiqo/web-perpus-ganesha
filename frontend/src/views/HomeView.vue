@@ -182,103 +182,19 @@ const categories = ref([
 // Computed property untuk Top 10 Buku dari database
 const topBooks = computed(() => {
   if (!books.value || books.value.length === 0) {
-    // Fallback ke dummy data jika database kosong
-    return [
-      {
-        id: 1,
-        title: 'See You Again Love',
-        author: 'Avryn Delvina',
-        rating: 4,
-        cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
-        synopsis: 'Kisah cinta yang penuh lika-liku antara dua insan yang dipertemukan kembali oleh takdir. Sebuah perjalanan emosional yang menghangatkan hati dan mengajarkan arti cinta sejati yang tak pernah pudar oleh waktu.'
-      },
-      {
-        id: 2,
-        title: 'Midnight Library',
-        author: 'Matt Haig',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop',
-        synopsis: 'Antara hidup dan mati terdapat perpustakaan yang menyimpan semua kemungkinan hidup yang berbeda. Setiap buku memberi kesempatan untuk melihat bagaimana hidup bisa berjalan jika keputusan berbeda diambil.'
-      },
-      {
-        id: 3,
-        title: 'The Silent Patient',
-        author: 'Alex Michaelides',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop',
-        synopsis: 'Seorang wanita yang membunuh suaminya kemudian berhenti berbicara. Seorang psikolog terpikat untuk mengungkap misterinya. Thriller psikologis yang akan membuat Anda terpaku hingga halaman terakhir.'
-      },
-      {
-        id: 4,
-        title: 'Atomic Habits',
-        author: 'James Clear',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&h=600&fit=crop',
-        synopsis: 'Panduan praktis untuk membangun kebiasaan baik dan menghilangkan kebiasaan buruk. Pelajari bagaimana perubahan kecil dapat menghasilkan hasil yang luar biasa dalam hidup Anda.'
-      },
-      {
-        id: 5,
-        title: 'Where the Crawdads Sing',
-        author: 'Delia Owens',
-        rating: 4,
-        cover: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&h=600&fit=crop',
-        synopsis: 'Kisah mengharukan tentang gadis yang tumbuh sendirian di rawa-rawa Carolina Utara. Sebuah misteri pembunuhan yang terjerat dengan cerita tentang ketahanan, cinta, dan keindahan alam.'
-      },
-      {
-        id: 6,
-        title: 'The Seven Husbands of Evelyn Hugo',
-        author: 'Taylor Jenkins Reid',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1535666669445-e8c15cd2e7d9?w=400&h=600&fit=crop',
-        synopsis: 'Ikon Hollywood yang sudah pensiun akhirnya siap menceritakan kisah hidupnya yang penuh skandal, ambisi, dan cinta terlarang yang membentuk kariernya yang gemilang.'
-      },
-      {
-        id: 7,
-        title: 'The Alchemist',
-        author: 'Paulo Coelho',
-        rating: 4,
-        cover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=600&fit=crop',
-        synopsis: 'Sebuah fabel tentang mengikuti impian Anda. Perjalanan seorang penggembala muda dari Spanyol ke piramida Mesir mengajarkan pelajaran hidup yang mendalam tentang mendengarkan hati kita.'
-      },
-      {
-        id: 8,
-        title: 'Educated',
-        author: 'Tara Westover',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400&h=600&fit=crop',
-        synopsis: 'Memoar yang luar biasa tentang seorang wanita yang tumbuh di keluarga survivalis di Idaho dan tidak pernah bersekolah, namun berhasil meraih gelar PhD dari Cambridge University.'
-      },
-      {
-        id: 9,
-        title: 'The Song of Achilles',
-        author: 'Madeline Miller',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop',
-        synopsis: 'Kisah epik tentang cinta antara Achilles, pahlawan terbesar Yunani, dan Patroclus, sahabatnya. Sebuah retelling mitologi Yunani yang memukau dan penuh emosi.'
-      },
-      {
-        id: 10,
-        title: 'Sapiens',
-        author: 'Yuval Noah Harari',
-        rating: 5,
-        cover: 'https://images.unsplash.com/photo-1495640452828-3df6795cf69b?w=400&h=600&fit=crop',
-        synopsis: 'Sebuah eksplorasi brilian tentang sejarah umat manusia dari Zaman Batu hingga era modern, mengungkap bagaimana Homo sapiens menjadi spesies dominan di planet ini.'
-      }
-    ]
+    return [];
   }
 
-  // Ambil 10 buku terpopuler dari database
-  return books.value
-    .slice(0, 10)
-    .map(book => ({
-      id: book.id,
-      title: book.judul || book.title,
-      author: book.penulis || book.author,
-      rating: book.rating || 4,
-      cover: getCoverUrl(book.sampul || book.cover || null),
-      synopsis: book.sinopsis || book.synopsis || 'Tidak ada sinopsis tersedia.'
-    }))
-})
+  // Ambil 10 buku pertama
+  return books.value.slice(0, 10).map(book => ({
+    id: book.id,
+    title: book.judul || book.title,
+    author: book.penulis || book.author,
+    rating: book.rating || 4,
+    cover: getCoverUrl(book.cover),
+    synopsis: book.sinopsis || 'Tidak ada sinopsis tersedia.'
+  }));
+});
 
 // Fetch data dari API
 const fetchBooks = async () => {

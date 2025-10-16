@@ -82,17 +82,19 @@
     <section class="info-container">
       <!-- Kontak Kiri -->
       <div class="contact-left">
-        <div class="contact-item">
+        <!-- Telepon / WhatsApp -->
+        <a href="https://wa.me/6208743718200" target="_blank" rel="noopener noreferrer" class="contact-item">
           <div class="contact-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
               <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25c1.12.37 2.32.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"></path>
             </svg>
           </div>
           <h3>Telepon</h3>
-          <p>(0274) 513515</p>
-        </div>
+          <p>+(62)812-3456-7890</p>
+        </a>
 
-        <div class="contact-item">
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/ganeshastembayo/" target="_blank" rel="noopener noreferrer" class="contact-item">
           <div class="contact-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
               <g fill="none">
@@ -103,9 +105,10 @@
           </div>
           <h3>Instagram</h3>
           <p>@ganeshastembayo</p>
-        </div>
+        </a>
 
-        <div class="contact-item">
+        <!-- TikTok -->
+        <a href="https://www.tiktok.com/@ganeshastembayo" target="_blank" rel="noopener noreferrer" class="contact-item">
           <div class="contact-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
               <path fill="currentColor" d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path>
@@ -113,9 +116,10 @@
           </div>
           <h3>Tiktok</h3>
           <p>@ganeshastembayo</p>
-        </div>
+        </a>
 
-        <div class="contact-item">
+        <!-- Email -->
+        <a href="mailto:ganeshastembayo@gmail.com" class="contact-item">
           <div class="contact-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
               <path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path>
@@ -123,7 +127,7 @@
           </div>
           <h3>Email</h3>
           <p>ganeshastembayo@gmail.com</p>
-        </div>
+        </a>
 
         <!-- MAP - Mengambil 2 kolom penuh -->
         <div class="map-container">
@@ -149,19 +153,53 @@
 
         <form class="contact-form" @submit.prevent="handleSubmit">
           <label>Nama Lengkap</label>
-          <input type="text" placeholder="Masukkan nama lengkap Anda" required />
+          <input 
+            type="text" 
+            placeholder="Masukkan nama lengkap Anda" 
+            v-model="form.name" 
+            required 
+            :disabled="isSubmitting"
+          />
 
           <label>Email</label>
-          <input type="email" placeholder="Masukkan alamat email aktif" required />
+          <input 
+            type="email" 
+            placeholder="Masukkan alamat email aktif" 
+            v-model="form.email" 
+            required 
+            :disabled="isSubmitting"
+          />
 
           <label>Subjek</label>
-          <input type="text" placeholder="Masukkan judul subjek" required />
+          <input 
+            type="text" 
+            placeholder="Masukkan judul subjek" 
+            v-model="form.subject" 
+            required 
+            :disabled="isSubmitting"
+          />
 
           <label>Pesan</label>
-          <textarea rows="8" placeholder="Tulis pesan Anda disini.." required></textarea>
+          <textarea 
+            rows="8" 
+            placeholder="Tulis pesan Anda disini.." 
+            v-model="form.message" 
+            required
+            :disabled="isSubmitting"
+          ></textarea>
 
-          <button type="submit">Kirim Pesan</button>
+          <button type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Mengirim...' : 'Kirim Pesan' }}
+          </button>
         </form>
+
+        <!-- Alert Messages -->
+        <div v-if="successMessage" class="alert alert-success">
+          ✓ {{ successMessage }}
+        </div>
+        <div v-if="errorMessage" class="alert alert-error">
+          ✗ {{ errorMessage }}
+        </div>
       </div>
     </section>
   </div>
@@ -172,7 +210,16 @@ export default {
   name: 'InformasiView',
   data() {
     return {
-      isVisible: false
+      isVisible: false,
+      isSubmitting: false,
+      successMessage: '',
+      errorMessage: '',
+      form: {
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      }
     }
   },
   mounted() {
@@ -199,7 +246,64 @@ export default {
       }
     },
     handleSubmit() {
-      alert('Pesan berhasil dikirim!');
+      // Validasi form
+      if (!this.form.name || !this.form.email || !this.form.subject || !this.form.message) {
+        this.errorMessage = 'Semua field harus diisi!';
+        setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
+        return;
+      }
+
+      this.isSubmitting = true;
+      this.successMessage = '';
+      this.errorMessage = '';
+
+      try {
+        // Format email body
+        const emailBody = `Nama: ${this.form.name}
+Email: ${this.form.email}
+
+Pesan:
+${this.form.message}
+
+---
+Dikirim dari Form Hubungi Kami - Perpustakaan Ganesha STembayo`;
+
+        // Encode untuk URL
+        const subject = encodeURIComponent(this.form.subject);
+        const body = encodeURIComponent(emailBody);
+        const recipient = 'veltrixtowin@gmail.com';
+
+        // Buat mailto link
+        const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
+
+        // Buka email client
+        window.location.href = mailtoLink;
+
+        this.successMessage = 'Email client Anda akan terbuka. Silakan kirim email dari aplikasi email Anda.';
+        
+        // Reset form setelah 2 detik
+        setTimeout(() => {
+          this.form = {
+            name: '',
+            email: '',
+            subject: '',
+            message: ''
+          };
+          this.successMessage = '';
+        }, 3000);
+
+      } catch (error) {
+        console.error('Error:', error);
+        this.errorMessage = 'Terjadi kesalahan. Pastikan Anda memiliki aplikasi email yang terpasang.';
+        
+        setTimeout(() => {
+          this.errorMessage = '';
+        }, 5000);
+      } finally {
+        this.isSubmitting = false;
+      }
     }
   }
 }
@@ -356,12 +460,14 @@ export default {
   font-size: 1rem;
   line-height: 1.7;
   color: #4b5563;
+  text-align: left;
 }
 
 .misi-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  text-align: left;
 }
 
 .misi-list li {
@@ -382,6 +488,7 @@ export default {
   border-radius: 50%;
   margin-top: 5px;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  flex-shrink: 0;
 }
 
 /* Jam Layanan */
@@ -431,11 +538,15 @@ export default {
   border-radius: 12px;
   text-align: center;
   transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .contact-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: #b8c5e0;
 }
 
 .contact-icon {
@@ -448,6 +559,13 @@ export default {
   background: white;
   border-radius: 50%;
   color: var(--primary);
+  transition: all 0.3s ease;
+}
+
+.contact-item:hover .contact-icon {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(44, 100, 227, 0.3);
 }
 
 .contact-item h3 {
@@ -527,6 +645,12 @@ export default {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.contact-form input:disabled,
+.contact-form textarea:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
 .contact-form textarea {
   resize: vertical;
   min-height: 120px;
@@ -543,12 +667,50 @@ export default {
   transition: all 0.3s;
   font-weight: 600;
   font-size: 15px;
-  margin-top: auto;
+  margin-top: 20px;
 }
 
-.contact-form button:hover {
+.contact-form button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.contact-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-success {
+  background: #d1fae5;
+  color: #047857;
+  border-left: 4px solid #10b981;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #dc2626;
+  border-left: 4px solid #ef4444;
 }
 
 /* Responsive */

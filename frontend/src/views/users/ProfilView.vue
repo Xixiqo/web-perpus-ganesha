@@ -1079,7 +1079,7 @@ export default {
     },
     
     goBack() {
-      this.$router.push('/dashboard');
+      this.$router.push('/');
     },
     
     getInitials(name) {

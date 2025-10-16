@@ -1,8 +1,11 @@
 <template>
 	<aside :class="`${is_expanded ? 'is-expanded' : ''}`">
-		<div class="logo">
-			<img :src="logoURL" alt="Vue" /> 
-		</div>
+    <div class="logo">
+      <router-link to="/admin">
+        <img :src="logoURL" alt="Vue" /> 
+      </router-link>
+    </div>
+
 
 		<div class="menu-toggle-wrap">
 			<button class="menu-toggle" @click="ToggleMenu">
@@ -12,10 +15,23 @@
 
 		<h3>Menu</h3>
 		<div class="menu">
-			<router-link to="/" class="button">
-				<span class="material-icons">home</span>
-				<span class="text">Home</span>
-			</router-link>
+			<!-- Dropdown Menu Item -->
+			<div class="dropdown-item">
+				<div class="button" @click="toggleDropdown('home')">
+					<span class="material-icons">home</span>
+					<span class="text">Home</span>
+					<span class="material-icons arrow" :class="{ rotated: openDropdowns.home }">arrow_drop_down</span>
+				</div>
+				<div v-show="is_expanded && openDropdowns.home" class="dropdown-menu">
+					<router-link to="/home/user" class="button sub-item">
+						<span class="text">Home User</span>
+					</router-link>
+					<router-link to="/home/admin" class="button sub-item">
+						<span class="text">Home Admin</span>
+					</router-link>
+				</div>
+			</div>
+
 			<router-link to="/about" class="button">
 				<span class="material-icons">description</span>
 				<span class="text">About</span>
@@ -47,9 +63,20 @@ import logoURL from '@/assets/logo.svg'
 
 const is_expanded = ref(localStorage.getItem("is_expanded") === "true")
 
+// Track open dropdowns by key
+const openDropdowns = ref({
+	home: false,
+	// Add more as needed: e.g., 'reports': false
+})
+
 const ToggleMenu = () => {
 	is_expanded.value = !is_expanded.value
 	localStorage.setItem("is_expanded", is_expanded.value)
+}
+
+const toggleDropdown = (key) => {
+	if (!is_expanded.value) return // Only allow dropdown if sidebar is expanded
+	openDropdowns.value[key] = !openDropdowns.value[key]
 }
 </script>
 
@@ -73,17 +100,18 @@ aside {
 	}
 
 	.logo {
-		margin-bottom: 5px;
+		margin-bottom: 0.5rem;
 
 		img {
 			width: 2rem;
+      height: auto;
 		}
 	}
 
 	.menu-toggle-wrap {
 		display: flex;
 		justify-content: flex-end;
-		margin-bottom: 5px;
+		margin-bottom: 0.5rem;
 
 		position: relative;
 		top: 0;
@@ -114,7 +142,7 @@ aside {
 	h3 {
 		color: var(--grey);
 		font-size: 0.875rem;
-		margin-bottom: 5px;
+		margin-bottom: 0.25rem;
 		text-transform: uppercase;
 	}
 
@@ -197,6 +225,34 @@ aside {
 	@media (max-width: 1024px) {
 		position: absolute;
 		z-index: 99;
+	}
+}
+
+.dropdown-item {
+	.button {
+		cursor: pointer;
+		position: relative;
+
+		.arrow {
+			margin-left: auto;
+			font-size: 1.5rem;
+			transition: transform 0.2s ease;
+			color: var(--grey);
+		}
+
+		&.rotated {
+			transform: rotate(180deg);
+		}
+	}
+}
+
+.dropdown-menu {
+	.sub-item {
+		padding-left: 3rem; // Indent sub-items
+    margin-left: 1.25rem;
+		.material-icons {
+			display: none; // Hide icons for sub-items (optional)
+		}
 	}
 }
 </style>

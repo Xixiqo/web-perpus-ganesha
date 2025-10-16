@@ -32,7 +32,7 @@
 				</div>
 			</div>
 
-			<router-link to="/about" class="button">
+			<router-link to="/admin/books" class="button">
 				<span class="material-icons">description</span>
 				<span class="text">About</span>
 			</router-link>

@@ -10,7 +10,12 @@ const adminRoutes = [
         path: '',
         name: 'AdminDashboard',
         component: Dashboard,
-      }
+      },
+      {
+        path: 'books',
+        name: 'AdminBooks',
+        component: () => import('@/views/admin/booksView.vue'),
+      },
     ],
   },
 ]

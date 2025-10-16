@@ -11,7 +11,7 @@
       <!-- Brand dengan Logo (pindah ke tengah di mobile) -->
       <div class="nav-brand">
         <img 
-          src="../../public/logo.png" 
+          src="@/../public/logo.png" 
           alt="Logo Ganesha" 
           class="logo-img"
         />
@@ -170,8 +170,7 @@ const handleLogout = async () => {
 }
 
 .nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 32px;
   padding: 0 1.5rem;
   display: flex;
   justify-content: space-between;

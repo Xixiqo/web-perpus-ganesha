@@ -45,12 +45,6 @@ const routes = [
         meta: { requiresAuth: false },
       },
       {
-        path: 'slider',
-        name: 'slider',
-        component: () => import('../views/users/slider-smntr.vue'),
-        meta: { requiresAuth: true },
-      },
-      {
         path: 'kategori',
         name: 'kategori',
         component: () => import('../views/users/KategoriView.vue'),

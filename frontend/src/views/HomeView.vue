@@ -103,9 +103,23 @@ const displayBooks = computed(() => {
 // Fetch data dari API
 const fetchBooks = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/books')
-    if (response.ok) {
-      const data = await response.json()
+    const response = await fetch('http://localhost:5000/api/books', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Server tidak mengembalikan format JSON yang valid');
+    }
+
+    const data = await response.json()
+    if (Array.isArray(data)) {
       books.value = data
       
       // Hitung jumlah buku per kategori

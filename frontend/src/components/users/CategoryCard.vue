@@ -142,14 +142,20 @@ export default {
       this.error = null;
 
       try {
-        const response = await fetch(this.apiEndpoint, {
+        const response = await fetch('http://localhost:5000' + this.apiEndpoint, {
           headers: {
+            'Accept': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
 
         if (!response.ok) {
-          throw new Error('Gagal mengambil data kategori');
+          throw new Error(`Gagal mengambil data kategori: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server tidak mengembalikan format JSON yang valid');
         }
 
         const data = await response.json();

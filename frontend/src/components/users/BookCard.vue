@@ -53,8 +53,10 @@ const props = defineProps({
   }
 })
 
-// Debug: Log book data when component receives it
-console.log('BookCard received book:', props.book);
+// Only log if in development mode
+if (process.env.NODE_ENV === 'development') {
+  console.debug('BookCard data:', props.book);
+}
 
 const emit = defineEmits(['click', 'book-selected'])
 

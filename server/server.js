@@ -30,14 +30,20 @@ import profileRoutes from "./api/profile.js";
 import booksRoutes from "./api/books.js";
 import searchRoutes from "./api/search.js";
 import peminjamanRoutes from "./api/peminjaman.js";
+import categoriesRoutes from "./api/categories.js";
 
 // Middleware untuk logging request
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
-app.use("/api", booksRoutes); // Mengubah ini untuk menangani semua route buku
-app.use("/api/search", searchRoutes); // Route untuk pencarian
+app.use("/api/books", booksRoutes);
+app.use("/api/search", searchRoutes);
 app.use("/api/peminjaman", peminjamanRoutes);
+app.use("/api/categories", categoriesRoutes);
 
 
 

@@ -50,6 +50,31 @@ const routes = [
         component: () => import('../views/users/slider-smntr.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'kategori',
+        name: 'kategori',
+        component: () => import('../views/users/KategoriView.vue'),
+      },
+      {
+        path: 'panduan',
+        name: 'panduan',
+        component: () => import('../views/users/PanduanView.vue'),
+      },
+      {
+        path: 'kontak',
+        name: 'kontak',
+        component: () => import('../views/users/KontakView.vue'),
+      },
+      {
+        path: 'kebijakan',
+        name: 'kebijakan',
+        component: () => import('../views/users/KebijakanView.vue'),
+      },
+      {
+        path: 'artikel',
+        name: 'artikel',
+        component: () => import('../views/users/ArticleView.vue'),
+      },
     ],
   },
   {

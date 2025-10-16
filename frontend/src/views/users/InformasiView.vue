@@ -193,7 +193,7 @@ export default {
       if (cardsWrapper) {
         const rect = cardsWrapper.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        if (rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3) {
+        if (rect.top < windowHeight * 0.5 && rect.bottom > windowHeight * 0.1) {
           this.isVisible = true;
         }
       }

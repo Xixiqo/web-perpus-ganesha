@@ -60,16 +60,16 @@ const handleClick = () => {
 }
 
 const handleImageError = (e) => {
-  if (imageErrorHandled.value) return  // jika sudah di-handle, jangan ulangi
+  if (imageErrorHandled.value) return
   imageErrorHandled.value = true
   e.target.onerror = null
-  e.target.src = `${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/uploads/placeholder-cover.png`
+  e.target.src = '/placeholder-cover.svg'  // langsung dari public
 }
 
 const getCoverUrl = (filename) => {
-  if (!filename) return `${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/uploads/placeholder-cover.png`
-  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  if (!filename) return '/placeholder-cover.svg'
   if (/^https?:\/\//i.test(filename)) return filename
+  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
   return `${base}/uploads/${filename}`
 }
 

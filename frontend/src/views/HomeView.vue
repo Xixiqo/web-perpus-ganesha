@@ -14,6 +14,7 @@
         :interval="5000"
         @view-book="handleViewBook"
       />
+      <div v-else class="placeholder-text">Belum ada data buku.</div>
     </section>
 
     <!-- Rekomendasi Koleksi -->
@@ -79,183 +80,98 @@ import StackPopBook from '@/components/users/StackPopBook.vue'
 
 const router = useRouter()
 
-// State untuk data dari database
+// State
 const books = ref([])
 const loading = ref(true)
+const categories = ref([])
 
-// Data rekomendasi buku (bisa diganti dengan data dari API)
+// Placeholder jika cover tidak ada
+const placeholderCover = '/placeholder-cover.png'
+
+// Fungsi untuk mendapatkan URL cover
 const getCoverUrl = (filename) => {
-  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-  if (!filename) return '/placeholder-cover.svg'
+  if (!filename) return placeholderCover
   if (/^https?:\/\//i.test(filename)) return filename
+  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
   return `${base}/uploads/${filename}`
 }
 
-const recommendedBooks = ref([
-  {
-    id: 1,
-    title: "Filosofi Teras",
-    author: "Henry Manampiring",
-    rating: 4.5,
-  cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop"
-  },
-  {
-    id: 2,
-    title: "Atomic Habits",
-    author: "James Clear",
-    rating: 5,
-    cover: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=300&h=400&fit=crop"
-  },
-  {
-    id: 3,
-    title: "Sapiens: A Brief History of Humankind",
-    author: "Yuval Noah Harari",
-    rating: 4.8,
-    cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=400&fit=crop"
-  },
-  {
-    id: 4,
-    title: "Laskar Pelangi",
-    author: "Andrea Hirata",
-    rating: 4.7,
-    cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=400&fit=crop"
-  },
-  {
-    id: 5,
-    title: "Bumi Manusia",
-    author: "Pramoedya Ananta Toer",
-    rating: 4.9,
-    cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=300&h=400&fit=crop"
-  },
-  {
-    id: 6,
-    title: "Cantik Itu Luka",
-    author: "Eka Kurniawan",
-    rating: 4.6,
-    cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=400&fit=crop"
-  },
-  {
-    id: 6,
-    title: "Cantik Itu Luka",
-    author: "Eka Kurniawan",
-    rating: 4.6,
-    cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=400&fit=crop"
-  },
-    {
-    id: 6,
-    title: "Cantik Itu Luka",
-    author: "Eka Kurniawan",
-    rating: 4.6,
-    cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=400&fit=crop"
-  },
-      {
-    id: 6,
-    title: "Cantik Itu Luka",
-    author: "Eka Kurniawan",
-    rating: 4.6,
-    cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=400&fit=crop"
-  },
-      {
-    id: 6,
-    title: "Cantik Itu Luka",
-    author: "Eka Kurniawan",
-    rating: 4.6,
-    cover: "https://images.unsplash.com/photo-1513001900722-370f803f498d?w=300&h=400&fit=crop"
-  }
-])
-
-// Data buku baru (duplikat untuk demo, bisa diganti dengan data dari API)
-const newArrivals = ref([...recommendedBooks.value])
-
-// Kategori berdasarkan genre buku dari database
-const categories = ref([
-  { id: 1, name: 'Fiksi', bookCount: 0, icon: '📖', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { id: 2, name: 'Fiksi Fantasi', bookCount: 0, icon: '🐉', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { id: 3, name: 'Romansa', bookCount: 0, icon: '💕', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-  { id: 4, name: 'Komedi', bookCount: 0, icon: '😂', color: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
-  { id: 5, name: 'Pengembangan Diri', bookCount: 0, icon: '🌱', color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
-  { id: 6, name: 'Ekonomi', bookCount: 0, icon: '💰', color: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)' },
-  { id: 7, name: 'Klasik', bookCount: 0, icon: '📚', color: 'linear-gradient(135deg, #868f96 0%, #596164 100%)' },
-  { id: 8, name: 'Motivasi', bookCount: 0, icon: '🔥', color: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)' }
-])
-
-// Computed property untuk Top 10 Buku dari database
+// Computed untuk Top 10 Books
 const topBooks = computed(() => {
-  if (!books.value || books.value.length === 0) {
-    return [];
-  }
-
-  // Ambil 10 buku pertama
   return books.value.slice(0, 10).map(book => ({
     id: book.id,
     title: book.judul || book.title,
     author: book.penulis || book.author,
-    rating: book.rating || 4,
+    rating: book.rating || 0,
     cover: getCoverUrl(book.cover),
     synopsis: book.sinopsis || 'Tidak ada sinopsis tersedia.'
-  }));
-});
+  }))
+})
+
+// Recommended dan new arrivals
+const recommendedBooks = computed(() => topBooks.value.slice(0, 10))
+const newArrivals = computed(() => topBooks.value.slice(0, 10))
 
 // Fetch data dari API
 const fetchBooks = async () => {
+  loading.value = true
   try {
     const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-    const response = await fetch(`${apiBase}/api/books`)
-    if (response.ok) {
-      const data = await response.json()
-      books.value = data
-      
-      // Hitung jumlah buku per kategori
-      updateCategoryCount(data)
-    }
-  } catch (error) {
-    console.error('Error fetching books:', error)
+    const res = await fetch(`${apiBase}/api/books`)
+    if (!res.ok) throw new Error('Gagal memuat data buku')
+    const data = await res.json()
+    books.value = data
+
+    updateCategoryCount(data)
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
   }
 }
 
 // Update jumlah buku per kategori
 const updateCategoryCount = (booksData) => {
-  categories.value.forEach(category => {
-    const count = booksData.filter(book => book.kategori === category.name).length
-    category.bookCount = count
+  // Kategori unik dari database
+  const categoryMap = {}
+  booksData.forEach(book => {
+    if (book.kategori) {
+      if (!categoryMap[book.kategori]) categoryMap[book.kategori] = 0
+      categoryMap[book.kategori]++
+    }
   })
-  
-  // Filter hanya kategori yang memiliki buku
-  categories.value = categories.value.filter(cat => cat.bookCount > 0)
+
+  categories.value = Object.entries(categoryMap).map(([name, count], idx) => ({
+    id: idx + 1,
+    name,
+    bookCount: count,
+    icon: '📖', // bisa ganti sesuai kategori
+    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  }))
 }
 
-// Handle click events
+// Event handlers
 const handleViewBook = (book) => {
-  console.log('Viewing book from carousel:', book)
-  if (book.id) {
-    router.push(`/buku/${book.id}`)
-  }
+  if (book.id) router.push(`/buku/${book.id}`)
 }
 
 const handleBookClick = (book) => {
-  if (book.id) {
-    console.log('Book clicked:', book)
-    router.push(`/buku/${book.id}`)
-  }
+  if (book.id) router.push(`/buku/${book.id}`)
 }
 
 const handleViewAll = (section) => {
-  console.log('View all:', section)
   router.push('/cari')
 }
 
 const handleCategoryClick = (category) => {
   if (category.name) {
-    console.log('Category clicked:', category)
     router.push(`/cari?kategori=${encodeURIComponent(category.name)}`)
   }
 }
 
-// Load data saat component di-mount
-onMounted(async () => {
-  loading.value = true
-  await fetchBooks()
-  loading.value = false
+// Load saat mount
+onMounted(() => {
+  fetchBooks()
 })
 </script>
 

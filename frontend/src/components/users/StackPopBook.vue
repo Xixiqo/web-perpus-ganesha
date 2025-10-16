@@ -1,8 +1,5 @@
 <template>
   <div class="stack-carousel-container">
-    <!-- Background patterns -->
-    <div class="bubble-pattern"></div>
-    
     <div class="carousel-content">
       <!-- Title Section -->
       <div class="carousel-header">
@@ -13,19 +10,12 @@
         </h2>
         <p class="carousel-subtitle">Jelajahi koleksi favorit peminjam di perpustakaan kami</p>
       </div>
-      
+
       <div class="carousel-body">
         <!-- Stack of books -->
         <div class="books-stack">
-          <!-- Navigation arrows -->
-          <button 
-            class="nav-button prev" 
-            @click="prevSlide"
-            aria-label="Buku sebelumnya"
-          >
-            <span>‹</span>
-          </button>
-          
+          <button class="nav-button prev" @click="prevSlide">‹</button>
+
           <transition-group name="book-transition" tag="div" class="stack-wrapper">
             <div
               v-for="(book, index) in visibleBooks"
@@ -34,17 +24,16 @@
               :style="getBookStyle(index)"
               :class="{ 'active': index === 0 }"
             >
-              <img :src="book.cover" :alt="book.title" class="book-cover" />
+              <img
+                :src="getCoverUrl(book.cover)"
+                :alt="book.title"
+                class="book-cover"
+                @error="e => e.target.src = '/placeholder-cover.svg'"
+              />
             </div>
           </transition-group>
-          
-          <button 
-            class="nav-button next" 
-            @click="nextSlide"
-            aria-label="Buku berikutnya"
-          >
-            <span>›</span>
-          </button>
+
+          <button class="nav-button next" @click="nextSlide">›</button>
         </div>
 
         <!-- Book details -->
@@ -52,7 +41,7 @@
           <div class="book-details" :key="currentBook.id">
             <h2 class="book-title">{{ currentBook.title }}</h2>
             <p class="book-author">{{ currentBook.author }}</p>
-            
+
             <div class="book-rating">
               <span
                 v-for="star in 5"
@@ -107,24 +96,26 @@ export default {
     visibleBooks() {
       const visible = []
       const totalBooks = this.books.length
-      
       for (let i = 0; i < Math.min(4, totalBooks); i++) {
         const index = (this.currentIndex + i) % totalBooks
         visible.push(this.books[index])
       }
-      
       return visible
     }
   },
   mounted() {
-    if (this.autoplay) {
-      this.startAutoplay()
-    }
+    if (this.autoplay) this.startAutoplay()
   },
   beforeUnmount() {
     this.stopAutoplay()
   },
   methods: {
+    getCoverUrl(filename) {
+      if (!filename) return '/placeholder-cover.svg' // null atau ''
+      if (/^https?:\/\//i.test(filename)) return filename
+      const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+      return `${base}/uploads/${filename}`
+    },
     getBookStyle(index) {
       const baseRotation = -8
       const rotationStep = 4
@@ -132,14 +123,8 @@ export default {
       const translateX = index * 15
       const translateY = index * 10
       const zIndex = 10 - index
-      
       return {
-        transform: `
-          translateX(${translateX}px) 
-          translateY(${translateY}px) 
-          rotate(${baseRotation + (index * rotationStep)}deg) 
-          scale(${scale})
-        `,
+        transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${baseRotation + (index * rotationStep)}deg) scale(${scale})`,
         zIndex: zIndex,
         opacity: index === 0 ? 1 : 0.7 - (index * 0.1)
       }
@@ -152,14 +137,8 @@ export default {
       this.currentIndex = (this.currentIndex + 1) % this.books.length
       this.resetAutoplay()
     },
-    goToSlide(index) {
-      this.currentIndex = index
-      this.resetAutoplay()
-    },
     startAutoplay() {
-      this.autoplayTimer = setInterval(() => {
-        this.nextSlide()
-      }, this.interval)
+      this.autoplayTimer = setInterval(() => this.nextSlide(), this.interval)
     },
     stopAutoplay() {
       if (this.autoplayTimer) {

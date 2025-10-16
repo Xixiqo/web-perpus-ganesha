@@ -124,7 +124,7 @@ const form = ref({
 
 // Fetch data buku dari backend
 const fetchBooks = async () => {
-  const res = await axios.get("http://localhost:5000/api/books");
+  const res = await axios.get("http://localhost:5000/api/admin/books");
   books.value = res.data;
 };
 
@@ -143,9 +143,9 @@ const submitForm = async () => {
   });
 
   if (editMode.value) {
-    await axios.put(`http://localhost:5000/api/books/${currentId.value}`, formData);
+    await axios.put(`http://localhost:5000/api/admin/books/${currentId.value}`, formData);
   } else {
-    await axios.post("http://localhost:5000/api/books", formData);
+    await axios.post("http://localhost:5000/api/admin/books", formData);
   }
 
   fetchBooks();
@@ -181,7 +181,7 @@ const cancelEdit = () => {
 // Delete
 const deleteBook = async (id) => {
   if (confirm("Apakah yakin ingin menghapus buku ini?")) {
-    await axios.delete(`http://localhost:5000/api/books/${id}`);
+    await axios.delete(`http://localhost:5000/api/admin/books/${id}`);
     fetchBooks();
   }
 };

@@ -31,6 +31,7 @@ import booksRoutes from "./api/books.js";
 import searchRoutes from "./api/search.js";
 import peminjamanRoutes from "./api/peminjaman.js";
 import categoriesRoutes from "./api/categories.js";
+import adminBooksRoutes from "./api/admin/books.js";
 
 // Middleware untuk logging request
 app.use((req, res, next) => {
@@ -38,14 +39,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Static files untuk akses cover buku
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/books", booksRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/peminjaman", peminjamanRoutes);
 app.use("/api/categories", categoriesRoutes);
-
-
+app.use("/api/admin/books", adminBooksRoutes);
 
 // Jalankan server
 const PORT = process.env.PORT || 5000;

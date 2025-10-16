@@ -10,7 +10,13 @@
               Kembali
           </button>
         <div class="book-cover-sticky">
-          <img :src="book.coverImage" :alt="book.title" class="book-cover" />
+            <img 
+              :src="book.coverImage" 
+              :alt="book.title" 
+              class="book-cover" 
+              @error="onImageError"
+            />
+
           
           <!-- Action Buttons -->
           <div class="action-buttons">
@@ -176,6 +182,10 @@ import { useRoute } from 'vue-router'
 const isBookmarked = ref(false)
 const isFavorited = ref(false)
 
+const onImageError = (event) => {
+  event.target.src = '/placeholder-cover.svg'
+}
+
 const book = ref({
   title: 'The Watchmaker of Filigree Street',
   author: 'Natasha Pulley',
@@ -200,6 +210,7 @@ const book = ref({
     { location: 'Ganesha Lantai 1', callNumber: '823.92 PUL W', code: '3422', status: 'Tersedia' },
     { location: 'Ganesha Lantai 1', callNumber: '823.92 PUL W', code: '3423', status: 'Dipinjam' }
   ],
+  
   relatedBooks: [
   { 
     id: 1, 

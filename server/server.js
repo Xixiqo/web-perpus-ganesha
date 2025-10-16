@@ -42,7 +42,12 @@ import searchRoutes from "./api/search.js";
 import peminjamanRoutes from "./api/riwayat.js";
 import categoriesRoutes from "./api/categories.js";
 import adminBooksRoutes from "./api/admin/books.js";
+import adminPeminjamanRoutes from "./api/admin/peminjaman.js";
+import adminPengembalianRoutes from "./api/admin/pengembalian.js";
 
+
+app.use("/api/admin/peminjaman", adminPeminjamanRoutes);
+app.use("/api/admin/pengembalian", adminPengembalianRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/books", booksRoutes);

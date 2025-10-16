@@ -2,9 +2,10 @@
 	<div class="app">
 		<!-- Sidebar -->
 		<Sidebar />
-
-		<!-- Content -->
-		<router-view />
+		<!-- Content Wrapper -->
+		<div class="content-wrapper">
+			<router-view />
+		</div>
 	</div>
 </template>
 
@@ -20,15 +21,19 @@ import Sidebar from '@/components/admin/sidebar.vue'
   --dark: #1e293b;
   --dark-alt: #334155;
   --light: #f1f5f9;
-  --sidebar-width: 300px;
-
+  --sidebar-width: 250px;
+  
   display: flex;
-
-  main {
-    flex: 1 1 0;
+  min-height: 100vh;
+  
+  .content-wrapper {
+    flex: 1;
+    margin-left: var(--sidebar-width);
     padding: 2rem;
-
+    width: 100%;
+    
     @media (max-width: 1024px) {
+      margin-left: 0;
       padding-left: 6rem;
     }
   }
@@ -42,7 +47,7 @@ import Sidebar from '@/components/admin/sidebar.vue'
 }
 
 body {
-  background: var(--light); /* Ini masih global, kalau mau full scoped bisa diganti di .app */
+  background: var(--light);
 }
 
 button {

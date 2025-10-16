@@ -84,13 +84,20 @@ const books = ref([])
 const loading = ref(true)
 
 // Data rekomendasi buku (bisa diganti dengan data dari API)
+const getCoverUrl = (filename) => {
+  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  if (!filename) return '/placeholder-cover.svg'
+  if (/^https?:\/\//i.test(filename)) return filename
+  return `${base}/uploads/${filename}`
+}
+
 const recommendedBooks = ref([
   {
     id: 1,
     title: "Filosofi Teras",
     author: "Henry Manampiring",
     rating: 4.5,
-    cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop"
+  cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop"
   },
   {
     id: 2,
@@ -268,7 +275,7 @@ const topBooks = computed(() => {
       title: book.judul || book.title,
       author: book.penulis || book.author,
       rating: book.rating || 4,
-      cover: book.sampul || book.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
+      cover: getCoverUrl(book.sampul || book.cover || null),
       synopsis: book.sinopsis || book.synopsis || 'Tidak ada sinopsis tersedia.'
     }))
 })
@@ -276,7 +283,8 @@ const topBooks = computed(() => {
 // Fetch data dari API
 const fetchBooks = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/books')
+    const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+    const response = await fetch(`${apiBase}/api/books`)
     if (response.ok) {
       const data = await response.json()
       books.value = data

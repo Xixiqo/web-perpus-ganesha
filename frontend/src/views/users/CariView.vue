@@ -130,6 +130,9 @@ export default {
   components: {
     BookCard
   },
+  methods: {
+    // helper will be merged into methods below; keep placeholder fallback consistent
+  },
   data() {
     return {
       searchQuery: '',
@@ -140,7 +143,8 @@ export default {
       selectedCategory: '',
       currentPage: 1,
       itemsPerPage: 12,
-      totalBooks: 0
+      totalBooks: 0,
+      initialFetchDone: false
     }
   },
   computed: {
@@ -158,13 +162,22 @@ export default {
       this.showFilter = !this.showFilter;
     },
 
+    // Build a full URL for a cover filename or pass-through full URLs
+    getCoverUrl(filename) {
+      const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+      if (!filename) return '/placeholder-cover.svg'
+      if (/^https?:\/\//i.test(filename)) return filename
+      return `${base}/uploads/${filename}`
+    },
+
     async handleSearch() {
       this.currentPage = 1;
       this.loading = true;
       console.log('Starting search with query:', this.searchQuery);
 
       try {
-        const baseUrl = 'http://localhost:5000/api/search';
+  const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  const baseUrl = `${apiBase}/api/search`;
         const params = new URLSearchParams();
         
         if (this.searchQuery.trim()) {
@@ -196,19 +209,19 @@ export default {
           // Format buku sesuai dengan data yang ada
           this.books = result.data.map(book => ({
             id: book.id,
-            kode: book.kode_buku,
+            kode_buku: book.kode_buku,
             judul: book.judul,
-            penulis: book.pembuat,
+            pembuat: book.pembuat,
             penerbit: book.penerbit,
-            tahun: book.tahun_rilis,
-            isbn: book.isbn_issn,
+            tahun_rilis: book.tahun_rilis,
+            isbn_issn: book.isbn_issn,
             kategori: book.kategori,
             sinopsis: book.sinopsis,
             stok: book.stok,
-            bahasa: book.bahasa_buku,
-            cover: book.cover ? `/cover/${book.cover}` : '/cover/default.jpg'
+            bahasa_buku: book.bahasa_buku,
+            cover: this.getCoverUrl(book.cover)
           }));
-          this.totalBooks = result.total;
+          this.totalBooks = result.total || this.books.length;
         } else {
           throw new Error(result.message || 'Gagal mengambil data buku');
         }
@@ -228,10 +241,13 @@ export default {
     },
 
     async fetchBooks() {
+      if (this.loading || this.initialFetchDone) return;
+      
       this.loading = true;
 
       try {
-        const response = await fetch('http://localhost:5000/api/search/books', {
+        const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+        const response = await fetch(`${apiBase}/api/books`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
@@ -243,42 +259,45 @@ export default {
         }
 
         const result = await response.json();
-        console.log('Raw book data:', result); // Debugging
-        if (result.success) {
-          // Format data buku
-          this.books = result.data.map(book => {
-            console.log('Processing book:', book); // Debugging
-            return {
-              id: book.id,
-              kode: book.kode_buku,
-              judul: book.judul,
-              penulis: book.pembuat,
-              penerbit: book.penerbit,
-              tahun: book.tahun_rilis,
-              isbn: book.isbn_issn,
-              kategori: book.kategori,
-              sinopsis: book.sinopsis,
-              stok: book.stok,
-              bahasa: book.bahasa_buku,
-              cover: book.cover ? `/cover/${book.cover}` : '/cover/default.jpg'
-            };
-          });
-          this.totalBooks = result.total;
+        let booksData = []
+        if (Array.isArray(result)) {
+          booksData = result
+          this.totalBooks = result.length
+        } else if (result && result.success) {
+          booksData = result.data || []
+          this.totalBooks = result.total || booksData.length
         } else {
-          throw new Error(result.message || 'Gagal mengambil data buku');
+          throw new Error('Unexpected response shape when fetching books')
         }
+
+        // Format data buku to match template expected keys
+        this.books = booksData.map(book => ({
+          id: book.id,
+          kode_buku: book.kode_buku,
+          judul: book.judul,
+          pembuat: book.pembuat,
+          penerbit: book.penerbit,
+          tahun_rilis: book.tahun_rilis,
+          isbn_issn: book.isbn_issn,
+          kategori: book.kategori,
+          sinopsis: book.sinopsis,
+          stok: book.stok,
+          bahasa_buku: book.bahasa_buku,
+          cover: this.getCoverUrl(book.cover)
+        }))
       } catch (error) {
         console.error('Fetch books error:', error);
         this.books = [];
         this.totalBooks = 0;
       } finally {
         this.loading = false;
+        this.initialFetchDone = true;
       }
     },
 
     async fetchCategories() {
       try {
-        const response = await fetch('http://localhost:5000/api/search/categories', {
+        const response = await fetch('http://localhost:5000/api/categories', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'

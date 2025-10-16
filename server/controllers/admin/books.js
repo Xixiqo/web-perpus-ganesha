@@ -2,6 +2,9 @@ import db from "../../config/db.js";
 import fs from "fs/promises";
 import path from "path";
 
+// Tentukan folder upload absolut
+const UPLOAD_FOLDER = path.resolve("../../upload");
+
 // GET /api/admin/books
 export const getBooks = async (req, res) => {
   try {
@@ -106,9 +109,15 @@ export const updateBook = async (req, res) => {
 
     // Hapus file lama jika ada cover baru
     if (cover && oldCover) {
-      const oldPath = path.join("uploads", oldCover);
-      try { await fs.unlink(oldPath); } catch (err) { console.log(err); }
+    const oldPath = path.join(UPLOAD_FOLDER, oldCover);
+    try {
+        await fs.access(oldPath); // cek apakah file ada
+        await fs.unlink(oldPath);
+    } catch (err) {
+        if (err.code !== 'ENOENT') console.error(err); // hanya log error selain file tidak ada
     }
+    }
+
 
     res.json({ message: "Buku berhasil diperbarui" });
   } catch (err) {
@@ -129,8 +138,12 @@ export const deleteBook = async (req, res) => {
 
     // Hapus cover file jika ada
     if (cover) {
-      const coverPath = path.join("uploads", cover);
-      try { await fs.unlink(coverPath); } catch (err) { console.log(err); }
+      const coverPath = path.join(UPLOAD_FOLDER, cover);
+      try {
+        await fs.unlink(coverPath);
+      } catch (err) {
+        if (err.code !== "ENOENT") console.error(err);
+      }
     }
 
     res.json({ message: "Buku berhasil dihapus" });

@@ -10,13 +10,13 @@
         {{ bookStock === 0 ? 'Tidak Tersedia' : `Stok: ${bookStock}` }}
       </div>
       
-      <img 
-        v-if="book.cover" 
-        :src="`/covers/${book.cover}`" 
+      <img
+        v-if="book.cover"
+        :src="getCoverUrl(book.cover)"
         :alt="book.judul"
         class="cover-image"
         @error="handleImageError"
-      >
+      />
       <div v-else class="cover-placeholder">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -66,7 +66,18 @@ const handleClick = () => {
 }
 
 const handleImageError = (e) => {
-  e.target.style.display = 'none'
+  // Replace broken image with a neutral placeholder
+  e.target.onerror = null
+  e.target.src = `${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/uploads/placeholder-cover.png`
+}
+
+// Build the full cover URL from backend uploads folder
+const getCoverUrl = (filename) => {
+  if (!filename) return `${import.meta.env.VITE_API_BASE || 'http://localhost:5000'}/uploads/placeholder-cover.png`
+  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  // If filename already looks like a full URL, return as-is
+  if (/^https?:\/\//i.test(filename)) return filename
+  return `${base}/uploads/${filename}`
 }
 
 // Computed property untuk stok buku

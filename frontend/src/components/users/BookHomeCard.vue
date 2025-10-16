@@ -6,7 +6,7 @@
     @mouseleave="isHovered = false"
   >
     <div class="book-image">
-      <img :src="book.cover || 'https://via.placeholder.com/300x400?text=No+Cover'" :alt="book.title" />
+      <img :src="getCoverUrl(book.cover)" :alt="book.title" @error="onError" />
     </div>
     <div class="book-info">
       <p class="book-author">{{ book.author }}</p>
@@ -26,6 +26,18 @@ const props = defineProps({
 })
 
 const isHovered = ref(false)
+
+const onError = (e) => {
+  e.target.onerror = null
+  e.target.src = '/placeholder-cover.svg'
+}
+
+const getCoverUrl = (filename) => {
+  if (!filename) return '/placeholder-cover.svg'
+  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  if (/^https?:\/\//i.test(filename)) return filename
+  return `${base}/uploads/${filename}`
+}
 </script>
 
 <style scoped>

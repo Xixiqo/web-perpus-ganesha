@@ -170,7 +170,8 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 const isBookmarked = ref(false)
 const isFavorited = ref(false)
@@ -179,7 +180,7 @@ const book = ref({
   title: 'The Watchmaker of Filigree Street',
   author: 'Natasha Pulley',
   publishDate: 'Jul 2015',
-  coverImage:'https://i.pinimg.com/1200x/6d/27/cd/6d27cd762bc01b7ffe5f6d9d6a60f7c0.jpg',
+  coverImage: '/placeholder-cover.svg',
   bookLink:'https://www.goodreads.com/book/show/22929563-the-watchmaker-of-filigree-street',
   rating: 4,
   reviewCount: 156,
@@ -238,6 +239,48 @@ const book = ref({
     { id: 2, name: 'Ahmad Rizki', date: '1 bulan lalu', rating: 4, text: 'Atmosfernya amazing banget, bener-bener berasa di London 1880-an. Twist tentang jam dan kemampuan Mori bikin penasaran terus. Romance-nya subtle dan nggak cheesy. Recommended buat yang suka historical fiction dengan sentuhan magic realism!' },
     { id: 3, name: 'Dea Maharani', date: '2 bulan lalu', rating: 5, text: 'Salah satu buku favorit! Gaya penulisan Pulley itu puitis tapi nggak bertele-tele. Eksplor budaya Jepang dan Inggris di era Victoria dengan respect. Hubungan Thaniel dan Mori dikembangkan dengan natural. Clockwork octopus-nya adorable!' }
   ]
+})
+
+// Build full URL for cover filenames or use existing absolute URLs
+const getCoverUrl = (filename) => {
+  const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  if (!filename) return '/placeholder-cover.svg'
+  if (/^https?:\/\//i.test(filename)) return filename
+  return `${base}/uploads/${filename}`
+}
+
+const route = useRoute()
+
+onMounted(async () => {
+  const id = route.params.id
+  if (id) {
+    try {
+      const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+      const res = await fetch(`${apiBase}/api/books/${id}`)
+      if (res.ok) {
+        const data = await res.json()
+        // data should include `cover` field with filename
+        book.value = {
+          ...book.value,
+          title: data.judul || data.title || book.value.title,
+          author: data.pembuat || data.author || book.value.author,
+          publishDate: data.tahun_rilis || book.value.publishDate,
+          coverImage: getCoverUrl(data.cover),
+          description: data.sinopsis || data.description || book.value.description,
+          publisher: data.penerbit || book.value.publisher,
+          isbn: data.isbn_issn || book.value.isbn,
+          pages: data.halaman || book.value.pages,
+          language: data.bahasa_buku || book.value.language,
+          relatedBooks: (data.relatedBooks || book.value.relatedBooks).map(rb => ({
+            ...rb,
+            cover: getCoverUrl(rb.cover || rb.sampul || rb.cover)
+          }))
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch book details', err)
+    }
+  }
 })
 
 const goBack = () => {

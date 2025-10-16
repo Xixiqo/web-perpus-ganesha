@@ -148,7 +148,7 @@ const submitForm = async () => {
     await axios.post("http://localhost:5000/api/admin/books", formData);
   }
 
-  fetchBooks();
+  await fetchBooks();
   cancelEdit();
 };
 

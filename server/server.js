@@ -24,6 +24,16 @@ const app = express();
 app.use(cors({ origin: process.env.CORS_ORIGIN || "*", credentials: true }));
 app.use(express.json());
 
+// Middleware untuk logging request
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// Static files untuk akses cover buku
+// ✅ Ganti "./uploads" jadi "/uploads"
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Routes
 import authRoutes from "./api/auth.js";
 import profileRoutes from "./api/profile.js";
@@ -32,15 +42,6 @@ import searchRoutes from "./api/search.js";
 import peminjamanRoutes from "./api/peminjaman.js";
 import categoriesRoutes from "./api/categories.js";
 import adminBooksRoutes from "./api/admin/books.js";
-
-// Middleware untuk logging request
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
-
-// Static files untuk akses cover buku
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);

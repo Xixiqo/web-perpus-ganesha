@@ -412,21 +412,7 @@
                 </div>
               </div>
             </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Papan Peringkat</label>
-              <p class="text-sm text-gray-600 mb-3">Menampilkan papan peringkat pembaca terdekat di pojok kiri atas laman.</p>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  v-model="preferences.showLeaderboard"
-                  @change="savePreferences"
-                  class="sr-only peer"
-                >
-                <div class="toggle-switch"></div>
-              </label>
-            </div>
-
+            
             <div v-if="preferencesMessage" class="p-3 rounded-lg bg-green-50 text-green-800">
               {{ preferencesMessage }}
             </div>

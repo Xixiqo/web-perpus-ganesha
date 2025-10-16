@@ -42,7 +42,7 @@ const routes = [
         path: 'detail',
         name: 'detail',
         component: () => import('../views/users/DetailView.vue'),
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: false },
       },
       {
         path: 'slider',

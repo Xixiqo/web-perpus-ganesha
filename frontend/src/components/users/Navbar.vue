@@ -77,7 +77,7 @@
               Riwayat Peminjaman
             </RouterLink>
             <div class="dropdown-divider"></div>
-            <button class="dropdown-item logout" @click="handleLogout">
+            <button class="dropdown-item logout" @click="openLogoutModal">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -90,6 +90,33 @@
       </div>
     </div>
   </nav>
+
+  <!-- Logout Confirmation Modal -->
+  <Teleport to="body">
+    <div v-if="showLogoutModal" class="modal-overlay" @click="closeLogoutModal">
+      <div class="modal-content" @click.stop>
+        <h2 class="modal-title">Logout Confirmation</h2>
+        <p class="modal-message">Apakah Anda yakin ingin keluar?</p>
+        
+        <div class="modal-buttons">
+          <button 
+            class="btn-confirm" 
+            @click="confirmLogout"
+            :disabled="isLoggingOut"
+          >
+            {{ isLoggingOut ? 'Loading...' : 'Logout' }}
+          </button>
+          <button 
+            class="btn-cancel" 
+            @click="closeLogoutModal"
+            :disabled="isLoggingOut"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -101,6 +128,8 @@ const menuOpen = ref(false)
 const userMenuOpen = ref(false)
 const isLoggedIn = ref(false)
 const user = ref(null)
+const showLogoutModal = ref(false)
+const isLoggingOut = ref(false)
 
 onMounted(() => {
   checkLoginStatus()
@@ -141,13 +170,36 @@ const handleClickOutside = (e) => {
   const menu = document.querySelector('.user-menu')
   if (menu && !menu.contains(e.target)) userMenuOpen.value = false
 }
-const handleLogout = async () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
-  isLoggedIn.value = false
-  user.value = null
-  userMenuOpen.value = false
-  router.push('/')
+
+const openLogoutModal = () => {
+  showLogoutModal.value = true
+  closeUserMenu()
+}
+
+const closeLogoutModal = () => {
+  showLogoutModal.value = false
+}
+
+const confirmLogout = async () => {
+  isLoggingOut.value = true
+  
+  try {
+    // Simulasi delay untuk logout process (bisa diganti dengan API call)
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    isLoggedIn.value = false
+    user.value = null
+    userMenuOpen.value = false
+    showLogoutModal.value = false
+    
+    router.push('/')
+  } catch (error) {
+    console.error('Error during logout:', error)
+  } finally {
+    isLoggingOut.value = false
+  }
 }
 </script>
 
@@ -386,7 +438,7 @@ const handleLogout = async () => {
   border: none;
   cursor: pointer;
   padding: 0;
-  order: -1; /* Pindah ke paling kiri */
+  order: -1;
 }
 
 .menu-btn .bar {
@@ -397,13 +449,113 @@ const handleLogout = async () => {
   transition: all 0.3s ease;
 }
 
+/* --- Modal Logout --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #131313;
+  margin: 0 0 8px 0;
+}
+
+.modal-message {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 24px 0;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-confirm,
+.btn-cancel {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 2px solid;
+  transition: all 0.3s ease;
+}
+
+.btn-confirm {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 6px 16px rgba(235, 37, 37, 0.4);
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background: white;
+  color: #2C64E3;
+  border-color: #2C64E3;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #eff6ff;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* --- Responsif --- */
 @media (max-width: 768px) {
   .menu-btn {
     display: flex;
   }
   
-  /* Container mobile: hamburger - logo - profile */
   .nav-container {
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -411,18 +563,15 @@ const handleLogout = async () => {
     gap: 1rem;
   }
   
-  /* Hamburger di kiri */
   .menu-btn {
     order: 1;
   }
   
-  /* Logo di tengah */
   .nav-brand {
     order: 2;
     justify-self: center;
   }
   
-  /* Profile di kanan */
   .nav-right {
     order: 3;
     justify-self: end;
@@ -483,6 +632,18 @@ const handleLogout = async () => {
   
   .nav-brand h2 {
     font-size: 1.25rem;
+  }
+
+  .modal-content {
+    padding: 24px;
+  }
+
+  .modal-title {
+    font-size: 1rem;
+  }
+
+  .modal-message {
+    font-size: 0.875rem;
   }
 }
 </style>

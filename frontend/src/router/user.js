@@ -39,15 +39,15 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: 'detail',
-        name: 'detail',
-        component: () => import('../views/users/DetailView.vue'),
-        meta: { requiresAuth: false },
-      },
-      {
         path: 'kategori',
         name: 'kategori',
         component: () => import('../views/users/KategoriView.vue'),
+      },
+      {
+        path: 'buku/:id',
+        name: 'BookDetail',
+        component: () => import('../views/users/DetailView.vue'),
+        meta: { requiresAuth: false },
       },
       {
         path: 'riwayat',

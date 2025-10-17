@@ -28,6 +28,7 @@
       
       <!-- User Section -->
       <div class="nav-right">
+          <DyslexiaToggle />
         <!-- Jika belum login -->
         <RouterLink v-if="!isLoggedIn" to="/login" class="user-chip-link">
           <div class="btn-login">
@@ -122,6 +123,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import DyslexiaToggle from '@/components/DyslexiaToggle.vue'
 
 const router = useRouter()
 const menuOpen = ref(false)
@@ -301,6 +303,37 @@ const confirmLogout = async () => {
 .nav-link.router-link-exact-active::after {
   width: 100%;
   opacity: 1;
+}
+
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* kasih jarak antar elemen */
+}
+
+/* Tombol toggle disleksia */
+.nav-right .toggle-btn {
+  background-color: #2C64E3;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.3s;
+  align-self: center;
+}
+
+.nav-right .toggle-btn:hover {
+  background-color: #1e40af;
+}
+
+/* biar tombol sejajar dengan user chip/login button */
+.user-menu,
+.btn-login {
+  display: flex;
+  align-items: center;
 }
 
 /* --- User chip --- */

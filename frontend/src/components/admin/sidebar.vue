@@ -144,10 +144,10 @@ export default {
 	position: absolute;
 	top: 350px;
 	right: 0;
-	background: white;
+	background: aliceblue;
 	color: var(--primary);
 	border: none;
-	border-radius: 50px 5px 5px 50px;
+	border-radius: 50px 0px 0px 50px;
 	padding: 0.5rem;
 	cursor: pointer;
 	z-index: 1100;

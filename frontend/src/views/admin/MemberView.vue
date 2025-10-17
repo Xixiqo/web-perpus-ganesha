@@ -7,6 +7,58 @@
       </button>
     </div>
 
+    <!-- Search & Filter Section -->
+    <div class="search-filter-container">
+      <div class="search-box">
+        <input 
+          v-model="searchQuery" 
+          type="text" 
+          placeholder="Cari berdasarkan username, nama, NIS/NIP..."
+          class="search-input"
+        />
+        <i class="icon-search">🔍</i>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label>Role:</label>
+          <select v-model="filterRole" class="filter-select">
+            <option value="">Semua Role</option>
+            <option value="siswa">Siswa</option>
+            <option value="pustakawan">Pustakawan</option>
+            <option value="superadmin">Super Admin</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Tipe Keanggotaan:</label>
+          <select v-model="filterTipeKeanggotaan" class="filter-select">
+            <option value="">Semua Tipe</option>
+            <option value="siswa">Siswa</option>
+            <option value="guru">Guru</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Status Member:</label>
+          <select v-model="filterStatus" class="filter-select">
+            <option value="">Semua Status</option>
+            <option value="active">Aktif</option>
+            <option value="expired">Expired</option>
+          </select>
+        </div>
+
+        <button @click="resetFilters" class="btn-reset">
+          Reset Filter
+        </button>
+      </div>
+    </div>
+
+    <!-- Result Info -->
+    <div class="result-info">
+      <p>Menampilkan {{ filteredUsers.length }} dari {{ users.length }} data</p>
+    </div>
+
     <!-- Tabel Users & Anggota -->
     <div class="table-container">
       <table>
@@ -25,7 +77,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.id">
+          <tr v-for="user in filteredUsers" :key="user.id">
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>
@@ -52,8 +104,8 @@
         </tbody>
       </table>
 
-      <div v-if="users.length === 0" class="empty-state">
-        <p>Belum ada data user</p>
+      <div v-if="filteredUsers.length === 0" class="empty-state">
+        <p>{{ users.length === 0 ? 'Belum ada data user' : 'Tidak ada data yang sesuai dengan pencarian' }}</p>
       </div>
     </div>
 
@@ -180,6 +232,10 @@ export default {
       users: [],
       showModal: false,
       isEditMode: false,
+      searchQuery: '',
+      filterRole: '',
+      filterTipeKeanggotaan: '',
+      filterStatus: '',
       formData: {
         id: null,
         username: '',
@@ -198,6 +254,48 @@ export default {
       }
     };
   },
+  computed: {
+    filteredUsers() {
+      let filtered = this.users;
+
+      // Filter berdasarkan search query
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        filtered = filtered.filter(user => {
+          return (
+            (user.username && user.username.toLowerCase().includes(query)) ||
+            (user.nama && user.nama.toLowerCase().includes(query)) ||
+            (user.nis_nip && user.nis_nip.toLowerCase().includes(query)) ||
+            (user.institute && user.institute.toLowerCase().includes(query))
+          );
+        });
+      }
+
+      // Filter berdasarkan role
+      if (this.filterRole) {
+        filtered = filtered.filter(user => user.role === this.filterRole);
+      }
+
+      // Filter berdasarkan tipe keanggotaan
+      if (this.filterTipeKeanggotaan) {
+        filtered = filtered.filter(user => user.tipe_keanggotaan === this.filterTipeKeanggotaan);
+      }
+
+      // Filter berdasarkan status member
+      if (this.filterStatus) {
+        filtered = filtered.filter(user => {
+          if (this.filterStatus === 'active') {
+            return user.member_expired && !this.isExpired(user.member_expired);
+          } else if (this.filterStatus === 'expired') {
+            return user.member_expired && this.isExpired(user.member_expired);
+          }
+          return true;
+        });
+      }
+
+      return filtered;
+    }
+  },
   mounted() {
     this.fetchUsers();
   },
@@ -210,6 +308,13 @@ export default {
         console.error('Gagal mengambil data users:', error);
         alert('Gagal mengambil data users');
       }
+    },
+
+    resetFilters() {
+      this.searchQuery = '';
+      this.filterRole = '';
+      this.filterTipeKeanggotaan = '';
+      this.filterStatus = '';
     },
 
     openAddModal() {
@@ -267,7 +372,7 @@ export default {
       try {
         const url = this.isEditMode 
           ? `http://localhost:5000/api/admin/users/${this.formData.id}` 
-            : 'http://localhost:5000/api/admin/users';
+        : 'http://localhost:5000/api/admin/users';
         
         const method = this.isEditMode ? 'PUT' : 'POST';
 
@@ -345,7 +450,7 @@ export default {
 }
 
 .btn-primary {
-  background: #4CAF50;
+  background: var(--primary);
   color: white;
   padding: 12px 24px;
   border: none;
@@ -358,7 +463,105 @@ export default {
 }
 
 .btn-primary:hover {
-  background: #45a049;
+  background: var(--secondary);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
+}
+
+/* Search & Filter Styles */
+.search-filter-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.icon-search {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 18px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+.filter-select {
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  min-width: 180px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.btn-reset {
+  padding: 10px 20px;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.btn-reset:hover {
+  background: #e0e0e0;
+}
+
+.result-info {
+  margin-bottom: 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+.result-info p {
+  margin: 0;
 }
 
 .table-container {
@@ -582,6 +785,19 @@ td {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-select {
+    min-width: 100%;
+  }
+
+  .btn-reset {
+    width: 100%;
   }
 }
 </style>

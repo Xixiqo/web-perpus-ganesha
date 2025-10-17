@@ -200,15 +200,20 @@ const submitForm = async () => {
     formData.append(key, form.value[key]);
   });
 
+  const config = {
+    headers: { "Content-Type": "multipart/form-data" },
+  };
+
   if (editMode.value) {
-    await axios.put(`http://localhost:5000/api/admin/books/${currentId.value}`, formData);
+    await axios.put(`http://localhost:5000/api/admin/books/${currentId.value}`, formData, config);
   } else {
-    await axios.post("http://localhost:5000/api/admin/books", formData);
+    await axios.post("http://localhost:5000/api/admin/books", formData, config);
   }
 
   await fetchBooks();
   cancelEdit();
 };
+
 
 // Edit
 const editBook = (book) => {

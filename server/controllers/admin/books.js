@@ -2,10 +2,9 @@ import db from "../../config/db.js";
 import fs from "fs/promises";
 import path from "path";
 
-// Tentukan folder upload absolut
-const UPLOAD_FOLDER = path.resolve("../../upload");
+const UPLOAD_FOLDER = path.join(process.cwd(), "uploads");
 
-// GET /api/admin/books
+// GET
 export const getBooks = async (req, res) => {
   try {
     const [results] = await db.query("SELECT * FROM books");
@@ -15,42 +14,26 @@ export const getBooks = async (req, res) => {
   }
 };
 
-// POST /api/admin/books
+// CREATE
 export const createBook = async (req, res) => {
   try {
     const {
-      kode_buku,
-      judul,
-      pembuat,
-      penerbit,
-      bahasa_buku,
-      tahun_rilis,
-      isbn_issn,
-      kategori,
-      sinopsis,
-      stok,
+      kode_buku, judul, pembuat, penerbit, bahasa_buku,
+      tahun_rilis, isbn_issn, kategori, sinopsis, stok
     } = req.body;
 
     const cover = req.file ? req.file.filename : null;
 
     const sql = `
       INSERT INTO books
-      (kode_buku, judul, pembuat, penerbit, bahasa_buku, tahun_rilis, isbn_issn, kategori, sinopsis, stok, cover, created_at, updated_at)
+      (kode_buku, judul, pembuat, penerbit, bahasa_buku, tahun_rilis,
+       isbn_issn, kategori, sinopsis, stok, cover, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     `;
 
     const [result] = await db.query(sql, [
-      kode_buku,
-      judul,
-      pembuat,
-      penerbit,
-      bahasa_buku,
-      tahun_rilis,
-      isbn_issn,
-      kategori,
-      sinopsis,
-      stok,
-      cover,
+      kode_buku, judul, pembuat, penerbit, bahasa_buku,
+      tahun_rilis, isbn_issn, kategori, sinopsis, stok, cover
     ]);
 
     res.json({ message: "Buku berhasil ditambahkan", id: result.insertId });
@@ -59,47 +42,34 @@ export const createBook = async (req, res) => {
   }
 };
 
-// PUT /api/admin/books/:id
+// UPDATE
 export const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      kode_buku,
-      judul,
-      pembuat,
-      penerbit,
-      bahasa_buku,
-      tahun_rilis,
-      isbn_issn,
-      kategori,
-      sinopsis,
-      stok,
+      kode_buku, judul, pembuat, penerbit, bahasa_buku,
+      tahun_rilis, isbn_issn, kategori, sinopsis, stok
     } = req.body;
 
     const cover = req.file ? req.file.filename : null;
 
-    // Ambil cover lama
     const [oldResult] = await db.query("SELECT cover FROM books WHERE id = ?", [id]);
-    const oldCover = oldResult[0]?.cover;
+    if (!oldResult.length)
+      return res.status(404).json({ error: "Buku tidak ditemukan" });
+
+    const oldCover = oldResult[0].cover;
 
     const sql = `
       UPDATE books SET 
-        kode_buku=?, judul=?, pembuat=?, penerbit=?, bahasa_buku=?, tahun_rilis=?, isbn_issn=?, kategori=?, sinopsis=?, stok=?, updated_at=NOW()
+        kode_buku=?, judul=?, pembuat=?, penerbit=?, bahasa_buku=?, tahun_rilis=?,
+        isbn_issn=?, kategori=?, sinopsis=?, stok=?, updated_at=NOW()
         ${cover ? ", cover=?" : ""}
       WHERE id=?
     `;
 
     const params = [
-      kode_buku,
-      judul,
-      pembuat,
-      penerbit,
-      bahasa_buku,
-      tahun_rilis,
-      isbn_issn,
-      kategori,
-      sinopsis,
-      stok,
+      kode_buku, judul, pembuat, penerbit, bahasa_buku,
+      tahun_rilis, isbn_issn, kategori, sinopsis, stok
     ];
 
     if (cover) params.push(cover);
@@ -107,17 +77,15 @@ export const updateBook = async (req, res) => {
 
     await db.query(sql, params);
 
-    // Hapus file lama jika ada cover baru
+    // Hapus file lama
     if (cover && oldCover) {
-    const oldPath = path.join(UPLOAD_FOLDER, oldCover);
-    try {
-        await fs.access(oldPath); // cek apakah file ada
+      const oldPath = path.join(UPLOAD_FOLDER, oldCover);
+      try {
         await fs.unlink(oldPath);
-    } catch (err) {
-        if (err.code !== 'ENOENT') console.error(err); // hanya log error selain file tidak ada
+      } catch (err) {
+        if (err.code !== "ENOENT") console.error("Gagal hapus cover lama:", err);
+      }
     }
-    }
-
 
     res.json({ message: "Buku berhasil diperbarui" });
   } catch (err) {
@@ -125,24 +93,24 @@ export const updateBook = async (req, res) => {
   }
 };
 
-// DELETE /api/admin/books/:id
+// DELETE
 export const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Ambil cover dulu
     const [result] = await db.query("SELECT cover FROM books WHERE id = ?", [id]);
-    const cover = result[0]?.cover;
+    if (!result.length)
+      return res.status(404).json({ error: "Buku tidak ditemukan" });
 
+    const cover = result[0].cover;
     await db.query("DELETE FROM books WHERE id = ?", [id]);
 
-    // Hapus cover file jika ada
     if (cover) {
       const coverPath = path.join(UPLOAD_FOLDER, cover);
       try {
         await fs.unlink(coverPath);
       } catch (err) {
-        if (err.code !== "ENOENT") console.error(err);
+        if (err.code !== "ENOENT") console.error("Gagal hapus file cover:", err);
       }
     }
 

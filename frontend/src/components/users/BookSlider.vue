@@ -76,14 +76,19 @@ const cardsPerView = ref(5)
 const calculateSlideWidth = () => {
   if (sliderContainer.value) {
     const containerWidth = sliderContainer.value.offsetWidth
+    const windowWidth = window.innerWidth
     const cardWidth = 174 // sesuaikan dengan lebar card
     const gap = 20
     
-    // Hitung berapa kartu yang bisa terlihat penuh
-    cardsPerView.value = Math.floor(containerWidth / (cardWidth + gap))
-    
-    // Slide width adalah lebar satu kartu + gap
-    slideWidth.value = cardWidth + gap
+    if (windowWidth <= 768) {
+      // Di mobile: slide per 1 card
+      cardsPerView.value = 1
+      slideWidth.value = cardWidth + gap
+    } else {
+      // Desktop: tetap seperti semula
+      cardsPerView.value = Math.floor(containerWidth / (cardWidth + gap))
+      slideWidth.value = cardWidth + gap
+    }
   }
 }
 
@@ -241,12 +246,21 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
+  .slider-section {
+    padding: 30px 0;
+  }
+
   .header {
     padding: 0 16px;
+    margin-bottom: 20px;
   }
   
   .header h2 {
     font-size: 20px;
+  }
+
+  .view-all {
+    font-size: 13px;
   }
   
   .slider-wrapper {
@@ -263,5 +277,27 @@ onUnmounted(() => {
     height: 36px;
     font-size: 20px;
   }
+
+  .nav-btn.prev {
+    left: 5px;
+  }
+
+  .nav-btn.next {
+    right: 5px;
+  }
+
+  .dots {
+    margin-top: 20px;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .dot.active {
+    width: 20px;
+  }
 }
-</style>  
+</style>

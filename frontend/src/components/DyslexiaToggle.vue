@@ -1,6 +1,6 @@
 <template>
   <button class="toggle-btn" @click="toggleDyslexiaMode">
-    {{ isDyslexiaMode ? "Matikan" : "Mode Disleksia" }}
+    {{ isDyslexiaMode ? "Mode Default" : "Mode Disleksia" }}
   </button>
 </template>
 

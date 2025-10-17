@@ -63,11 +63,11 @@ const handleImageError = (e) => {
   if (imageErrorHandled.value) return
   imageErrorHandled.value = true
   e.target.onerror = null
-  e.target.src = '/placeholder-cover.svg'  // langsung dari public
+  e.target.src = '/default_cover.png'  // langsung dari public
 }
 
 const getCoverUrl = (filename) => {
-  if (!filename) return '/placeholder-cover.svg'
+  if (!filename) return '/default_cover.png'
   if (/^https?:\/\//i.test(filename)) return filename
   const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
   return `${base}/uploads/${filename}`

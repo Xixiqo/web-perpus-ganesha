@@ -3,10 +3,13 @@ import db from "../../config/db.js";
 
 const router = express.Router();
 
-// ✅ GET semua data peminjaman dengan JOIN
+/* =====================================================
+   📘 1️⃣ GET semua data peminjaman (dengan JOIN lengkap)
+   ===================================================== */
 router.get("/", async (req, res) => {
   try {
     console.log("📥 Request GET /api/admin/peminjamann");
+
     const [results] = await db.query(`
       SELECT 
         p.id_peminjaman, p.id_anggota, p.id_buku, 
@@ -29,51 +32,56 @@ router.get("/", async (req, res) => {
         p.id_peminjaman DESC
     `);
 
-    console.log("✅ Data peminjaman berhasil diambil:", results.length, "rows");
+    console.log(`✅ Data peminjaman berhasil diambil (${results.length} rows)`);
     res.json(results);
   } catch (err) {
-    console.error("❌ Error GET peminjaman:", err.message);
+    console.error("❌ Error GET peminjaman:", err);
     res.status(500).json({ message: "Gagal mengambil data peminjaman", error: err.message });
   }
 });
 
-// ✅ GET check status terlambat otomatis (PINDAHKAN KE ATAS SEBELUM /:id)
+/* =====================================================
+   ⏰ 2️⃣ Cek otomatis keterlambatan peminjaman
+   ===================================================== */
 router.get("/check/late", async (req, res) => {
   let connection;
   try {
     console.log("📥 Request GET /api/admin/peminjamann/check/late");
+
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    // Update status jadi Terlambat jika melewati tanggal kembali
+    // Update semua status "Dipinjam" yang sudah melewati tanggal_kembali
     const [result] = await connection.query(`
       UPDATE peminjaman 
       SET status = 'Terlambat' 
       WHERE status = 'Dipinjam' 
-      AND tanggal_kembali < CURDATE()
+      AND tanggal_kembali < CURDATE();
     `);
 
-    console.log("✅ Status terlambat checked, updated:", result.affectedRows, "rows");
     await connection.commit();
+    console.log(`✅ Status terlambat diperbarui: ${result.affectedRows} baris`);
 
-    res.json({ 
-      message: "Pengecekan status terlambat berhasil", 
-      updated: result.affectedRows 
+    res.json({
+      message: "Pengecekan status keterlambatan selesai",
+      updated: result.affectedRows,
     });
   } catch (err) {
     if (connection) await connection.rollback();
-    console.error("❌ Error checking late status:", err.message);
-    res.status(500).json({ message: "Gagal mengecek status terlambat", error: err.message });
+    console.error("❌ Error checking late status:", err);
+    res.status(500).json({ message: "Gagal mengecek status keterlambatan", error: err.message });
   } finally {
     if (connection) connection.release();
   }
 });
 
-// ✅ GET peminjaman by ID (SETELAH /check/late)
+/* =====================================================
+   📗 3️⃣ GET detail peminjaman berdasarkan ID
+   ===================================================== */
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("📥 Request GET /api/admin/peminjamann/" + id);
+    console.log(`📥 Request GET /api/admin/peminjamann/${id}`);
 
     const [results] = await db.query(`
       SELECT 
@@ -89,43 +97,42 @@ router.get("/:id", async (req, res) => {
       WHERE p.id_peminjaman = ?
     `, [id]);
 
-    if (results.length === 0) {
+    if (results.length === 0)
       return res.status(404).json({ message: "Data peminjaman tidak ditemukan" });
-    }
 
     res.json(results[0]);
   } catch (err) {
-    console.error("❌ Error GET peminjaman by ID:", err.message);
+    console.error("❌ Error GET peminjaman by ID:", err);
     res.status(500).json({ message: "Gagal mengambil data peminjaman", error: err.message });
   }
 });
 
-// ✅ PUT update status peminjaman (Pending -> Approved -> Dipinjam)
+/* =====================================================
+   🔁 4️⃣ Ubah status peminjaman (Pending → Approved → Dipinjam)
+   ===================================================== */
 router.put("/:id/status", async (req, res) => {
   let connection;
   try {
-    console.log("📥 Request PUT /api/admin/peminjamann/" + req.params.id + "/status");
+    const { id } = req.params;
+    const { status } = req.body;
+
+    console.log(`📥 PUT /api/admin/peminjamann/${id}/status`);
     console.log("📦 Body:", req.body);
 
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    const { id } = req.params;
-    const { status } = req.body;
-
-    // Validasi status
-    const validStatus = ['Pending', 'Approved', 'Dipinjam', 'Dikembalikan', 'Terlambat'];
+    const validStatus = ["Pending", "Approved", "Dipinjam", "Dikembalikan", "Terlambat"];
     if (!validStatus.includes(status)) {
       await connection.rollback();
       return res.status(400).json({ message: "Status tidak valid" });
     }
 
-    // Get data peminjaman dan buku
     const [peminjaman] = await connection.query(`
       SELECT p.*, b.stok 
       FROM peminjaman p 
       LEFT JOIN books b ON p.id_buku = b.id 
-      WHERE p.id_peminjaman = ?
+      WHERE p.id_peminjaman = ?;
     `, [id]);
 
     if (peminjaman.length === 0) {
@@ -133,162 +140,120 @@ router.put("/:id/status", async (req, res) => {
       return res.status(404).json({ message: "Data peminjaman tidak ditemukan" });
     }
 
-    const currentStatus = peminjaman[0].status;
-    const idBuku = peminjaman[0].id_buku;
-    const currentStok = peminjaman[0].stok;
+    const { status: currentStatus, id_buku: idBuku, stok: currentStok } = peminjaman[0];
 
-    // Validasi workflow status
-    if (currentStatus === 'Pending' && status !== 'Approved' && status !== 'Pending') {
+    if (currentStatus === "Pending" && status === "Dipinjam") {
       await connection.rollback();
-      return res.status(400).json({ message: "Status Pending hanya bisa diubah ke Approved" });
+      return res.status(400).json({ message: "Harus disetujui (Approved) terlebih dahulu" });
     }
 
-    if (currentStatus === 'Approved' && status !== 'Dipinjam' && status !== 'Approved') {
-      await connection.rollback();
-      return res.status(400).json({ message: "Status Approved hanya bisa diubah ke Dipinjam" });
-    }
-
-    // Jika status berubah dari Approved ke Dipinjam, kurangi stok
-    if (currentStatus === 'Approved' && status === 'Dipinjam') {
+    if (currentStatus === "Approved" && status === "Dipinjam") {
       if (currentStok <= 0) {
         await connection.rollback();
-        return res.status(400).json({ message: "Stok buku habis, tidak bisa dipinjam" });
+        return res.status(400).json({ message: "Stok buku habis" });
       }
-
-      // Kurangi stok buku
       await connection.query(`UPDATE books SET stok = stok - 1 WHERE id = ?`, [idBuku]);
-      console.log("✅ Stok buku dikurangi untuk book ID:", idBuku);
+      console.log(`✅ Stok buku dikurangi (Book ID: ${idBuku})`);
     }
 
-    // Update status peminjaman
     await connection.query(`UPDATE peminjaman SET status = ? WHERE id_peminjaman = ?`, [status, id]);
-    console.log("✅ Status peminjaman updated:", id, "->", status);
+    console.log(`✅ Status peminjaman updated: ${id} → ${status}`);
 
     await connection.commit();
 
-    res.json({ 
-      message: `Status berhasil diubah menjadi ${status}`, 
-      id_peminjaman: id, 
-      new_status: status 
-    });
+    res.json({ message: `Status diubah ke ${status}`, id_peminjaman: id, new_status: status });
   } catch (err) {
     if (connection) await connection.rollback();
-    console.error("❌ Error PUT status peminjaman:", err.message);
+    console.error("❌ Error PUT status peminjaman:", err);
     res.status(500).json({ message: "Gagal mengubah status peminjaman", error: err.message });
   } finally {
     if (connection) connection.release();
   }
 });
 
-// ✅ DELETE/REJECT peminjaman (untuk status Pending)
+/* =====================================================
+   ❌ 5️⃣ Hapus / Tolak peminjaman (hanya jika Pending)
+   ===================================================== */
 router.delete("/:id", async (req, res) => {
   let connection;
   try {
-    console.log("📥 Request DELETE /api/admin/peminjamann/" + req.params.id);
+    const { id } = req.params;
+    console.log(`📥 DELETE /api/admin/peminjamann/${id}`);
 
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    const { id } = req.params;
-
-    // Cek status peminjaman
-    const [peminjaman] = await connection.query(
-      `SELECT status FROM peminjaman WHERE id_peminjaman = ?`,
-      [id]
-    );
-
-    if (peminjaman.length === 0) {
+    const [rows] = await connection.query(`SELECT status FROM peminjaman WHERE id_peminjaman = ?`, [id]);
+    if (rows.length === 0) {
       await connection.rollback();
-      return res.status(404).json({ message: "Data peminjaman tidak ditemukan" });
+      return res.status(404).json({ message: "Data tidak ditemukan" });
     }
 
-    // Hanya bisa delete jika status masih Pending
-    if (peminjaman[0].status !== 'Pending') {
+    if (rows[0].status !== "Pending") {
       await connection.rollback();
-      return res.status(400).json({ message: "Hanya peminjaman dengan status Pending yang bisa ditolak" });
+      return res.status(400).json({ message: "Hanya data Pending yang bisa dihapus" });
     }
 
-    // Hapus peminjaman
     await connection.query(`DELETE FROM peminjaman WHERE id_peminjaman = ?`, [id]);
-    console.log("✅ Peminjaman rejected/deleted:", id);
-
     await connection.commit();
 
+    console.log("✅ Peminjaman ditolak dan dihapus:", id);
     res.json({ message: "Peminjaman berhasil ditolak" });
   } catch (err) {
     if (connection) await connection.rollback();
-    console.error("❌ Error DELETE peminjaman:", err.message);
+    console.error("❌ Error DELETE peminjaman:", err);
     res.status(500).json({ message: "Gagal menolak peminjaman", error: err.message });
   } finally {
     if (connection) connection.release();
   }
 });
 
-// ✅ PUT proses pengembalian buku
+/* =====================================================
+   🔄 6️⃣ Proses Pengembalian Buku
+   ===================================================== */
 router.put("/:id/return", async (req, res) => {
   let connection;
   try {
-    console.log("📥 Request PUT /api/admin/peminjamann/" + req.params.id + "/return");
+    const { id } = req.params;
+    const { tanggal_dikembalikan, denda, keterangan } = req.body;
+
+    console.log(`📥 PUT /api/admin/peminjamann/${id}/return`);
     console.log("📦 Body:", req.body);
+
+    if (!tanggal_dikembalikan) {
+      return res.status(400).json({ message: "Tanggal dikembalikan wajib diisi" });
+    }
 
     connection = await db.getConnection();
     await connection.beginTransaction();
 
-    const { id } = req.params;
-    const { tanggal_dikembalikan, denda, keterangan } = req.body;
-
-    // Validasi
-    if (!tanggal_dikembalikan) {
-      await connection.rollback();
-      return res.status(400).json({ message: "Tanggal dikembalikan wajib diisi" });
-    }
-
-    // Get data peminjaman
-    const [peminjaman] = await connection.query(
-      `SELECT * FROM peminjaman WHERE id_peminjaman = ?`,
-      [id]
-    );
-
+    const [peminjaman] = await connection.query(`SELECT * FROM peminjaman WHERE id_peminjaman = ?`, [id]);
     if (peminjaman.length === 0) {
       await connection.rollback();
       return res.status(404).json({ message: "Data peminjaman tidak ditemukan" });
     }
 
-    const currentStatus = peminjaman[0].status;
-    const idBuku = peminjaman[0].id_buku;
-
-    // Validasi status harus Dipinjam atau Terlambat
-    if (currentStatus !== 'Dipinjam' && currentStatus !== 'Terlambat') {
+    const { status, id_buku } = peminjaman[0];
+    if (!["Dipinjam", "Terlambat"].includes(status)) {
       await connection.rollback();
-      return res.status(400).json({ message: "Hanya peminjaman dengan status Dipinjam atau Terlambat yang bisa dikembalikan" });
+      return res.status(400).json({ message: "Hanya status Dipinjam/Terlambat yang bisa dikembalikan" });
     }
 
-    // Insert ke tabel pengembalian
     await connection.query(`
       INSERT INTO pengembalian (id_peminjaman, tanggal_dikembalikan, denda, keterangan) 
       VALUES (?, ?, ?, ?)
     `, [id, tanggal_dikembalikan, denda || 0, keterangan || null]);
 
-    console.log("✅ Data pengembalian inserted for peminjaman ID:", id);
-
-    // Update status peminjaman jadi Dikembalikan
     await connection.query(`UPDATE peminjaman SET status = 'Dikembalikan' WHERE id_peminjaman = ?`, [id]);
-    console.log("✅ Status peminjaman updated to Dikembalikan:", id);
-
-    // Tambah stok buku kembali
-    await connection.query(`UPDATE books SET stok = stok + 1 WHERE id = ?`, [idBuku]);
-    console.log("✅ Stok buku ditambah kembali untuk book ID:", idBuku);
+    await connection.query(`UPDATE books SET stok = stok + 1 WHERE id = ?`, [id_buku]);
 
     await connection.commit();
 
-    res.json({ 
-      message: "Buku berhasil dikembalikan", 
-      id_peminjaman: id, 
-      denda: denda || 0 
-    });
+    console.log(`✅ Buku dikembalikan (${id}), stok buku ditambah kembali`);
+    res.json({ message: "Buku berhasil dikembalikan", id_peminjaman: id, denda: denda || 0 });
   } catch (err) {
     if (connection) await connection.rollback();
-    console.error("❌ Error PUT return peminjaman:", err.message);
+    console.error("❌ Error PUT return peminjaman:", err);
     res.status(500).json({ message: "Gagal memproses pengembalian", error: err.message });
   } finally {
     if (connection) connection.release();

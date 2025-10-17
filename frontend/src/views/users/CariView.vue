@@ -142,7 +142,7 @@ export default {
       showFilter: false,
       selectedCategory: '',
       currentPage: 1,
-      itemsPerPage: 12,
+      itemsPerPage: 18,
       totalBooks: 0,
       initialFetchDone: false
     }

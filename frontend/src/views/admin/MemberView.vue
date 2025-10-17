@@ -450,7 +450,7 @@ export default {
 }
 
 .btn-primary {
-  background: #4CAF50;
+  background: var(--primary);
   color: white;
   padding: 12px 24px;
   border: none;
@@ -463,7 +463,9 @@ export default {
 }
 
 .btn-primary:hover {
-  background: #45a049;
+  background: var(--secondary);
+  transform: translateY(-2px);
+  transition: 0.3s ease;
 }
 
 /* Search & Filter Styles */

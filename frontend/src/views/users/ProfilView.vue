@@ -40,18 +40,6 @@
           </li>
           <li>
             <button 
-              @click="activeSection = 'display'" 
-              :class="['w-full text-left px-4 py-2.5 rounded-lg flex items-center transition-colors', 
-                       activeSection === 'display' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50']"
-            >
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-              Preferensi Tampilan
-            </button>
-          </li>
-          <li>
-            <button 
               @click="activeSection = 'notifications'" 
               :class="['w-full text-left px-4 py-2.5 rounded-lg flex items-center transition-colors', 
                        activeSection === 'notifications' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50']"
@@ -309,116 +297,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Preferensi Tampilan -->
-        <div v-if="activeSection === 'display'" class="max-w-3xl">
-          <h1 class="text-2xl font-bold text-gray-900 mb-6">Preferensi Tampilan</h1>
-          
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Bahasa</label>
-              <select 
-                v-model="preferences.language"
-                @change="savePreferences"
-                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="id">Indonesia</option>
-                <option value="en">English</option>
-              </select>
-              <p class="text-xs text-gray-500 mt-1">Menggunakan bahasa antarmuka.</p>
-            </div>
-
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Mode Disleksia</label>
-                <p class="text-sm text-gray-600 mb-3">Mengubah tampilan teks agar lebih mudah dibaca oleh pengguna dengan gangguan disleksia.</p>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    v-model="preferences.dyslexiaMode"
-                    @change="savePreferences"
-                    class="sr-only peer"
-                  >
-                  <div class="toggle-switch"></div>
-                </label>
-              </div>
-
-              <!-- Pengaturan Disleksia tambahan yang muncul ketika mode disleksia aktif -->
-              <div v-if="preferences.dyslexiaMode" class="pl-4 border-l-2 border-blue-200 space-y-4">
-                <!-- Ukuran Font -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Ukuran Teks</label>
-                  <div class="flex items-center gap-4">
-                    <input 
-                      type="range" 
-                      v-model="preferences.dyslexiaFontSize"
-                      min="14"
-                      max="24"
-                      step="1"
-                      @change="savePreferences"
-                      class="w-full"
-                    >
-                    <span class="text-sm text-gray-600">{{ preferences.dyslexiaFontSize }}px</span>
-                  </div>
-                </div>
-
-                <!-- Jarak Baris -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Jarak Antar Baris</label>
-                  <div class="flex items-center gap-4">
-                    <input 
-                      type="range" 
-                      v-model="preferences.dyslexiaLineSpacing"
-                      min="1"
-                      max="2"
-                      step="0.1"
-                      @change="savePreferences"
-                      class="w-full"
-                    >
-                    <span class="text-sm text-gray-600">{{ preferences.dyslexiaLineSpacing }}x</span>
-                  </div>
-                </div>
-
-                <!-- Jenis Font -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Font</label>
-                  <select 
-                    v-model="preferences.dyslexiaFontFamily"
-                    @change="savePreferences"
-                    class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="OpenDyslexic">OpenDyslexic</option>
-                    <option value="Lexia">Lexia</option>
-                    <option value="Arial">Arial</option>
-                    <option value="Verdana">Verdana</option>
-                  </select>
-                </div>
-
-                <!-- Preview Teks -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Preview</label>
-                  <div 
-                    class="p-4 bg-white border border-gray-200 rounded-lg"
-                    :style="{
-                      fontSize: preferences.dyslexiaFontSize + 'px',
-                      lineHeight: preferences.dyslexiaLineSpacing,
-                      fontFamily: preferences.dyslexiaFontFamily
-                    }"
-                  >
-                    Contoh teks dengan pengaturan yang dipilih.
-                    <br>
-                    Perpustakaan Ganesha menyediakan berbagai macam buku.
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div v-if="preferencesMessage" class="p-3 rounded-lg bg-green-50 text-green-800">
-              {{ preferencesMessage }}
-            </div>
-          </div>
-        </div>
-
         <!-- Notifikasi -->
         <div v-if="activeSection === 'notifications'" class="max-w-3xl">
           <h1 class="text-2xl font-bold text-gray-900 mb-6">Notifikasi dan Pemberitahuan</h1>

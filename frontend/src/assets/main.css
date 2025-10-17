@@ -1,5 +1,20 @@
 @import './base.css';
 
+/* src/assets/base.css atau main.css */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('@/assets/fonts/OpenDyslexic3-Regular.ttf') format('truetype'),
+       url('@/assets/fonts/OpenDyslexic3-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body.dyslexia-mode {
+  font-family: 'OpenDyslexic', Arial, sans-serif !important;
+}
+
+
+
 /* Neutral global styles: avoid opinionated layouts that conflict with app components */
 #app {
   /* Let pages control their own layout; keep only basic font weight */

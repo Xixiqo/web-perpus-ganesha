@@ -45,20 +45,20 @@
         <div class="steps">
           <div class="step second">
             <div class="avatar crown silver">🥈</div>
-            <div class="name">Gendis</div>
-            <div class="points">2 Peminjaman</div>
+            <div class="name">Ikra</div>
+            <div class="points">72 Peminjaman</div>
             <div class="block">2nd</div>
           </div>
           <div class="step first">
             <div class="avatar crown gold">👑</div>
-            <div class="name">Rafif</div>
-            <div class="points">3 Peminjaman</div>
+            <div class="name">Bambang</div>
+            <div class="points">91 Peminjaman</div>
             <div class="block">1st</div>
           </div>
           <div class="step third">
             <div class="avatar crown bronze">🥉</div>
-            <div class="name">Naila</div>
-            <div class="points">1 Peminjaman</div>
+            <div class="name">Zulhamdono</div>
+            <div class="points">-1 Peminjaman</div>
             <div class="block">3rd</div>
           </div>
         </div>

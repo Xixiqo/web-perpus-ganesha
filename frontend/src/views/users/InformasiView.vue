@@ -319,7 +319,7 @@ Dikirim dari Form Hubungi Kami - Perpustakaan Ganesha STembayo`;
 .hero-section {
   position: relative;
   min-height: 100vh;
-  background-image: url('/emyu.jpg');
+  background-image: url('/news/background.jpeg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

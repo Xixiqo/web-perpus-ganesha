@@ -226,7 +226,7 @@ export default {
         async loadPeminjaman() {
             this.loading = true;
             try {
-                const response = await fetch('http://localhost:5000/api/admin/peminjaman');
+                const response = await fetch('http://localhost:5000/api/admin/peminjamann');
                 if (!response.ok) throw new Error('Gagal memuat data peminjaman');
                 
                 this.peminjaman = await response.json();
@@ -254,7 +254,7 @@ export default {
             if (!confirm(`Apakah Anda yakin ingin mengubah status menjadi ${newStatus}?`)) return;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/peminjaman/${item.id_peminjaman}/status`, {
+                const response = await fetch(`http://localhost:5000/api/admin/peminjamann/${item.id_peminjaman}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: newStatus })
@@ -275,7 +275,7 @@ export default {
         async rejectPeminjaman(item) {
             if (!confirm('Apakah Anda yakin ingin menolak peminjaman ini?')) return;
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/peminjaman/${item.id_peminjaman}`, {
+                const response = await fetch(`http://localhost:5000/api/admin/peminjamann/${item.id_peminjaman}`, {
                     method: 'DELETE'
                 });
 
@@ -315,7 +315,7 @@ export default {
             try {
                 const denda = this.calculateDenda();
 
-                const response = await fetch(`http://localhost:5000/api/admin/peminjaman/${this.selectedItem.id_peminjaman}/return`, {
+                const response = await fetch(`http://localhost:5000/api/admin/peminjamann/${this.selectedItem.id_peminjaman}/return`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -351,7 +351,7 @@ export default {
 
         async checkLateStatus() {
             try {
-                const response = await fetch('http://localhost:5000/api/admin/peminjaman/check/late');
+                const response = await fetch('http://localhost:5000/api/admin/peminjamann/check/late');
                 const result = await response.json();
 
                 if (response.ok) {

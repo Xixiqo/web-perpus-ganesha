@@ -29,11 +29,11 @@ const isHovered = ref(false)
 
 const onError = (e) => {
   e.target.onerror = null
-  e.target.src = '/placeholder-cover.svg'
+  e.target.src = '/default_cover.png'
 }
 
 const getCoverUrl = (filename) => {
-  if (!filename) return '/placeholder-cover.svg'
+  if (!filename) return '/default_cover.png'
   const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
   if (/^https?:\/\//i.test(filename)) return filename
   return `${base}/uploads/${filename}`

@@ -265,7 +265,12 @@
             <p class="modal-question">Apakah Anda yakin ingin mengajukan peminjaman buku ini?</p>
             
             <div class="book-summary">
-              <img :src="book.coverImage" :alt="book.title" class="summary-cover" />
+              <img 
+                :src="book.coverImage" 
+                :alt="book.title" 
+                class="summary-cover"
+                @error="e => e.target.src = '/default_cover.png'"
+              />
               <div class="summary-info">
                 <h4>{{ book.title }}</h4>
                 <p class="summary-author">{{ book.author }}</p>
@@ -396,16 +401,16 @@ const fetchCurrentUser = async () => {
 
 // ===== BOOK DETAIL FUNCTIONS (TETAP SAMA) =====
 const onImageError = (event) => {
-  event.target.src = '/placeholder-cover.svg'
+  event.target.src = '/default_cover.png'
 }
 
 const onRelatedImageError = (event) => {
-  event.target.src = '/placeholder-cover.svg'
+  event.target.src = '/default_cover.png'
 }
 
 const getCoverUrl = (filename) => {
   const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-  if (!filename) return '/placeholder-cover.svg'
+  if (!filename) return '/default_cover.png'
   if (/^https?:\/\//i.test(filename)) return filename
   return `${base}/uploads/${filename}`
 }

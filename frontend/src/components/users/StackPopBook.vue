@@ -28,7 +28,7 @@
                 :src="getCoverUrl(book.cover)"
                 :alt="book.title"
                 class="book-cover"
-                @error="e => e.target.src = '/placeholder-cover.svg'"
+                @error="e => e.target.src = '/default_cover.png'"
               />
             </div>
           </transition-group>
@@ -111,7 +111,7 @@ export default {
   },
   methods: {
     getCoverUrl(filename) {
-      if (!filename) return '/placeholder-cover.svg' // null atau ''
+      if (!filename) return '/default_cover.png' // null atau ''
       if (/^https?:\/\//i.test(filename)) return filename
       const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
       return `${base}/uploads/${filename}`
@@ -487,9 +487,35 @@ export default {
 }
 
 /* Responsive */
-@media (max-width: 968px) {
+/* Responsive */
+@media (max-width: 1200px) {
   .carousel-content {
-    padding: 30px 20px 40px;
+    width: 95%;
+    padding: 30px 20px 50px;
+  }
+
+  .carousel-title {
+    font-size: 2.2rem;
+  }
+
+  .book-title {
+    font-size: 2.2rem;
+  }
+
+  .book-details {
+    padding-left: 40px;
+  }
+}
+
+@media (max-width: 968px) {
+  .stack-carousel-container {
+    height: auto;
+    min-height: 600px;
+    padding: 40px 20px;
+  }
+
+  .carousel-content {
+    padding: 20px 15px 30px;
   }
 
   .carousel-header {
@@ -498,40 +524,40 @@ export default {
 
   .carousel-title {
     font-size: 1.8rem;
+    gap: 8px;
+  }
+
+  .title-year {
+    padding: 4px 12px;
+    font-size: 0.75em;
   }
 
   .carousel-subtitle {
     font-size: 0.9rem;
+    margin-top: 10px;
   }
 
   .carousel-body {
     flex-direction: column;
+    gap: 30px;
   }
 
   .books-stack {
     width: 100%;
     height: auto;
-    margin-bottom: 30px;
-  }
-
-  .nav-button.prev {
-    left: -60px;
-  }
-
-  .nav-button.next {
-    right: -60px;
+    margin-bottom: 0;
   }
 
   .stack-wrapper {
-    width: 240px;
-    height: 340px;
+    width: 260px;
+    height: 370px;
   }
 
   .book-card {
-    width: 200px;
-    height: 290px;
-    margin-left: -100px;
-    margin-top: -145px;
+    width: 220px;
+    height: 320px;
+    margin-left: -110px;
+    margin-top: -160px;
   }
 
   .book-details {
@@ -544,22 +570,228 @@ export default {
     font-size: 1.8rem;
   }
 
+  .book-author {
+    font-size: 1rem;
+  }
+
   .book-synopsis {
+    -webkit-line-clamp: 4;
+    font-size: 0.95rem;
+  }
+
+  .nav-button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.8rem;
+  }
+
+  .nav-button.prev {
+    left: -20px;
+  }
+
+  .nav-button.next {
+    right: -20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stack-carousel-container {
+    padding: 30px 10px;
+    min-height: 550px;
+  }
+
+  .carousel-content {
+    width: 100%;
+    padding: 15px 10px 20px;
+  }
+
+  .carousel-header {
+    margin-bottom: 25px;
+  }
+
+  .carousel-title {
+    font-size: 1.5rem;
+    gap: 6px;
+  }
+
+  .title-year {
+    font-size: 0.7em;
+    padding: 3px 10px;
+  }
+
+  .carousel-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .carousel-body {
+    gap: 25px;
+  }
+
+  .stack-wrapper {
+    width: 200px;
+    height: 290px;
+  }
+
+  .book-card {
+    width: 170px;
+    height: 250px;
+    margin-left: -85px;
+    margin-top: -125px;
+  }
+
+  .book-details {
+    padding: 0 10px;
+  }
+
+  .book-title {
+    font-size: 1.5rem;
+  }
+
+  .book-author {
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+  }
+
+  .book-rating {
+    margin-bottom: 15px;
+  }
+
+  .star {
+    font-size: 1.3rem;
+    margin-right: 3px;
+  }
+
+  .book-synopsis {
+    font-size: 0.9rem;
     -webkit-line-clamp: 3;
+    margin-bottom: 20px;
+  }
+
+  .cta-button {
+    padding: 12px 28px;
+    font-size: 0.95rem;
   }
 
   .nav-button {
     width: 40px;
     height: 40px;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .nav-button.prev {
-    left: -50px;
+    left: -15px;
   }
 
   .nav-button.next {
-    right: -50px;
+    right: -15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stack-carousel-container {
+    padding: 20px 5px;
+  }
+
+  .carousel-title {
+    font-size: 1.3rem;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .title-year {
+    font-size: 0.65em;
+  }
+
+  .carousel-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .stack-wrapper {
+    width: 160px;
+    height: 240px;
+  }
+
+  .book-card {
+    width: 140px;
+    height: 210px;
+    margin-left: -70px;
+    margin-top: -105px;
+  }
+
+  .book-title {
+    font-size: 1.3rem;
+  }
+
+  .book-author {
+    font-size: 0.9rem;
+  }
+
+  .star {
+    font-size: 1.2rem;
+  }
+
+  .book-synopsis {
+    font-size: 0.85rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .cta-button {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+  }
+
+  .nav-button {
+    width: 35px;
+    height: 35px;
+    font-size: 1.4rem;
+  }
+
+  .nav-button.prev {
+    left: -10px;
+  }
+
+  .nav-button.next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .carousel-title {
+    font-size: 1.1rem;
+  }
+
+  .carousel-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .stack-wrapper {
+    width: 140px;
+    height: 210px;
+  }
+
+  .book-card {
+    width: 120px;
+    height: 180px;
+    margin-left: -60px;
+    margin-top: -90px;
+  }
+
+  .book-title {
+    font-size: 1.1rem;
+  }
+
+  .nav-button {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+
+  .nav-button.prev {
+    left: -5px;
+  }
+
+  .nav-button.next {
+    right: -5px;
   }
 }
 </style>

@@ -1,14 +1,14 @@
 <template>
   <nav class="navbar">
     <div class="nav-container">
-      <!-- Tombol menu mobile (pindah ke kiri) -->
+      <!-- Tombol menu mobile -->
       <button class="menu-btn" @click="toggleMenu">
         <span class="bar" />
         <span class="bar" />
         <span class="bar" />
       </button>
       
-      <!-- Brand dengan Logo (pindah ke tengah di mobile) -->
+      <!-- Brand dengan Logo -->
       <div class="nav-brand">
         <img 
           src="@/../public/logo.png" 
@@ -28,7 +28,8 @@
       
       <!-- User Section -->
       <div class="nav-right">
-          <DyslexiaToggle />
+        <DyslexiaToggle />
+        
         <!-- Jika belum login -->
         <RouterLink v-if="!isLoggedIn" to="/login" class="user-chip-link">
           <div class="btn-login">
@@ -44,7 +45,7 @@
               :src="user?.avatar || 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'"
               :alt="user?.name || 'User'"
             />
-            <span>{{ user?.name || 'User' }}</span>
+            <span class="user-name">{{ user?.name || 'Pengguna' }}</span>
             <svg 
               class="dropdown-icon" 
               :class="{ open: userMenuOpen }"
@@ -71,11 +72,29 @@
               </svg>
               Profil Saya
             </RouterLink>
-            <RouterLink to="/riwayat" class="dropdown-item" @click="closeUserMenu">
+            <!-- Tampilkan tombol berbeda berdasarkan role -->
+            <RouterLink
+              v-if="user?.role === 'siswa'"
+              to="/riwayat"
+              class="dropdown-item"
+              @click="closeUserMenu"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
               </svg>
               Riwayat Peminjaman
+            </RouterLink>
+
+            <RouterLink
+              v-else-if="user?.role === 'pustakawan'"
+              to="/admin"
+              class="dropdown-item"
+              @click="closeUserMenu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h18M3 6h18M3 18h18"></path>
+              </svg>
+              Admin Panel
             </RouterLink>
             <div class="dropdown-divider"></div>
             <button class="dropdown-item logout" @click="openLogoutModal">
@@ -124,6 +143,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DyslexiaToggle from '@/components/DyslexiaToggle.vue'
+import axios from 'axios'
 
 const router = useRouter()
 const menuOpen = ref(false)
@@ -142,18 +162,42 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-const checkLoginStatus = () => {
+const checkLoginStatus = async () => {
   const token = localStorage.getItem('token')
-  const userData = localStorage.getItem('user')
   
-  if (token && userData) {
+  if (token) {
     try {
-      isLoggedIn.value = true
-      user.value = JSON.parse(userData)
+      // Panggil API untuk mendapatkan data profile
+      const response = await axios.get('/api/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      
+      if (response.data.success) {
+        isLoggedIn.value = true
+        user.value = response.data.data
+        // Simpan ke localStorage untuk cache
+        localStorage.setItem('user', JSON.stringify(response.data.data))
+      } else {
+        throw new Error('Failed to fetch profile')
+      }
     } catch (error) {
-      console.error('Error parsing user data:', error)
-      isLoggedIn.value = false
-      user.value = null
+      console.error('Error fetching profile:', error)
+      // Jika error, coba gunakan data dari localStorage
+      const userData = localStorage.getItem('user')
+      if (userData) {
+        try {
+          isLoggedIn.value = true
+          user.value = JSON.parse(userData)
+        } catch (e) {
+          isLoggedIn.value = false
+          user.value = null
+        }
+      } else {
+        isLoggedIn.value = false
+        user.value = null
+      }
     }
   } else {
     isLoggedIn.value = false
@@ -186,7 +230,6 @@ const confirmLogout = async () => {
   isLoggingOut.value = true
   
   try {
-    // Simulasi delay untuk logout process (bisa diganti dengan API call)
     await new Promise(resolve => setTimeout(resolve, 500))
     
     localStorage.removeItem('token')
@@ -211,26 +254,17 @@ const confirmLogout = async () => {
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: none;
-  border: none;
-  border-bottom: none;
-  border-top: none;
-}
-
-.navbar::before,
-.navbar::after {
-  display: none !important;
-  content: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .nav-container {
-  margin: 0 32px;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 0 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 70px;
-  border: none;
 }
 
 /* Logo dan Brand */
@@ -249,17 +283,15 @@ const confirmLogout = async () => {
 .nav-brand h2 {
   color: #131313;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.125rem;
   margin: 0;
 }
 
-/* --- Link utama --- */
+/* Link utama */
 .nav-links {
   display: flex;
   gap: 1rem;
   transition: all 0.3s ease;
-  border: none;
-  box-shadow: none;
 }
 
 .nav-link {
@@ -268,11 +300,9 @@ const confirmLogout = async () => {
   color: #444;
   font-weight: 500;
   padding: 0.5rem 1rem;
-  border-radius: 0;
   transition: color 0.3s ease;
 }
 
-/* Garis bawah animasi */
 .nav-link::after {
   content: "";
   position: absolute;
@@ -285,7 +315,6 @@ const confirmLogout = async () => {
   opacity: 0;
 }
 
-/* Saat hover */
 .nav-link:hover {
   color: var(--primary);
 }
@@ -295,7 +324,6 @@ const confirmLogout = async () => {
   opacity: 1;
 }
 
-/* Saat router-link aktif */
 .nav-link.router-link-exact-active {
   color: var(--primary);
 }
@@ -305,38 +333,13 @@ const confirmLogout = async () => {
   opacity: 1;
 }
 
-
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 16px; /* kasih jarak antar elemen */
+  gap: 12px;
 }
 
-/* Tombol toggle disleksia */
-.nav-right .toggle-btn {
-  background-color: #2C64E3;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.3s;
-  align-self: center;
-}
-
-.nav-right .toggle-btn:hover {
-  background-color: #1e40af;
-}
-
-/* biar tombol sejajar dengan user chip/login button */
-.user-menu,
-.btn-login {
-  display: flex;
-  align-items: center;
-}
-
-/* --- User chip --- */
+/* User chip */
 .user-chip-link {
   text-decoration: none;
 }
@@ -362,7 +365,7 @@ const confirmLogout = async () => {
 .btn-login {
   background: #2C64E3;
   border-radius: 20px;
-  padding: 8px 32px;
+  padding: 8px 24px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -373,12 +376,13 @@ const confirmLogout = async () => {
 
 .btn-login span {
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .btn-login:hover {
   background: #1e40af;
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-  scale: 1.02;
+  transform: translateY(-2px);
 }
 
 .user-chip.logged-in {
@@ -393,15 +397,23 @@ const confirmLogout = async () => {
   object-fit: cover;
 }
 
+.user-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .dropdown-icon {
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 }
 
 .dropdown-icon.open {
   transform: rotate(180deg);
 }
 
-/* --- User Menu Dropdown --- */
+/* User Menu Dropdown */
 .user-menu {
   position: relative;
 }
@@ -460,7 +472,7 @@ const confirmLogout = async () => {
   margin: 8px 0;
 }
 
-/* --- Tombol menu (hamburger) --- */
+/* Tombol menu (hamburger) */
 .menu-btn {
   display: none;
   flex-direction: column;
@@ -471,7 +483,6 @@ const confirmLogout = async () => {
   border: none;
   cursor: pointer;
   padding: 0;
-  order: -1;
 }
 
 .menu-btn .bar {
@@ -482,7 +493,7 @@ const confirmLogout = async () => {
   transition: all 0.3s ease;
 }
 
-/* --- Modal Logout --- */
+/* Modal Logout */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -583,17 +594,43 @@ const confirmLogout = async () => {
   cursor: not-allowed;
 }
 
-/* --- Responsif --- */
+/* Responsif Tablet */
+@media (max-width: 968px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+
+  .nav-links {
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .nav-brand h2 {
+    font-size: 1rem;
+  }
+
+  .logo-img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Responsif Mobile */
 @media (max-width: 768px) {
   .menu-btn {
     display: flex;
   }
   
   .nav-container {
+    height: 60px;
+    padding: 0 0.75rem;
     display: grid;
     grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
   }
   
   .menu-btn {
@@ -602,24 +639,33 @@ const confirmLogout = async () => {
   
   .nav-brand {
     order: 2;
-    justify-self: center;
+    justify-self: start;
+    margin-left: 0.5rem;
+  }
+
+  .nav-brand h2 {
+    font-size: 0.9rem;
+  }
+
+  .logo-img {
+    width: 36px;
+    height: 36px;
   }
   
   .nav-right {
     order: 3;
     justify-self: end;
+    gap: 8px;
   }
   
   .nav-links {
     position: absolute;
-    top: 70px;
+    top: 60px;
     left: 0;
     width: 100%;
     flex-direction: column;
     background: #ffffff;
-    border: none;
-    border-top: none;
-    box-shadow: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -635,19 +681,74 @@ const confirmLogout = async () => {
   
   .nav-link {
     display: block;
-    padding: 1rem;
-    text-align: center;
+    padding: 0.875rem 1rem;
+    text-align: left;
     width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .nav-link::after {
+    display: none;
+  }
+
+  .btn-login {
+    padding: 6px 16px;
+  }
+
+  .btn-login span {
+    font-size: 0.85rem;
+  }
+
+  .user-chip {
+    padding: 4px 8px;
+  }
+
+  .user-chip .avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+    max-width: 100px;
+  }
+
+  .dropdown-menu {
+    width: 220px;
   }
 }
 
+/* Mobile sangat kecil */
 @media (max-width: 480px) {
-  .user-chip span {
+  .nav-container {
+    padding: 0 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .nav-brand h2 {
+    font-size: 0.8rem;
+  }
+
+  .logo-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-right {
+    gap: 6px;
+  }
+
+  .user-name {
     display: none;
   }
   
   .user-chip {
-    padding: 6px;
+    padding: 4px;
+  }
+
+  .user-chip .avatar {
+    width: 32px;
+    height: 32px;
   }
   
   .dropdown-icon {
@@ -655,20 +756,21 @@ const confirmLogout = async () => {
   }
   
   .dropdown-menu {
-    width: 280px;
+    width: calc(100vw - 2rem);
+    right: 1rem;
   }
-  
-  .logo-img {
-    width: 40px;
-    height: 40px;
+
+  .btn-login {
+    padding: 6px 12px;
   }
-  
-  .nav-brand h2 {
-    font-size: 1.25rem;
+
+  .btn-login span {
+    font-size: 0.8rem;
   }
 
   .modal-content {
     padding: 24px;
+    width: calc(100% - 2rem);
   }
 
   .modal-title {
@@ -677,6 +779,15 @@ const confirmLogout = async () => {
 
   .modal-message {
     font-size: 0.875rem;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+  }
+
+  .btn-confirm,
+  .btn-cancel {
+    width: 100%;
   }
 }
 </style>

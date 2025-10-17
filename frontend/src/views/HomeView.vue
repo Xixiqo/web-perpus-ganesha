@@ -163,8 +163,9 @@ const handleBookClick = (book) => {
 }
 
 const scrollToNextSection = () => {
-  if (stackSection.value) {
-    stackSection.value.scrollIntoView({ behavior: 'smooth' })
+  const target = document.querySelector('.stack')
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth' })
   }
 }
 

@@ -125,4 +125,18 @@ defineProps({
   opacity: 1;
   transform: translateY(0);
 }
+
+@media (max-width: 768px) {
+  .article-content p {
+    font-size: 0.9rem;
+    color: #ddd;
+    opacity: 1;
+    transform: translateY(5px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
 </style>

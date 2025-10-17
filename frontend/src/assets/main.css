@@ -9,7 +9,9 @@
 
 :root {
   --primary: #667eea; /* global scope */
-  --primary2: #e8ebff; /* global scope */
+  --primary2: #e8ebff; 
+  --secondary: #4d65cf; /* global scope */
+  --secondary2: #bdc1e0;
 }
 
 a,

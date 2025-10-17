@@ -158,7 +158,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ PUT update user + anggota
+// ✅ PUT update user + anggota (perbaikan format tanggal)
 router.put("/:id", async (req, res) => {
   let connection;
   
@@ -186,8 +186,21 @@ router.put("/:id", async (req, res) => {
       no_telp
     } = req.body;
 
+    // helper: format ke YYYY-MM-DD atau null
+    const formatDateToSql = (d) => {
+      if (!d) return null;
+      // jika sudah dalam format YYYY-MM-DD, kembalikan apa adanya
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+      const date = new Date(d);
+      if (Number.isNaN(date.getTime())) return null;
+      return date.toISOString().split("T")[0];
+    };
+
+    const tglLahir = formatDateToSql(tanggal_lahir);
+    const memberExp = formatDateToSql(member_expired);
+
     // Update user
-    if (password && password.trim() !== '') {
+    if (password && password.toString().trim() !== '') {
       const hashedPassword = await bcrypt.hash(password, 10);
       await connection.query(
         `UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?`,
@@ -209,7 +222,7 @@ router.put("/:id", async (req, res) => {
     );
 
     if (anggotaCheck.length > 0) {
-      // Update anggota yang sudah ada
+      // Update anggota yang sudah ada, gunakan tanggal terformat (atau null)
       await connection.query(
         `UPDATE anggota SET 
           nis_nip = ?, nama = ?, jenis_kelamin = ?, tanggal_lahir = ?,
@@ -217,22 +230,22 @@ router.put("/:id", async (req, res) => {
           tipe_keanggotaan = ?, no_telp = ?
         WHERE user_id = ?`,
         [
-          nis_nip || null, nama || null, jenis_kelamin || null, tanggal_lahir || null,
-          member_expired || null, institute || null, major || null, angkatan || null,
+          nis_nip || null, nama || null, jenis_kelamin || null, tglLahir,
+          memberExp, institute || null, major || null, angkatan || null,
           tipe_keanggotaan || null, no_telp || null, id
         ]
       );
       console.log("✅ Anggota updated for user ID:", id);
     } else if (nama) {
-      // Insert anggota baru
+      // Insert anggota baru (tanggal terformat)
       await connection.query(
         `INSERT INTO anggota (
           user_id, nis_nip, nama, jenis_kelamin, tanggal_lahir,
           member_expired, institute, major, angkatan, tipe_keanggotaan, no_telp
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          id, nis_nip || null, nama, jenis_kelamin || null, tanggal_lahir || null,
-          member_expired || null, institute || null, major || null, angkatan || null, 
+          id, nis_nip || null, nama, jenis_kelamin || null, tglLahir,
+          memberExp, institute || null, major || null, angkatan || null, 
           tipe_keanggotaan || null, no_telp || null
         ]
       );
@@ -243,7 +256,7 @@ router.put("/:id", async (req, res) => {
     res.json({ message: "User dan anggota berhasil diperbarui" });
   } catch (err) {
     if (connection) await connection.rollback();
-    console.error("❌ Error PUT user:", err.message);
+    console.error("❌ Error PUT user:", err.message || err);
     
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(400).json({ message: "Username sudah digunakan" });

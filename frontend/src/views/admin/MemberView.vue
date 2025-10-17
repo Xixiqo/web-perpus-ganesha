@@ -267,7 +267,7 @@ export default {
       try {
         const url = this.isEditMode 
           ? `http://localhost:5000/api/admin/users/${this.formData.id}` 
-            : 'http://localhost:5000/api/admin/users';
+        : 'http://localhost:5000/api/admin/users';
         
         const method = this.isEditMode ? 'PUT' : 'POST';
 

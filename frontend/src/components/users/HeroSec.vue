@@ -109,40 +109,6 @@ export default {
         </div>
       </div>
     </div>
-
-    
-
-    <!-- Social Media Links with Icons -->
-    <div class="social-links">
-      <span class="social-label">IKUTI KAMI</span>
-      <div class="social-icons">
-        <a href="#" class="social-icon" aria-label="Twitter">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
-          </svg>
-        </a>
-        <a href="#" class="social-icon" aria-label="LinkedIn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-            <rect width="4" height="12" x="2" y="9"/>
-            <circle cx="4" cy="4" r="2"/>
-          </svg>
-        </a>
-        <a href="#" class="social-icon" aria-label="YouTube">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/>
-            <path d="m10 15 5-3-5-3z"/>
-          </svg>
-        </a>
-        <a href="#" class="social-icon" aria-label="Instagram">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-          </svg>
-        </a>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -358,90 +324,6 @@ export default {
   transform: scale(1.05);
 }
 
-/* Slide Indicators (Vertical Dashes on Right) */
-.slide-indicators {
-  position: absolute;
-  right: 2.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  z-index: 10;
-}
-
-.indicator-dash {
-  width: 5px;
-  height: 2.5rem;
-  background: rgba(255, 255, 255, 0.3);
-  transition: all 0.4s ease;
-  position: relative;
-  border-radius: 20px;
-}
-
-.indicator-dash.active {
-  background: #2c64e3;
-  height: 3.5rem;
-  box-shadow: 0 0 10px rgba(44, 100, 227, 0.6);
-}
-
-.indicator-dash.active::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: rgba(44, 100, 227, 0.2);
-  filter: blur(4px);
-  border-radius: 20px;
-}
-
-/* Social Media Links */
-.social-links {
-  position: absolute;
-  bottom: 2rem;
-  left: 1.5rem;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  z-index: 10;
-}
-
-.social-label {
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  font-family: 'Libre Baskerville', serif;
-}
-
-.social-icons {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.social-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(4px);
-  border-radius: 50%;
-  color: white;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.social-icon:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-.social-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .container {
@@ -471,31 +353,6 @@ export default {
   .btn-primary,
   .btn-secondary {
     width: 100%;
-  }
-
-  .social-links {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  /* Move indicators to bottom right on mobile */
-  .slide-indicators {
-    right: 1rem;
-    bottom: 2rem;
-    top: auto;
-    transform: none;
-    flex-direction: row;
-  }
-
-  .indicator-dash {
-    width: 2rem;
-    height: 5px;
-  }
-
-  .indicator-dash.active {
-    width: 2.5rem;
-    height: 5px;
   }
 }
 

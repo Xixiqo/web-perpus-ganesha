@@ -9,13 +9,11 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 
-// ============================================
-// 🧩 SETUP ENVIRONMENT
-// ============================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
+<<<<<<< HEAD
 console.log("🧩 Loaded .env from:", path.join(__dirname, ".env"));
 console.log("🧩 ENV TEST:", {
   DB_HOST: process.env.DB_HOST,
@@ -28,37 +26,40 @@ console.log("🧩 ENV TEST:", {
 // ============================================
 // 📦 EXPRESS APP SETUP
 // ============================================
+=======
+>>>>>>> 3dc189ca18af8506c74561ffe8b01a18d686b088
 const app = express();
 
-// CORS configuration
-app.use(cors({ 
-  origin: process.env.CORS_ORIGIN || "*", 
-  credentials: true 
-}));
-
-// Body parser
+app.use(cors({ origin: process.env.CORS_ORIGIN || "*", credentials: true }));
 app.use(express.json());
 
-// Logging middleware - tambahkan log lebih detail
+// Logging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// Static files untuk upload (cover buku, dll)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// ===== Middleware uploads dengan fallback =====
+const uploadsPath = path.join(__dirname, "uploads");
+const placeholderPath = path.join(__dirname, "placeholder-cover.svg");
 
-// ============================================
-// 📥 IMPORT API ROUTES
-// ============================================
+app.use("/uploads", (req, res, next) => {
+  const filePath = path.join(uploadsPath, req.path);
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // file tidak ada → fallback ke placeholder
+      return res.sendFile(placeholderPath);
+    }
+    next();
+  });
+}, express.static(uploadsPath));
 
-// === PUBLIC/USER ROUTES ===
+// ===== Import dan register API routes =====
+// (sesuaikan dengan kode sebelumnya)
 import authRoutes from "./api/auth.js";
 import profileRoutes from "./api/profile.js";
 import booksRoutes from "./api/books.js";
-import searchRoutes from "./api/search.js";
-import peminjamanRoutes from "./api/riwayat.js";
-import categoriesRoutes from "./api/categories.js";
+import riwayatRoutes from "./api/riwayat.js";
 
 // === ADMIN ROUTES (versi baru dengan double 'n') ===
 import adminPeminjamannRoutes from "./api/admin/peminjamann.js";
@@ -103,12 +104,9 @@ console.log("   ✓ Registered: /api/admin/books");
 
 // === PUBLIC/USER ROUTES ===
 app.use("/api/auth", authRoutes);
-console.log("   ✓ Registered: /api/auth");
-
 app.use("/api/profile", profileRoutes);
-console.log("   ✓ Registered: /api/profile");
-
 app.use("/api/books", booksRoutes);
+<<<<<<< HEAD
 console.log("   ✓ Registered: /api/books");
 
 app.use("/api/search", searchRoutes);
@@ -128,9 +126,14 @@ console.log("✅ All API routes registered\n");
 // ============================================
 // 🌐 FRONTEND HANDLER (Vue Build)
 // ============================================
-const frontendPath = path.join(__dirname, "../frontend/dist");
+=======
+app.use("/api/riwayat", riwayatRoutes);
 
+// ===== Frontend Vue build =====
+>>>>>>> 3dc189ca18af8506c74561ffe8b01a18d686b088
+const frontendPath = path.join(__dirname, "../frontend/dist");
 if (fs.existsSync(frontendPath)) {
+<<<<<<< HEAD
   console.log("📁 Frontend build folder found:", frontendPath);
   
   // Serve static files dari Vue build
@@ -146,20 +149,19 @@ if (fs.existsSync(frontendPath)) {
       });
     }
     console.log("   → Serving index.html for:", req.url);
+=======
+  app.use(express.static(frontendPath));
+  app.get("*", (req, res) => {
+    if (req.url.startsWith("/api/")) return res.status(404).json({ error: "API not found" });
+>>>>>>> 3dc189ca18af8506c74561ffe8b01a18d686b088
     res.sendFile(path.join(frontendPath, "index.html"));
   });
-  
-  console.log("   ✓ Vue Router catch-all registered");
-} else {
-  console.warn("⚠️ Frontend build folder NOT found:", frontendPath);
-  console.warn("   Please run: cd frontend && npm run build");
 }
 
 // ============================================
 // 🚀 START SERVER
 // ============================================
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, '0.0.0.0', () => {
   console.log("\n" + "=".repeat(70));
   console.log(`✅ Server running on port ${PORT}`);

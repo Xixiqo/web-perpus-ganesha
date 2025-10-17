@@ -110,15 +110,7 @@ export default {
       </div>
     </div>
 
-    <!-- Slide Indicator (Vertical Dashes) -->
-    <div class="slide-indicators">
-      <div
-        v-for="(desc, index) in descriptions"
-        :key="index"
-        class="indicator-dash"
-        :class="{ active: index === currentDescription }"
-      ></div>
-    </div>
+    
 
     <!-- Social Media Links with Icons -->
     <div class="social-links">

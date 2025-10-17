@@ -31,7 +31,6 @@ app.use((req, res, next) => {
 });
 
 // Static files untuk akses cover buku
-// ✅ Ganti "./uploads" jadi "/uploads"
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
@@ -44,8 +43,10 @@ import categoriesRoutes from "./api/categories.js";
 import adminBooksRoutes from "./api/admin/books.js";
 import adminPeminjamanRoutes from "./api/admin/peminjaman.js";
 import adminPengembalianRoutes from "./api/admin/pengembalian.js";
+import adminUsersRoutes from "./api/admin/users.js"; // ✅ Perbaikan di sini
 
-
+// Register routes
+app.use("/api/admin/users", adminUsersRoutes);
 app.use("/api/admin/peminjaman", adminPeminjamanRoutes);
 app.use("/api/admin/pengembalian", adminPengembalianRoutes);
 app.use("/api/auth", authRoutes);

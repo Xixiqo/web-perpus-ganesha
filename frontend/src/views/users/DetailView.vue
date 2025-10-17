@@ -1,50 +1,55 @@
 <template>
   <div class="book-detail-container">
-    <div class="book-detail-wrapper">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Memuat detail buku...</p>
+    </div>
+
+    <!-- Content -->
+    <div v-else-if="book" class="book-detail-wrapper">
       <!-- Left Side - Book Cover (Sticky) -->
       <aside class="book-cover-section">
-          <button class="btn-back" @click="goBack">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
-              Kembali
-          </button>
+        <button class="btn-back" @click="goBack">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Kembali
+        </button>
+        
         <div class="book-cover-sticky">
+          <div class="cover-wrapper">
             <img 
               :src="book.coverImage" 
               :alt="book.title" 
               class="book-cover" 
               @error="onImageError"
             />
-
-          
-          <!-- Action Buttons -->
-          <div class="action-buttons">
-            <button class="btn-primary">
-              Pinjam Buku
+            
+            <!-- Share Button (Absolute positioned) -->
+            <button 
+              :class="['btn-share', { copied: isLinkCopied }]" 
+              @click="copyLink"
+              :title="isLinkCopied ? 'Link tersalin!' : 'Salin link'"
+            >
+              <svg v-if="!isLinkCopied" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
             </button>
           </div>
 
-          <!-- Action Icons -->
-          <div class="action-icons">
-            <button :class="['icon-btn save', { active: isBookmarked }]" @click="saveToCollection" title="Simpan ke Koleksi">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" :fill="isBookmarked ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn-primary" @click="openBorrowModal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
               </svg>
-            </button>
-            <button :class="['icon-btn like', { active: isFavorited }]" @click="addToFavorites" title="Sukai">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" :fill="isFavorited ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </button>
-            <button class="icon-btn share" @click="shareBook" title="Bagikan">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="18" cy="5" r="3"></circle>
-                <circle cx="6" cy="12" r="3"></circle>
-                <circle cx="18" cy="19" r="3"></circle>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-              </svg>
+              Pinjam Buku
             </button>
           </div>
         </div>
@@ -55,53 +60,46 @@
         <!-- Book Title & Meta -->
         <div class="book-header">
           <h1 class="book-title">{{ book.title }}</h1>
-          <p class="book-author">oleh <a :href="book.authorLink" class="author-link">{{ book.author }}</a> | {{ book.publishDate }}</p>
+          <p class="book-author">oleh <span class="author-name">{{ book.author }}</span> | {{ book.publishDate }}</p>
           
           <!-- Rating & Badges -->
           <div class="book-meta">
-            <div class="rating">
-              <div class="stars">
+            <div class="rating" v-if="book.rating">
+              <div class="stars"> 
                 <span v-for="i in 5" :key="i" :class="i <= book.rating ? 'star filled' : 'star'">★</span>
               </div>
               <span class="rating-text">({{ book.reviewCount }} reviews)</span>
-              <span class="reader-count">• {{ book.readerCount }} pembaca</span>
-            </div>
-            
-            <div class="badges">
-              <span class="badge badge-first" v-if="book.isFirstRead">📖 First Read</span>
-              <span class="badge badge-best" v-if="book.isBestOfMonth">🔥 Best Of Month</span>
-              <span class="badge badge-choice" v-if="book.isReaderChoice">⭐ Reader Choice</span>
+              <span class="reader-count" v-if="book.readerCount">• {{ book.readerCount }} pembaca</span>
             </div>
           </div>
         </div>
 
         <!-- Description -->
-        <div class="book-description">
+        <div class="book-description" v-if="book.description">
           <p>{{ book.description }}</p>
-          <a :href="book.bookLink" class="read-more">Baca review lengkap →</a>
         </div>
 
         <!-- Detail Buku -->
         <section class="book-details">
           <h2 class="section-title">Detail Buku</h2>
           <div class="details-grid">
-            <div class="detail-item">
+            <div class="detail-item" v-if="book.publisher">
               <span class="detail-label">Penerbit</span>
               <span class="detail-value">{{ book.publisher }}</span>
             </div>
-            <div class="detail-item">
+            <div class="detail-item" v-if="book.publishDate">
               <span class="detail-label">Tanggal Terbit</span>
               <span class="detail-value">{{ book.publishDate }}</span>
             </div>
-            <div class="detail-item">
+            <div class="detail-item" v-if="book.isbn">
               <span class="detail-label">ISBN</span>
               <span class="detail-value">{{ book.isbn }}</span>
             </div>
-            <div class="detail-item">
+            <div class="detail-item" v-if="book.pages">
               <span class="detail-label">Halaman</span>
               <span class="detail-value">{{ book.pages }}</span>
             </div>
-            <div class="detail-item">
+            <div class="detail-item" v-if="book.language">
               <span class="detail-label">Bahasa</span>
               <span class="detail-value">{{ book.language }}</span>
             </div>
@@ -109,7 +107,7 @@
         </section>
 
         <!-- Ketersediaan Buku -->
-        <section class="book-availability">
+        <section class="book-availability" v-if="book.availability && book.availability.length > 0">
           <h2 class="section-title">Lokasi dan Ketersediaan</h2>
           <div class="availability-table">
             <div class="availability-header">
@@ -137,38 +135,189 @@
 
         <!-- Buku Lainnya -->
         <section class="related-books">
-          <h2 class="section-title">Buku Lainnya</h2>
-          <div class="books-grid">
-            <div v-for="relatedBook in book.relatedBooks" :key="relatedBook.id" class="related-book-card">
-              <img :src="relatedBook.cover" :alt="relatedBook.title" class="related-book-cover" />
+          <h2 class="section-title">Rekomendasi Buku Lainnya</h2>
+          
+          <div v-if="isLoadingRelated" class="loading-related">
+            <div class="spinner-small"></div>
+            <p>Memuat rekomendasi...</p>
+          </div>
+
+          <div v-else-if="relatedBooks.length > 0" class="books-grid">
+            <div 
+              v-for="relatedBook in relatedBooks" 
+              :key="relatedBook.id" 
+              class="related-book-card"
+              @click="goToBook(relatedBook.id)"
+            >
+              <img 
+                :src="getCoverUrl(relatedBook.cover)" 
+                :alt="relatedBook.title" 
+                class="related-book-cover"
+                @error="onRelatedImageError"
+              />
               <div class="related-book-info">
                 <h4 class="related-book-title">{{ relatedBook.title }}</h4>
                 <p class="related-book-author">oleh {{ relatedBook.author }} | {{ relatedBook.year }}</p>
-                <div class="related-book-rating">
-                  <span class="stars-small">★★★★★</span>
-                  <span class="rating-count">({{ relatedBook.reviews }})</span>
-                </div>
               </div>
             </div>
+          </div>
+
+          <div v-else class="no-related">
+            <p>Tidak ada rekomendasi buku saat ini</p>
           </div>
         </section>
       </main>
     </div>
 
+    <!-- Error State -->
+    <div v-else class="error-state">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h2>Buku tidak ditemukan</h2>
+      <p>Maaf, buku yang Anda cari tidak tersedia.</p>
+      <button class="btn-secondary" @click="goBack">Kembali</button>
+    </div>
+
+    <!-- Member Modal (untuk non-member) -->
+<transition name="modal-fade">
+  <div v-if="showMemberModal" class="modal-overlay" @click="closeMemberModal">
+    <div class="modal-content member-modal" @click.stop>
+      <div class="modal-header">
+        <h3></h3>
+        <button class="btn-close" @click="closeMemberModal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+          <div class="member-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+
+          <h4>Jadilah Member Perpustakaan</h4>
+          <p class="member-description">
+            Untuk meminjam buku, Anda harus menjadi member terdaftar. Kunjungi perpustakaan kami dan lakukan pendaftaran untuk mendapatkan akses penuh ke koleksi buku.
+          </p>
+
+          <div class="member-benefits">
+            <h5>Keuntungan Member:</h5>
+            <ul>
+              <li>
+                <span class="benefit-icon">✓</span>
+                <span>Pinjam buku hingga 5 judul sekaligus</span>
+              </li>
+              <li>
+                <span class="benefit-icon">✓</span>
+                <span>Durasi peminjaman 14 hari</span>
+              </li>
+              <li>
+                <span class="benefit-icon">✓</span>
+                <span>Prioritas pemesanan buku</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="member-contact">
+            <h5>Hubungi Kami:</h5>
+            <div class="contact-info">
+              <div class="info-item">
+                <span class="info-icon material-icons">access_time</span>
+                <div>
+                  <p class="info-label">Jam Operasional</p>
+                  <p class="info-value">Senin - Jumat: 07:00 - 15:00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-confirm" @click="closeMemberModal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </transition>
+
+    <!-- Borrow Confirmation Modal -->
+    <transition name="modal-fade">
+      <div v-if="showModal" class="modal-overlay" @click="closeModal">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h3>Konfirmasi Peminjaman Buku</h3>
+            <button class="btn-close" @click="closeModal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <p class="modal-question">Apakah Anda yakin ingin mengajukan peminjaman buku ini?</p>
+            
+            <div class="book-summary">
+              <img :src="book.coverImage" :alt="book.title" class="summary-cover" />
+              <div class="summary-info">
+                <h4>{{ book.title }}</h4>
+                <p class="summary-author">{{ book.author }}</p>
+                <div class="summary-code" v-if="selectedBook">
+                  <span class="code-label">Kode Buku:</span>
+                  <span class="code-value">{{ selectedBook.code }}</span>
+                </div>
+                <div class="summary-location" v-if="selectedBook">
+                  <span class="location-icon">📍</span>
+                  <span>{{ selectedBook.location }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn-cancel" @click="closeModal">Batal</button>
+            <button class="btn-confirm" @click="confirmBorrow">Ya, Ajukan Peminjaman</button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Success Confirmation -->
+    <transition name="modal-fade">
+      <div v-if="showConfirmation" class="modal-overlay" @click="closeConfirmation">
+        <div class="modal-content confirmation-modal" @click.stop>
+          <div class="confirmation-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          
+          <h3>Pengajuan Berhasil!</h3>
+          <p>Peminjaman buku Anda telah diajukan. Pihak perpustakaan akan segera menghubungi Anda</p>
+
+          <button class="btn-primary-full" @click="closeConfirmation">Mengerti</button>
+        </div>
+      </div>
+    </transition>
+
     <!-- Alert Notifications -->
     <transition name="slide-fade">
       <div v-if="alert.show" :class="['alert-notification', `alert-${alert.type}`]">
         <div class="alert-icon">
-          <span v-if="alert.type === 'success'">●</span>
-          <span v-if="alert.type === 'error'">●</span>
-          <span v-if="alert.type === 'warning'">●</span>
-          <span v-if="alert.type === 'info'">●</span>
-          <span v-if="alert.type === 'favorite'">●</span>
-          <span v-if="alert.type === 'library'">●</span>
+          <span v-if="alert.type === 'success'">✓</span>
+          <span v-else-if="alert.type === 'error'">✕</span>
+          <span v-else-if="alert.type === 'info'">ℹ</span>
         </div>
         <div class="alert-content">
           <span class="alert-message">{{ alert.message }}</span>
-          <span v-if="alert.action" class="alert-action">{{ alert.action }}</span>
         </div>
       </div>
     </transition>
@@ -177,82 +326,83 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-const isBookmarked = ref(false)
-const isFavorited = ref(false)
+const route = useRoute()
+const router = useRouter()
 
+// ===== AUTH STATE =====
+const currentUser = ref(null)
+const isLoadingAuth = ref(true)
+
+// ===== BOOK STATE =====
+const book = ref(null)
+const relatedBooks = ref([])
+const isLoading = ref(true)
+const isLoadingRelated = ref(true)
+
+// ===== MODAL STATE =====
+const isLinkCopied = ref(false)
+const showModal = ref(false)
+const showConfirmation = ref(false)
+const showMemberModal = ref(false)
+const selectedBook = ref(null)
+
+
+// ===== FETCH CURRENT USER (FIXED!) =====
+const fetchCurrentUser = async () => {
+  isLoadingAuth.value = true
+  try {
+    const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+    
+    // 🔴 AMBIL TOKEN DARI LOCALSTORAGE
+    const token = localStorage.getItem('token')
+    
+    if (!token) {
+      console.log('⚠️ No token found')
+      currentUser.value = null
+      isLoadingAuth.value = false
+      return
+    }
+
+    // 🔴 KIRIM TOKEN DI AUTHORIZATION HEADER
+    const res = await fetch(`${apiBase}/api/profile`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // 🔴 INI YANG PENTING!
+      }
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      currentUser.value = data.user || data
+      console.log('✅ User logged in:', currentUser.value)
+    } else {
+      currentUser.value = null
+      // 🔴 Kalau token invalid/expired, hapus dari localStorage
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('token')
+      }
+      console.log('⚠️ User not authenticated')
+    }
+  } catch (err) {
+    console.error('❌ Error fetching user:', err)
+    currentUser.value = null
+  } finally {
+    isLoadingAuth.value = false
+  }
+}
+
+// ===== BOOK DETAIL FUNCTIONS (TETAP SAMA) =====
 const onImageError = (event) => {
   event.target.src = '/placeholder-cover.svg'
 }
 
-const book = ref({
-  title: 'The Watchmaker of Filigree Street',
-  author: 'Natasha Pulley',
-  publishDate: 'Jul 2015',
-  coverImage: '/placeholder-cover.svg',
-  bookLink:'https://www.goodreads.com/book/show/22929563-the-watchmaker-of-filigree-street',
-  rating: 4,
-  reviewCount: 156,
-  readerCount: 4872,
-  isFirstRead: false,
-  isBestOfMonth: true,
-  isReaderChoice: true,
-  description: 'Novel fiksi historis yang memukau berlatar London era Victoria tahun 1883. Menceritakan Thaniel Steepleton, seorang telegrafis yang menemukan jam saku misterius di mejanya setelah serangkaian serangan bom teroris. Jam tersebut membawanya ke toko jam tangan di Filigree Street milik Keita Mori, seorang pembuat jam Jepang yang penuh misteri. Dengan elemen fantasi ringan, steampunk, dan romance yang halus, novel ini mengeksplorasi tema waktu, takdir, dan hubungan antarmanusia dengan gaya penulisan yang puitis.',
-  publisher: 'Bloomsbury Publishing',
-  isbn: '978-1620408339',
-  pages: '336',
-  language: 'English',
-  category: 'Historical Fiction, Fantasy',
-  genre: ['Historical Fiction', 'Fantasy', 'Mystery', 'LGBT', 'Steampunk'],
-  availability: [
-    { location: 'Ganesha Lantai 1', callNumber: '823.92 PUL W', code: '3421', status: 'Tersedia' },
-    { location: 'Ganesha Lantai 1', callNumber: '823.92 PUL W', code: '3422', status: 'Tersedia' },
-    { location: 'Ganesha Lantai 1', callNumber: '823.92 PUL W', code: '3423', status: 'Dipinjam' }
-  ],
-  
-  relatedBooks: [
-  { 
-    id: 1, 
-    title: 'The Bedlam Stacks', 
-    author: 'Natasha Pulley', 
-    year: '2017', 
-    reviews: 89,
-    cover: 'https://covers.openlibrary.org/b/id/8308654-L.jpg'
-  },
-  { 
-    id: 2, 
-    title: 'The Lost Future of Pepperharrow', 
-    author: 'Natasha Pulley', 
-    year: '2020', 
-    reviews: 112,
-    cover: 'https://covers.openlibrary.org/b/id/10529531-L.jpg'
-  },
-  { 
-    id: 3, 
-    title: 'The Invisible Library', 
-    author: 'Genevieve Cogman', 
-    year: '2015', 
-    reviews: 203,
-    cover: 'https://covers.openlibrary.org/b/id/8376302-L.jpg'
-  },
-  { 
-    id: 4, 
-    title: 'Sorcerer to the Crown', 
-    author: 'Zen Cho', 
-    year: '2015', 
-    reviews: 167,
-    cover: 'https://covers.openlibrary.org/b/id/8376301-L.jpg'
-  }
-  ],
-  reviews: [
-    { id: 1, name: 'Rina Wijaya', date: '3 minggu lalu', rating: 5, text: 'Novel yang sangat unik! Perpaduan antara fiksi historis Victorian era dengan elemen fantasi yang subtle. Karakternya kompleks dan well-developed, terutama Mori yang penuh misteri. Pacing-nya memang agak lambat di awal, tapi worldbuilding-nya luar biasa detail.' },
-    { id: 2, name: 'Ahmad Rizki', date: '1 bulan lalu', rating: 4, text: 'Atmosfernya amazing banget, bener-bener berasa di London 1880-an. Twist tentang jam dan kemampuan Mori bikin penasaran terus. Romance-nya subtle dan nggak cheesy. Recommended buat yang suka historical fiction dengan sentuhan magic realism!' },
-    { id: 3, name: 'Dea Maharani', date: '2 bulan lalu', rating: 5, text: 'Salah satu buku favorit! Gaya penulisan Pulley itu puitis tapi nggak bertele-tele. Eksplor budaya Jepang dan Inggris di era Victoria dengan respect. Hubungan Thaniel dan Mori dikembangkan dengan natural. Clockwork octopus-nya adorable!' }
-  ]
-})
+const onRelatedImageError = (event) => {
+  event.target.src = '/placeholder-cover.svg'
+}
 
-// Build full URL for cover filenames or use existing absolute URLs
 const getCoverUrl = (filename) => {
   const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
   if (!filename) return '/placeholder-cover.svg'
@@ -260,55 +410,220 @@ const getCoverUrl = (filename) => {
   return `${base}/uploads/${filename}`
 }
 
-const route = useRoute()
+const fetchBookDetails = async (id) => {
+  try {
+    const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+    const res = await fetch(`${apiBase}/api/books/${id}`)
 
-onMounted(async () => {
-  const id = route.params.id
-  if (id) {
-    try {
-      const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-      const res = await fetch(`${apiBase}/api/books/${id}`)
-      if (res.ok) {
-        const data = await res.json()
-        // data should include `cover` field with filename
-        book.value = {
-          ...book.value,
-          title: data.judul || data.title || book.value.title,
-          author: data.pembuat || data.author || book.value.author,
-          publishDate: data.tahun_rilis || book.value.publishDate,
-          coverImage: getCoverUrl(data.cover),
-          description: data.sinopsis || data.description || book.value.description,
-          publisher: data.penerbit || book.value.publisher,
-          isbn: data.isbn_issn || book.value.isbn,
-          pages: data.halaman || book.value.pages,
-          language: data.bahasa_buku || book.value.language,
-          relatedBooks: (data.relatedBooks || book.value.relatedBooks).map(rb => ({
-            ...rb,
-            cover: getCoverUrl(rb.cover || rb.sampul || rb.cover)
-          }))
-        }
+    if (res.ok) {
+      const data = await res.json()
+      book.value = {  
+        id: data.id,
+        title: data.judul || data.title || '',
+        author: data.pembuat || data.author || '',
+        publishDate: data.tahun_rilis || data.publishDate || '',
+        coverImage: getCoverUrl(data.cover),
+        description: data.sinopsis || data.description || '',
+        publisher: data.penerbit || data.publisher || '',
+        isbn: data.isbn_issn || data.isbn || '',
+        pages: data.halaman || data.pages || '',
+        language: data.bahasa_buku || data.language || '',
+        rating: data.rating || 0,
+        reviewCount: data.reviewCount || 0,
+        readerCount: data.readerCount || 0,
+        availability: data.availability || []
       }
-    } catch (err) {
-      console.error('Failed to fetch book details', err)
+    } else {
+      book.value = null
     }
+  } catch (err) {
+    console.error('Failed to fetch book details:', err)
+    book.value = null
+  } finally {
+    isLoading.value = false
   }
-})
-
-const goBack = () => {
-  window.history.back()
 }
 
+const fetchRelatedBooks = async () => {
+  try {
+    const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+    const res = await fetch(`${apiBase}/api/books`)
+    
+    if (res.ok) {
+      const data = await res.json()
+      const allBooks = data.books || data || []
+      
+      const filtered = allBooks.filter(b => b.id !== book.value?.id)
+      const shuffled = filtered.sort(() => Math.random() - 0.5)
+      
+      relatedBooks.value = shuffled.slice(0, 4).map(b => ({
+        id: b.id,
+        title: b.judul || b.title || '',
+        author: b.pembuat || b.author || '',
+        year: b.tahun_rilis || '',
+        cover: b.cover || b.sampul || ''
+      }))
+    }
+  } catch (err) {
+    console.error('Failed to fetch related books:', err)
+  } finally {
+    isLoadingRelated.value = false
+  }
+}
+
+// ===== BORROW FUNCTIONS (DIPERBAIKI) =====
+const openBorrowModal = () => {
+  console.log('🔍 Open borrow modal clicked')
+  console.log('Current user:', currentUser.value)
+  
+  if (!currentUser.value) {
+    showAlert('error', 'Silakan login terlebih dahulu untuk meminjam buku')
+    return
+  }
+
+  // Cek apakah user memiliki data anggota dan membership masih aktif
+  const isMember = checkMembershipStatus(currentUser.value)
+
+  console.log('Is member?', isMember.isActive)
+  console.log('Member data:', currentUser.value)
+
+  if (!isMember.isActive) {
+    showMemberModal.value = true
+    return
+  }
+
+  if (book.value?.availability?.length > 0) {
+    const available = book.value.availability
+      .filter(item => item.status === 'Tersedia')
+      .sort((a, b) => a.code.localeCompare(b.code))
+    
+    if (available.length > 0) {
+      selectedBook.value = available[0]
+      showModal.value = true
+    } else {
+      showAlert('error', 'Maaf, tidak ada buku yang tersedia saat ini.')
+    }
+  } else {
+    showAlert('error', 'Informasi ketersediaan buku tidak tersedia.')
+  }
+}
+
+// Helper function untuk cek status membership
+const checkMembershipStatus = (user) => {
+  if (!user.id_anggota && !user.id) {
+    return { isActive: false, reason: 'not_member' }
+  }
+
+  if (!user.member_expired) {
+    return { isActive: false, reason: 'no_expiry_date' }
+  }
+
+  const today = new Date()
+  const expiryDate = new Date(user.member_expired)
+  
+  if (expiryDate < today) {
+    return { isActive: false, reason: 'expired' }
+  }
+
+  return { isActive: true }
+}
+
+const confirmBorrow = async () => {
+  if (!selectedBook.value || !currentUser.value) return
+
+  try {
+    const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+    const token = localStorage.getItem('token')
+
+    const borrowData = {
+      id_buku: book.value.id,
+      tanggal_pinjam: new Date().toISOString().split('T')[0],
+      status: 'Dipinjam'
+    }
+
+    const res = await fetch(`${apiBase}/api/peminjaman`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(borrowData)
+    })
+
+    const result = await res.json()
+
+    if (res.ok) {
+      showModal.value = false
+      showConfirmation.value = true
+      selectedBook.value = null
+      await fetchBookDetails(book.value.id)
+      showAlert('success', result.message || 'Peminjaman berhasil diajukan!')
+    } else {
+      showAlert('error', result.message || 'Gagal mengajukan peminjaman')
+    }
+  } catch (err) {
+    console.error('Error confirming borrow:', err)
+    showAlert('error', 'Terjadi kesalahan saat memproses peminjaman.')
+  }
+}
+
+
+// ===== MODAL & NAVIGATION =====
+const closeModal = () => {
+  showModal.value = false
+  selectedBook.value = null
+}
+
+const closeConfirmation = () => {
+  showConfirmation.value = false
+  selectedBook.value = null
+}
+
+const closeMemberModal = () => {
+  showMemberModal.value = false
+}
+
+const goBack = () => {
+  router.push('/')
+}
+
+const goToBook = (id) => {
+  router.push(`/buku/${id}`)
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  
+  isLoading.value = true
+  isLoadingRelated.value = true
+  fetchBookDetails(id).then(() => {
+    if (book.value) {
+      fetchRelatedBooks()
+    }
+  })
+}
+
+const copyLink = () => {
+  const url = window.location.href
+  navigator.clipboard.writeText(url).then(() => {
+    isLinkCopied.value = true
+    showAlert('success', 'Link berhasil disalin ke clipboard!')
+    
+    setTimeout(() => {
+      isLinkCopied.value = false
+    }, 3000)
+  }).catch(() => {
+    showAlert('error', 'Gagal menyalin link')
+  })
+}
+
+// ===== ALERT (TETAP SAMA) =====
 const alert = reactive({
   show: false,
   type: 'success',
-  message: '',
-  action: ''
+  message: ''
 })
 
-const showAlert = (type, message, action = '') => {
+const showAlert = (type, message) => {
   alert.type = type
   alert.message = message
-  alert.action = action
   alert.show = true
   
   setTimeout(() => {
@@ -316,44 +631,22 @@ const showAlert = (type, message, action = '') => {
   }, 4000)
 }
 
-const saveToCollection = () => {
-  isBookmarked.value = !isBookmarked.value
-  if (isBookmarked.value) {
-    showAlert('library', 'This book is now on your library.', 'My Library')
+// ===== COMPONENT LIFECYCLE (TETAP SAMA) =====
+onMounted(async () => {
+  console.log('🚀 DetailView mounted')
+  
+  await fetchCurrentUser()
+  
+  const id = route.params.id
+  if (id) {
+    await fetchBookDetails(id)
+    if (book.value) {
+      await fetchRelatedBooks()
+    }
   } else {
-    showAlert('info', 'Buku dihapus dari koleksi Anda.')
+    isLoading.value = false
   }
-}
-
-const addToFavorites = () => {
-  isFavorited.value = !isFavorited.value
-  if (isFavorited.value) {
-    showAlert('favorite', 'This book just made it to your favourites!', 'My Favourite')
-  } else {
-    showAlert('info', 'Buku dihapus dari favorit Anda.')
-  }
-}
-
-const shareBook = () => {
-  if (navigator.share) {
-    navigator.share({
-      title: book.value.title,
-      text: `Baca buku "${book.value.title}" oleh ${book.value.author}`,
-      url: window.location.href
-    }).then(() => {
-      showAlert('success', 'Buku berhasil dibagikan!')
-    }).catch(() => {
-      copyToClipboard()
-    })
-  } else {
-    copyToClipboard()
-  }
-}
-
-const copyToClipboard = () => {
-  navigator.clipboard.writeText(window.location.href)
-  showAlert('info', 'Link buku berhasil disalin ke clipboard!')
-}
+})
 </script>
 
 <style scoped>
@@ -362,6 +655,7 @@ const copyToClipboard = () => {
   margin: 0 auto;
   padding: 40px 20px;
   background: #FAFAFA;
+  min-height: 100vh;
 }
 
 .book-detail-wrapper {
@@ -369,6 +663,62 @@ const copyToClipboard = () => {
   grid-template-columns: 320px 1fr;
   gap: 60px;
   align-items: start;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #E5E7EB;
+  border-top-color: #2C64F9;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-size: 1.1rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+/* Error State */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+  text-align: center;
+}
+
+.error-state svg {
+  color: #EF4444;
+}
+
+.error-state h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.error-state p {
+  font-size: 1rem;
+  color: #6B7280;
+  margin-bottom: 20px;
 }
 
 /* Left Side - Book Cover */
@@ -414,21 +764,59 @@ const copyToClipboard = () => {
   transform: translateX(-4px);
 }
 
+.cover-wrapper {
+  position: relative;
+  margin-bottom: 24px;
+}
+
 .book-cover {
   width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  margin-bottom: 24px;
+}
+
+.btn-share {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #374151;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.btn-share:hover {
+  background: white;
+  transform: scale(1.1);
+  color: #2C64F9;
+}
+
+.btn-share.copied {
+  background: #2C64F9;
+  color: white;
+}
+
+.btn-share.copied:hover {
+  background: #2C64F9;
+  transform: scale(1.1);
 }
 
 .action-buttons {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 20px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary {
   padding: 14px 20px;
   border: none;
   border-radius: 8px;
@@ -440,9 +828,6 @@ const copyToClipboard = () => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-}
-
-.btn-primary {
   background: #2C64F9;
   color: white;
 }
@@ -454,90 +839,23 @@ const copyToClipboard = () => {
 }
 
 .btn-secondary {
-  background: #F3F4F6;
-  color: #374151;
+  padding: 14px 32px;
+  border: 2px solid #2C64F9;
+  background: white;
+  color: #2C64F9;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-  background: #E5E7EB;
+  background: #2C64F9;
+  color: white;
 }
 
-.share-icons {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #E5E7EB;
-}
-
-.action-icons {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #E5E7EB;
-}
-
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: #F3F4F6;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #6B7280;
-}
-
-.icon-btn.save:hover {
-  background: #ffc8004b;
-  color: #131313;
-  transform: translateY(-2px);
-}
-
-.icon-btn.save.active {
-  background: #ffc8004b;
-  color: #ffc800;
-;
-}
-
-.icon-btn.save.active:hover {
-  background: #ffc8004b;
-}
-
-.icon-btn.like:hover {
-  background: #d9467e35;
-  color: #D9467F;
-  transform: translateY(-2px);
-}
-
-.icon-btn.like.active {
-  background: #d9467e35;
-  color: #D9467F;
-}
-
-.icon-btn.like.active:hover {
-  background: #13131325;
-}
-
-.icon-btn.share:hover {
-  background: #13131325;
-  color: #131313;
-  transform: translateY(-2px);
-}
-
-.icon-btn.share.active {
-  background: #13131325;
-  color: #131313;
-}
-
-.icon-btn.share.active:hover {
-  background: #13131325;
-}
-
+/* Right Side - Book Info */
 .book-info-section {
   background: white;
   padding: 40px;
@@ -563,14 +881,9 @@ const copyToClipboard = () => {
   margin-bottom: 16px;
 }
 
-.author-link {
+.author-name {
   color: #2C64F9;
-  text-decoration: none;
   font-weight: 600;
-}
-
-.author-link:hover {
-  text-decoration: underline;
 }
 
 .book-meta {
@@ -605,34 +918,6 @@ const copyToClipboard = () => {
   color: #6B7280;
 }
 
-.badges {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.badge-first {
-  background: #FEF3C7;
-  color: #92400E;
-}
-
-.badge-best {
-  background: #FEE2E2;
-  color: #991B1B;
-}
-
-.badge-choice {
-  background: #DBEAFE;
-  color: #1E40AF;
-}
-
 .book-description {
   margin-bottom: 40px;
   padding: 24px;
@@ -645,18 +930,6 @@ const copyToClipboard = () => {
   font-size: 1rem;
   line-height: 1.7;
   color: #374151;
-  margin-bottom: 12px;
-}
-
-.read-more {
-  color: #2C64F9;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.read-more:hover {
-  text-decoration: underline;
 }
 
 .section-title {
@@ -768,63 +1041,42 @@ const copyToClipboard = () => {
   color: #92400E;
 }
 
-.status-tidak {
-  background: #F3F4F6;
-  color: #6B7280;
-}
-
-/* Author Card */
-.about-author {
-  margin-bottom: 40px;
-}
-
-.author-card {
-  display: flex;
-  gap: 20px;
-  padding: 24px;
-  background: #F9FAFB;
-  border-radius: 8px;
-}
-
-.author-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.author-info {
-  flex: 1;
-}
-
-.author-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 8px;
-}
-
-.author-bio {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #374151;
-  margin-bottom: 12px;
-}
-
-.view-profile {
-  color: #2C64F9;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.view-profile:hover {
-  text-decoration: underline;
+.status-rusak, .status-hilang {
+  background: #FEE2E2;
+  color: #991B1B;
 }
 
 /* Related Books */
 .related-books {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+}
+
+.loading-related {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0;
+}
+
+.spinner-small {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #2C64F9;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-related p {
+  font-size: 0.95rem;
+  color: #6B7280;
+}
+
+.no-related {
+  text-align: center;
+  padding: 40px;
+  color: #6B7280;
 }
 
 .books-grid {
@@ -845,12 +1097,14 @@ const copyToClipboard = () => {
 .related-book-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border-color: #2C64F9;
 }
 
 .related-book-cover {
   width: 100%;
-  height: 180px;
+  height: 220px;
   object-fit: cover;
+  background: #F3F4F6;
 }
 
 .related-book-info {
@@ -866,75 +1120,320 @@ const copyToClipboard = () => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.4;
+  min-height: 2.8em;
 }
 
 .related-book-author {
   font-size: 0.8rem;
   color: #6B7280;
-  margin-bottom: 8px;
 }
 
-.related-book-rating {
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  backdrop-filter: blur(4px);
 }
 
-.stars-small {
-  color: #FBBF24;
-  font-size: 0.85rem;
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: modalSlideUp 0.3s ease-out;
 }
 
-.rating-count {
-  font-size: 0.8rem;
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0 24px;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.btn-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #F3F4F6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
   color: #6B7280;
 }
 
-.btn-view-all {
-  width: 100%;
-  padding: 14px;
-  background: white;
+.btn-close:hover {
+  background: #E5E7EB;
+  color: #111827;
+}
+
+.modal-body {
+  padding: 0 24px 24px 24px;
+}
+
+.modal-question {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.book-summary {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  margin-bottom: 20px;
   border: 2px solid #E5E7EB;
+}
+
+.summary-cover {
+  width: 80px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.summary-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-info h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.summary-author {
+  font-size: 0.9rem;
+  color: #6B7280;
+}
+
+.summary-code {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.code-label {
+  font-size: 0.85rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.code-value {
+  font-size: 0.9rem;
+  color: #2C64F9;
+  font-weight: 700;
+  background: #DBEAFE;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.summary-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.location-icon {
+  font-size: 1rem;
+}
+
+.modal-note {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #FEF3C7;
+  border-radius: 8px;
+  border-left: 4px solid #F59E0B;
+}
+
+.modal-note svg {
+  flex-shrink: 0;
+  color: #F59E0B;
+  margin-top: 2px;
+}
+
+.modal-note p {
+  font-size: 0.9rem;
+  color: #78350F;
+  line-height: 1.6;
+}
+
+.modal-note strong {
+  font-weight: 700;
+  color: #92400E;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 0 24px 24px 24px;
+}
+
+.btn-cancel, .btn-confirm {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #374151;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.btn-view-all:hover {
-  border-color: #2C64F9;
-  color: #2C64F9;
+.btn-cancel {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.btn-cancel:hover {
+  background: #E5E7EB;
+}
+
+.btn-confirm {
+  background: #2C64F9;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background: #1e4ed8;
+  box-shadow: 0 4px 12px rgba(44, 100, 249, 0.3);
+}
+
+/* Confirmation Modal */
+.confirmation-modal {
+  text-align: center;
+  padding: 40px 30px;
+  max-width: 450px;
+}
+
+.confirmation-icon {
+  display: inline-flex;
+  width: 80px;
+  height: 80px;
+  align-items: center;
+  justify-content: center;
+  background: #D1FAE5;
+  border-radius: 50%;
+  margin-bottom: 24px;
+}
+
+.confirmation-icon svg {
+  color: #10B981;
+}
+
+.confirmation-modal h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.confirmation-modal > p {
+  font-size: 1rem;
+  color: #6B7280;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.contact-methods {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.contact-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
   background: #F9FAFB;
+  border-radius: 12px;
+  border: 2px solid #E5E7EB;
+  flex: 1;
+  transition: all 0.3s ease;
 }
 
-@media (max-width: 1024px) {
-  .book-detail-wrapper {
-    grid-template-columns: 1fr;
-  }
-  
-  .book-cover-sticky {
-    position: static;
-  }
-  
-  .books-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.contact-item:hover {
+  border-color: #2C64F9;
+  background: #EFF6FF;
 }
 
-@media (max-width: 640px) {
-  .details-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .availability-header, .availability-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .books-grid {
-    grid-template-columns: 1fr;
-  }
+.contact-item svg {
+  color: #2C64F9;
+}
+
+.contact-item span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.btn-primary-full {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #2C64F9;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-full:hover {
+  background: #1e4ed8;
+  box-shadow: 0 4px 12px rgba(44, 100, 249, 0.3);
 }
 
 /* Alert Notifications */
@@ -966,48 +1465,24 @@ const copyToClipboard = () => {
   color: #991B1B;
 }
 
-.alert-warning {
-  background: #FEF3C7;
-  border-left-color: #F59E0B;
-  color: #92400E;
-}
-
 .alert-info {
   background: #DBEAFE;
   border-left-color: #3B82F6;
   color: #1E40AF;
 }
 
-.alert-favorite {
-  background: #FCE7F3;
-  border-left-color: #EC4899;
-  color: #9F1239;
-}
-
-.alert-library {
-  background: #EDE9FE;
-  border-left-color: #8B5CF6;
-  color: #5B21B6;
-}
-
 .alert-icon {
   font-size: 1.2rem;
   line-height: 1;
+  font-weight: 700;
 }
 
-.alert-success .alert-icon span { color: #059669; }
-.alert-error .alert-icon span { color: #DC2626; }
-.alert-warning .alert-icon span { color: #F59E0B; }
-.alert-info .alert-icon span { color: #3B82F6; }
-.alert-favorite .alert-icon span { color: #EC4899; }
-.alert-library .alert-icon span { color: #8B5CF6; }
+.alert-success .alert-icon { color: #059669; }
+.alert-error .alert-icon { color: #DC2626; }
+.alert-info .alert-icon { color: #3B82F6; }
 
 .alert-content {
   flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
 }
 
 .alert-message {
@@ -1016,20 +1491,7 @@ const copyToClipboard = () => {
   line-height: 1.4;
 }
 
-.alert-action {
-  font-size: 0.85rem;
-  font-weight: 600;
-  white-space: nowrap;
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-.alert-action:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-
-/* Transition Animation */
+/* Transition Animations */
 .slide-fade-enter-active {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -1046,5 +1508,280 @@ const copyToClipboard = () => {
 .slide-fade-leave-to {
   transform: translateY(20px);
   opacity: 0;
+}
+
+.modal-fade-enter-active, .modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from, .modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active .modal-content {
+  animation: modalSlideUp 0.3s ease-out;
+}
+
+.member-modal {
+  max-width: 550px;
+}
+
+.member-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.member-icon svg {
+  width: 64px;
+  height: 64px;
+  color: #2C64F9;
+  stroke-width: 1.5;
+}
+
+.modal-body h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.member-description {
+  font-size: 0.95rem;
+  color: #6B7280;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 0 16px;
+}
+
+.member-benefits {
+  background: #F0F9FF;
+  border: 1px solid #DBEAFE;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.member-benefits h5 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.member-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #10B981;
+  color: white;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.member-contact {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.member-contact h5 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-item div {
+  flex: 1;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: #6B7280;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 0.9rem;
+  color: #111827;
+  font-weight: 600;
+  margin: 4px 0 0 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .book-detail-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .book-cover-sticky {
+    position: static;
+  }
+  
+  .books-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+    .member-modal {
+    max-width: 100%;
+  }
+
+  .member-description {
+    padding: 0;
+  }
+
+  .contact-info {
+    gap: 12px;
+  }
+
+  .info-item {
+    gap: 10px;
+  }
+
+  .book-detail-container {
+    padding: 20px 16px;
+  }
+
+  .book-info-section {
+    padding: 24px 20px;
+  }
+
+  .book-title {
+    font-size: 1.8rem;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .availability-header, .availability-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .availability-header {
+    display: none;
+  }
+
+  .availability-row {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #E5E7EB;
+  }
+
+  .col-location, .col-code, .col-status {
+    width: 100%;
+  }
+
+  .col-code, .col-status {
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
+
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-summary {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .summary-cover {
+    width: 100px;
+    height: 150px;
+  }
+
+  .summary-info {
+    align-items: center;
+  }
+
+  .summary-code, .summary-location {
+    justify-content: center;
+  }
+
+  .contact-methods {
+    flex-direction: column;
+  }
+
+  .alert-notification {
+    left: 16px;
+    right: 16px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    margin: 0 16px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-cancel, .btn-confirm {
+    width: 100%;
+  }
 }
 </style>

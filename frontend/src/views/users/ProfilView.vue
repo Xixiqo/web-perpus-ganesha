@@ -545,7 +545,6 @@
 </template>
 
 <script>
-// Bagian <script> dari Profile.vue yang diperbaiki
 export default {
   name: 'ProfilePage',
   data() {

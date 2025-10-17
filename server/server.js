@@ -63,6 +63,8 @@ import adminPengembaliannRoutes from "./api/admin/pengembaliann.js";
 // === ADMIN ROUTES (versi lama - single 'n') ===
 import adminPeminjamanRoutes from "./api/admin/peminjaman.js";
 import adminPengembalianRoutes from "./api/admin/pengembalian.js";
+import adminUsersRoutes from "./api/admin/users.js"
+import ProcessPeminjamanRoutes from "./api/peminjaman.js"
 
 // === ADMIN ROUTES (lainnya) ===
 import adminBooksRoutes from "./api/admin/books.js";
@@ -154,6 +156,21 @@ if (fs.existsSync(frontendPath)) {
   console.warn("⚠️ Frontend build folder NOT found:", frontendPath);
   console.warn("   Please run: cd frontend && npm run build");
 }
+app.use("/api/peminjaman", ProcessPeminjamanRoutes);
+
+// // === FRONTEND HANDLER (penting!) ===
+// // Arahkan ke folder build Vue (frontend/dist)
+// const frontendPath = path.join(__dirname, "../frontend/dist");
+// if (fs.existsSync(frontendPath)) {
+//   app.use(express.static(frontendPath));
+
+//   // Handle semua route frontend ke index.html
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.join(frontendPath, "index.html"));
+//   });
+// } else {
+//   console.warn("⚠️ Frontend build folder not found:", frontendPath);
+// }
 
 // ============================================
 // 🚀 START SERVER

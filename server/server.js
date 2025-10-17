@@ -57,19 +57,19 @@ app.use("/api/riwayat", peminjamanRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/admin/books", adminBooksRoutes);
 
-// === FRONTEND HANDLER (penting!) ===
-// Arahkan ke folder build Vue (frontend/dist)
-const frontendPath = path.join(__dirname, "../frontend/dist");
-if (fs.existsSync(frontendPath)) {
-  app.use(express.static(frontendPath));
+// // === FRONTEND HANDLER (penting!) ===
+// // Arahkan ke folder build Vue (frontend/dist)
+// const frontendPath = path.join(__dirname, "../frontend/dist");
+// if (fs.existsSync(frontendPath)) {
+//   app.use(express.static(frontendPath));
 
-  // Handle semua route frontend ke index.html
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-} else {
-  console.warn("⚠️ Frontend build folder not found:", frontendPath);
-}
+//   // Handle semua route frontend ke index.html
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.join(frontendPath, "index.html"));
+//   });
+// } else {
+//   console.warn("⚠️ Frontend build folder not found:", frontendPath);
+// }
 
 // Jalankan server
 const PORT = process.env.PORT || 5000;

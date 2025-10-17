@@ -43,7 +43,8 @@ import categoriesRoutes from "./api/categories.js";
 import adminBooksRoutes from "./api/admin/books.js";
 import adminPeminjamanRoutes from "./api/admin/peminjaman.js";
 import adminPengembalianRoutes from "./api/admin/pengembalian.js";
-import adminUsersRoutes from "./api/admin/users.js"; // ✅ Perbaikan di sini
+import adminUsersRoutes from "./api/admin/users.js"
+import ProcessPeminjamanRoutes from "./api/peminjaman.js"
 
 // Register routes
 app.use("/api/admin/users", adminUsersRoutes);
@@ -56,6 +57,7 @@ app.use("/api/search", searchRoutes);
 app.use("/api/riwayat", peminjamanRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/admin/books", adminBooksRoutes);
+app.use("/api/peminjaman", ProcessPeminjamanRoutes);
 
 // // === FRONTEND HANDLER (penting!) ===
 // // Arahkan ke folder build Vue (frontend/dist)

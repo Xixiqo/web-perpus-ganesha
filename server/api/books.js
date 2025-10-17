@@ -177,6 +177,7 @@ router.get("/:id", async (req, res) => {
       isReaderChoice: Math.random() > 0.5,
       bookLink: `#/buku/${book.id}`,
       authorLink: `#/author/${encodeURIComponent(book.pembuat)}`,
+      stok: Number(book.stok) || 0,
       relatedBooks: transformedRelated,
       availability: [
         { 

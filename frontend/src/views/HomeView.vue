@@ -1,9 +1,10 @@
 <template>
   <div class="home">
-    <!-- Top banner image -->
-    <section class="container banner">
-      <div class="banner-img" role="img" aria-label="Rak buku perpustakaan"></div>
-    </section>
+    <!-- Hero Section -->
+    <HeroSec
+      @scroll-next="scrollToNextSection"
+      @go-search="goToSearchPage"
+    />
 
     <!-- Top 10 Book -->
     <section class="container section stack">
@@ -77,8 +78,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BookSlider from '@/components/users/BookSlider.vue'
 import StackPopBook from '@/components/users/StackPopBook.vue'
+import HeroSec from '@/components/users/HeroSec.vue'
 
 const router = useRouter()
+const stackSection = ref(null)
 
 // State
 const books = ref([])
@@ -157,6 +160,16 @@ const handleViewBook = (book) => {
 
 const handleBookClick = (book) => {
   if (book.id) router.push(`/buku/${book.id}`)
+}
+
+const scrollToNextSection = () => {
+  if (stackSection.value) {
+    stackSection.value.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+const goToSearchPage = () => {
+  router.push('/cari')
 }
 
 const handleViewAll = (section) => {

@@ -57,13 +57,12 @@ import peminjamanRoutes from "./api/riwayat.js";
 import categoriesRoutes from "./api/categories.js";
 
 // === ADMIN ROUTES (versi baru dengan double 'n') ===
-import adminPeminjamannRoutes from "./api/admin/peminjamann.js";
-import adminPengembaliannRoutes from "./api/admin/pengembaliann.js";
+import adminpinjam_manageRoutes from "./api/admin/pinjam_manage.js";
+import adminkembali_manageRoutes from "./api/admin/kembali_manage.js";
 
 // === ADMIN ROUTES (versi lama - single 'n') ===
 import adminPeminjamanRoutes from "./api/admin/peminjaman.js";
 import adminPengembalianRoutes from "./api/admin/pengembalian.js";
-import adminUsersRoutes from "./api/admin/users.js"
 import ProcessPeminjamanRoutes from "./api/peminjaman.js"
 
 // === ADMIN ROUTES (lainnya) ===
@@ -80,11 +79,11 @@ console.log("✅ All route modules imported successfully");
 console.log("📝 Registering API routes...");
 
 // === ADMIN ROUTES - NEW (dengan double 'n') ===
-app.use("/api/admin/peminjamann", adminPeminjamannRoutes);
-console.log("   ✓ Registered: /api/admin/peminjamann");
+app.use("/api/admin/pinjam_manage", adminpinjam_manageRoutes);
+console.log("   ✓ Registered: /api/admin/pinjam_manage");
 
-app.use("/api/admin/pengembaliann", adminPengembaliannRoutes);
-console.log("   ✓ Registered: /api/admin/pengembaliann");
+app.use("/api/admin/kembali_manage", adminkembali_manageRoutes);
+console.log("   ✓ Registered: /api/admin/kembali_manage");
 
 // === ADMIN ROUTES - OLD (single 'n') ===
 app.use("/api/admin/peminjaman", adminPeminjamanRoutes);
@@ -194,15 +193,15 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log("   - GET    /api/profile");
   console.log("");
   console.log("   ADMIN ROUTES (NEW - double n):");
-  console.log("   - GET    /api/admin/peminjamann");
-  console.log("   - GET    /api/admin/peminjamann/check/late  ⭐");
-  console.log("   - GET    /api/admin/peminjamann/:id");
-  console.log("   - PUT    /api/admin/peminjamann/:id/status");
-  console.log("   - PUT    /api/admin/peminjamann/:id/return");
-  console.log("   - DELETE /api/admin/peminjamann/:id");
-  console.log("   - GET    /api/admin/pengembaliann");
-  console.log("   - GET    /api/admin/pengembaliann/stats/summary");
-  console.log("   - GET    /api/admin/pengembaliann/peminjaman/:id");
+  console.log("   - GET    /api/admin/pinjam_manage");
+  console.log("   - GET    /api/admin/pinjam_manage/check/late  ⭐");
+  console.log("   - GET    /api/admin/pinjam_manage/:id");
+  console.log("   - PUT    /api/admin/pinjam_manage/:id/status");
+  console.log("   - PUT    /api/admin/pinjam_manage/:id/return");
+  console.log("   - DELETE /api/admin/pinjam_manage/:id");
+  console.log("   - GET    /api/admin/kembali_manage");
+  console.log("   - GET    /api/admin/kembali_manage/stats/summary");
+  console.log("   - GET    /api/admin/kembali_manage/peminjaman/:id");
   console.log("");
   console.log("   ADMIN ROUTES (OLD - single n):");
   console.log("   - GET    /api/admin/peminjaman");

@@ -251,7 +251,9 @@ export default {
         angkatan: '',
         tipe_keanggotaan: '',
         no_telp: ''
-      }
+      },
+      // 🔴 API Base dari environment variable
+      apiBase: import.meta.env.VITE_API_BASE || 'http://localhost:5000'
     };
   },
   computed: {
@@ -300,12 +302,48 @@ export default {
     this.fetchUsers();
   },
   methods: {
+    // 🔴 Method untuk mendapatkan config dengan Authorization header
+    getAuthConfig() {
+      const token = localStorage.getItem('token');
+      return {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+    },
+
+    // 🔴 Error handler untuk unauthorized
+    handleUnauthorized(response) {
+      if (response.status === 401 || response.status === 403) {
+        console.error('⚠️ Unauthorized - Token invalid atau expired');
+        localStorage.removeItem('token');
+        // Optional: redirect ke login
+        // window.location.href = '/login';
+      }
+    },
+
     async fetchUsers() {
       try {
-        const response = await fetch('http://localhost:5000/api/admin/users');
-        this.users = await response.json();
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${this.apiBase}/api/admin/users`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          this.users = await response.json();
+          console.log('✅ Users fetched successfully');
+        } else {
+          this.handleUnauthorized(response);
+          console.error('❌ Failed to fetch users');
+          alert('Gagal mengambil data users');
+        }
       } catch (error) {
-        console.error('Gagal mengambil data users:', error);
+        console.error('❌ Error fetching users:', error);
         alert('Gagal mengambil data users');
       }
     },
@@ -371,14 +409,18 @@ export default {
     async submitForm() {
       try {
         const url = this.isEditMode 
-          ? `http://localhost:5000/api/admin/users/${this.formData.id}` 
-        : 'http://localhost:5000/api/admin/users';
+          ? `${this.apiBase}/api/admin/users/${this.formData.id}` 
+          : `${this.apiBase}/api/admin/users`;
         
         const method = this.isEditMode ? 'PUT' : 'POST';
+        const token = localStorage.getItem('token');
 
         const response = await fetch(url, {
           method,
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(this.formData)
         });
 
@@ -388,11 +430,13 @@ export default {
           alert(result.message);
           this.closeModal();
           this.fetchUsers();
+          console.log('✅ User saved successfully');
         } else {
+          this.handleUnauthorized(response);
           alert(result.message || 'Terjadi kesalahan');
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error submitting form:', error);
         alert('Gagal menyimpan data');
       }
     },
@@ -401,8 +445,13 @@ export default {
       if (!confirm('Apakah Anda yakin ingin menghapus user ini?')) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
-          method: 'DELETE'
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${this.apiBase}/api/admin/users/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         });
 
         const result = await response.json();
@@ -410,11 +459,13 @@ export default {
         if (response.ok) {
           alert(result.message);
           this.fetchUsers();
+          console.log('✅ User deleted successfully');
         } else {
+          this.handleUnauthorized(response);
           alert(result.message || 'Gagal menghapus data');
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error deleting user:', error);
         alert('Gagal menghapus data');
       }
     },

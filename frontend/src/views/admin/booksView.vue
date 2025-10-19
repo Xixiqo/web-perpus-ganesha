@@ -180,10 +180,34 @@ const form = ref({
   cover: null,
 });
 
+// 🔴 Ambil API Base dari environment variable
+const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
+// 🔴 Function untuk mendapatkan config dengan Authorization header
+const getAuthConfig = (additionalHeaders = {}) => {
+  const token = localStorage.getItem('token');
+  return {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      ...additionalHeaders
+    }
+  };
+};
+
 // Fetch data buku dari backend
 const fetchBooks = async () => {
-  const res = await axios.get("http://localhost:5000/api/admin/books");
-  books.value = res.data;
+  try {
+    const res = await axios.get(`${apiBase}/api/admin/books`, getAuthConfig());
+    books.value = res.data;
+  } catch (err) {
+    console.error('❌ Error fetching books:', err);
+    // Jika unauthorized, redirect ke login atau hapus token
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      localStorage.removeItem('token');
+      // Optional: redirect ke halaman login
+      // window.location.href = '/login';
+    }
+  }
 };
 
 onMounted(fetchBooks);
@@ -195,25 +219,34 @@ const handleFileUpload = (event) => {
 
 // Submit form
 const submitForm = async () => {
-  const formData = new FormData();
-  Object.keys(form.value).forEach((key) => {
-    formData.append(key, form.value[key]);
-  });
+  try {
+    const formData = new FormData();
+    Object.keys(form.value).forEach((key) => {
+      formData.append(key, form.value[key]);
+    });
 
-  const config = {
-    headers: { "Content-Type": "multipart/form-data" },
-  };
+    // 🔴 Config untuk multipart/form-data dengan Authorization
+    const config = getAuthConfig({ "Content-Type": "multipart/form-data" });
 
-  if (editMode.value) {
-    await axios.put(`http://localhost:5000/api/admin/books/${currentId.value}`, formData, config);
-  } else {
-    await axios.post("http://localhost:5000/api/admin/books", formData, config);
+    if (editMode.value) {
+      await axios.put(
+        `${apiBase}/api/admin/books/${currentId.value}`,
+        formData,
+        config
+      );
+    } else {
+      await axios.post(`${apiBase}/api/admin/books`, formData, config);
+    }
+
+    await fetchBooks();
+    cancelEdit();
+  } catch (err) {
+    console.error('❌ Error submitting form:', err);
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      localStorage.removeItem('token');
+    }
   }
-
-  await fetchBooks();
-  cancelEdit();
 };
-
 
 // Edit
 const editBook = (book) => {
@@ -244,8 +277,15 @@ const cancelEdit = () => {
 // Delete
 const deleteBook = async (id) => {
   if (confirm("Apakah yakin ingin menghapus buku ini?")) {
-    await axios.delete(`http://localhost:5000/api/admin/books/${id}`);
-    fetchBooks();
+    try {
+      await axios.delete(`${apiBase}/api/admin/books/${id}`, getAuthConfig());
+      fetchBooks();
+    } catch (err) {
+      console.error('❌ Error deleting book:', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.removeItem('token');
+      }
+    }
   }
 };
 </script>

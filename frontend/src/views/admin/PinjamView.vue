@@ -215,7 +215,9 @@ export default {
             returnDate: new Date().toISOString().split('T')[0],
             keterangan: '',
             lateDays: 0,
-            loading: false
+            loading: false,
+            // 🔴 API Base dari environment variable
+            apiBase: import.meta.env.VITE_API_BASE || 'http://localhost:5000'
         }
     },
     mounted() {
@@ -223,17 +225,43 @@ export default {
         this.checkLateStatus(); // Auto check setiap refresh
     },
     methods: {
+        // 🔴 Method untuk mendapatkan config dengan Authorization header
+        getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        },
+
+        // 🔴 Error handler untuk unauthorized
+        handleUnauthorized(response) {
+            if (response.status === 401 || response.status === 403) {
+                console.error('⚠️ Unauthorized - Token invalid atau expired');
+                localStorage.removeItem('token');
+                // Optional: redirect ke login
+                // window.location.href = '/login';
+            }
+        },
+
         async loadPeminjaman() {
             this.loading = true;
             try {
-                const response = await fetch('http://localhost:5000/api/admin/peminjamann');
-                if (!response.ok) throw new Error('Gagal memuat data peminjaman');
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann`, {
+                    method: 'GET',
+                    headers: this.getAuthHeaders()
+                });
+
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    throw new Error('Gagal memuat data peminjaman');
+                }
                 
                 this.peminjaman = await response.json();
                 this.filteredPeminjaman = [...this.peminjaman];
                 console.log('✅ Data peminjaman dimuat:', this.peminjaman.length);
             } catch (error) {
-                console.error('Error loading peminjaman:', error);
+                console.error('❌ Error loading peminjaman:', error);
                 alert('Gagal memuat data peminjaman: ' + error.message);
             } finally {
                 this.loading = false;
@@ -254,20 +282,25 @@ export default {
             if (!confirm(`Apakah Anda yakin ingin mengubah status menjadi ${newStatus}?`)) return;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/peminjamann/${item.id_peminjaman}/status`, {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${item.id_peminjaman}/status`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.getAuthHeaders(),
                     body: JSON.stringify({ status: newStatus })
                 });
 
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Gagal mengubah status');
+                
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    throw new Error(result.message || 'Gagal mengubah status');
+                }
 
                 item.status = newStatus;
                 alert(`Status berhasil diubah menjadi ${newStatus}`);
                 this.filterPeminjaman();
+                console.log('✅ Status updated successfully');
             } catch (error) {
-                console.error('Error updating status:', error);
+                console.error('❌ Error updating status:', error);
                 alert('Gagal mengubah status: ' + error.message);
             }
         },
@@ -275,18 +308,24 @@ export default {
         async rejectPeminjaman(item) {
             if (!confirm('Apakah Anda yakin ingin menolak peminjaman ini?')) return;
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/peminjamann/${item.id_peminjaman}`, {
-                    method: 'DELETE'
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${item.id_peminjaman}`, {
+                    method: 'DELETE',
+                    headers: this.getAuthHeaders()
                 });
 
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Gagal menolak peminjaman');
+                
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    throw new Error(result.message || 'Gagal menolak peminjaman');
+                }
 
                 this.peminjaman = this.peminjaman.filter(p => p.id_peminjaman !== item.id_peminjaman);
                 this.filterPeminjaman();
                 alert('Peminjaman berhasil ditolak');
+                console.log('✅ Peminjaman rejected successfully');
             } catch (error) {
-                console.error('Error rejecting peminjaman:', error);
+                console.error('❌ Error rejecting peminjaman:', error);
                 alert('Gagal menolak peminjaman: ' + error.message);
             }
         },
@@ -315,9 +354,9 @@ export default {
             try {
                 const denda = this.calculateDenda();
 
-                const response = await fetch(`http://localhost:5000/api/admin/peminjamann/${this.selectedItem.id_peminjaman}/return`, {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${this.selectedItem.id_peminjaman}/return`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: this.getAuthHeaders(),
                     body: JSON.stringify({
                         tanggal_dikembalikan: this.returnDate,
                         denda: denda,
@@ -326,14 +365,19 @@ export default {
                 });
 
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Gagal memproses pengembalian');
+                
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    throw new Error(result.message || 'Gagal memproses pengembalian');
+                }
 
                 this.selectedItem.status = 'Dikembalikan';
                 alert(`Buku berhasil dikembalikan${denda > 0 ? ` dengan denda Rp ${denda.toLocaleString('id-ID')}` : ''}`);
                 this.closeModal();
                 this.filterPeminjaman();
+                console.log('✅ Book returned successfully');
             } catch (error) {
-                console.error('Error returning book:', error);
+                console.error('❌ Error returning book:', error);
                 alert('Gagal memproses pengembalian: ' + error.message);
             }
         },
@@ -351,17 +395,23 @@ export default {
 
         async checkLateStatus() {
             try {
-                const response = await fetch('http://localhost:5000/api/admin/peminjamann/check/late');
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/check/late`, {
+                    method: 'GET',
+                    headers: this.getAuthHeaders()
+                });
+
                 const result = await response.json();
 
                 if (response.ok) {
                     alert(`Pengecekan status terlambat berhasil. ${result.updated} data diperbarui.`);
                     await this.loadPeminjaman();
+                    console.log('✅ Late status checked successfully');
                 } else {
+                    this.handleUnauthorized(response);
                     throw new Error(result.message || 'Gagal mengecek status terlambat');
                 }
             } catch (error) {
-                console.error('Error checking late status:', error);
+                console.error('❌ Error checking late status:', error);
                 alert('Gagal mengecek status terlambat: ' + error.message);
             }
         },

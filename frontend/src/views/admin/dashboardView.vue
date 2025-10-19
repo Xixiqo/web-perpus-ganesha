@@ -159,6 +159,20 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 
+// 🔴 Ambil API Base dari environment variable
+const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
+// 🔴 Function untuk mendapatkan config dengan Authorization header
+const getAuthConfig = () => {
+  const token = localStorage.getItem('token');
+  return {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+};
+
 // State
 const stats = ref({
   totalKoleksi: 0,
@@ -176,7 +190,7 @@ const summary = ref({
   keterlambatan: 0
 });
 
-const hasBackupToday = ref(true); // Set based on your backup logic
+const hasBackupToday = ref(true);
 const overdueMembers = ref(0);
 
 // Chart refs
@@ -190,18 +204,28 @@ const formatNumber = (num) => {
   return num.toLocaleString('id-ID');
 };
 
+// 🔴 Error handler untuk unauthorized
+const handleUnauthorized = (error) => {
+  if (error.response?.status === 401 || error.response?.status === 403) {
+    console.error('⚠️ Unauthorized - Token invalid atau expired');
+    localStorage.removeItem('token');
+    // Optional: redirect ke login
+    // window.location.href = '/login';
+  }
+};
+
 // Methods
 const fetchDashboardData = async () => {
   try {
     // Fetch books statistics
-    const booksRes = await axios.get('http://localhost:5000/api/admin/books');
+    const booksRes = await axios.get(`${apiBase}/api/admin/books`, getAuthConfig());
     const books = booksRes.data;
     
     stats.value.totalKoleksi = books.length;
     stats.value.totalEksemplar = books.reduce((sum, book) => sum + (book.stok || 0), 0);
     
     // Fetch peminjaman statistics
-    const peminjamanRes = await axios.get('http://localhost:5000/api/admin/peminjaman');
+    const peminjamanRes = await axios.get(`${apiBase}/api/admin/peminjaman`, getAuthConfig());
     const peminjaman = peminjamanRes.data;
     
     stats.value.dipinjamkan = peminjaman.filter(p => p.status === 'Dipinjam').length;
@@ -224,13 +248,14 @@ const fetchDashboardData = async () => {
     await fetchSummaryData(peminjaman);
     
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
+    console.error('❌ Error fetching dashboard data:', error);
+    handleUnauthorized(error);
   }
 };
 
 const fetchTransactionData = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/api/admin/peminjaman');
+    const res = await axios.get(`${apiBase}/api/admin/peminjaman`, getAuthConfig());
     const peminjaman = res.data;
     
     // Get last 7 days
@@ -257,7 +282,7 @@ const fetchTransactionData = async () => {
     });
     
     // Get pengembalian data
-    const pengembalianRes = await axios.get('http://localhost:5000/api/admin/pengembalian');
+    const pengembalianRes = await axios.get(`${apiBase}/api/admin/pengembalian`, getAuthConfig());
     pengembalianRes.data.forEach(p => {
       const kembaliDate = p.tanggal_dikembalikan?.split('T')[0];
       const dayData = last7Days.find(d => d.date === kembaliDate);
@@ -269,13 +294,14 @@ const fetchTransactionData = async () => {
     transactionData.value = last7Days;
     
   } catch (error) {
-    console.error('Error fetching transaction data:', error);
+    console.error('❌ Error fetching transaction data:', error);
+    handleUnauthorized(error);
   }
 };
 
 const fetchSummaryData = async (peminjaman) => {
   try {
-    const pengembalianRes = await axios.get('http://localhost:5000/api/admin/pengembalian');
+    const pengembalianRes = await axios.get(`${apiBase}/api/admin/pengembalian`, getAuthConfig());
     const pengembalian = pengembalianRes.data;
     
     summary.value.baru = peminjaman.filter(p => p.status === 'Dipinjam').length;
@@ -286,7 +312,8 @@ const fetchSummaryData = async (peminjaman) => {
                           summary.value.perpanjang + summary.value.keterlambatan;
     
   } catch (error) {
-    console.error('Error fetching summary data:', error);
+    console.error('❌ Error fetching summary data:', error);
+    handleUnauthorized(error);
   }
 };
 

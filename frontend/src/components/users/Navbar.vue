@@ -42,10 +42,11 @@
           <div class="user-chip logged-in" @click="toggleUserMenu">
             <img
               class="avatar"
-              :src="user?.avatar || 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'"
-              :alt="user?.name || 'User'"
+              :src="getAvatarUrl()"
+              :alt="getUserName()"
+              @error="handleAvatarError"
             />
-            <span class="user-name">{{ user?.name || 'Pengguna' }}</span>
+            <span class="user-name">{{ getUserName() }}</span>
             <svg 
               class="dropdown-icon" 
               :class="{ open: userMenuOpen }"
@@ -74,7 +75,7 @@
             </RouterLink>
             <!-- Tampilkan tombol berbeda berdasarkan role -->
             <RouterLink
-              v-if="user?.role === 'siswa'"
+              v-if="getUserRole() === 'siswa'"
               to="/riwayat"
               class="dropdown-item"
               @click="closeUserMenu"
@@ -86,7 +87,7 @@
             </RouterLink>
 
             <RouterLink
-              v-else-if="user?.role === 'pustakawan'"
+              v-else-if="getUserRole() === 'pustakawan'"
               to="/admin"
               class="dropdown-item"
               @click="closeUserMenu"
@@ -152,6 +153,7 @@ const isLoggedIn = ref(false)
 const user = ref(null)
 const showLogoutModal = ref(false)
 const isLoggingOut = ref(false)
+const avatarError = ref(false)
 
 onMounted(() => {
   checkLoginStatus()
@@ -179,6 +181,7 @@ const checkLoginStatus = async () => {
         user.value = response.data.data
         // Simpan ke localStorage untuk cache
         localStorage.setItem('user', JSON.stringify(response.data.data))
+        console.log('User data loaded:', user.value)
       } else {
         throw new Error('Failed to fetch profile')
       }
@@ -188,9 +191,12 @@ const checkLoginStatus = async () => {
       const userData = localStorage.getItem('user')
       if (userData) {
         try {
+          const parsedUser = JSON.parse(userData)
           isLoggedIn.value = true
-          user.value = JSON.parse(userData)
+          user.value = parsedUser
+          console.log('User data from cache:', user.value)
         } catch (e) {
+          console.error('Error parsing user data:', e)
           isLoggedIn.value = false
           user.value = null
         }
@@ -203,6 +209,58 @@ const checkLoginStatus = async () => {
     isLoggedIn.value = false
     user.value = null
   }
+}
+
+// Helper function untuk mendapatkan nama user
+const getUserName = () => {
+  if (!user.value) return 'Pengguna'
+  
+  // Cek berbagai kemungkinan field name
+  return user.value.name || 
+         user.value.nama || 
+         user.value.username || 
+         user.value.fullName || 
+         user.value.full_name || 
+         'Pengguna'
+}
+
+// Helper function untuk mendapatkan role user
+const getUserRole = () => {
+  if (!user.value) return 'siswa'
+  
+  return user.value.role || 
+         user.value.user_role || 
+         user.value.userRole || 
+         'siswa'
+}
+
+// Helper function untuk mendapatkan URL avatar
+const getAvatarUrl = () => {
+  if (avatarError.value) {
+    return 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'
+  }
+  
+  if (!user.value || !user.value.avatar) {
+    return 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'
+  }
+  
+  const avatar = user.value.avatar
+  
+  // Jika sudah URL lengkap
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    return avatar
+  }
+  
+  // Jika path relatif, gabungkan dengan base URL
+  const baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+  return `${baseURL}/uploads/${avatar}`
+}
+
+// Handle error saat load avatar
+const handleAvatarError = (e) => {
+  console.error('Error loading avatar, using default')
+  avatarError.value = true
+  e.target.src = 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'
 }
 
 const toggleMenu = () => (menuOpen.value = !menuOpen.value)

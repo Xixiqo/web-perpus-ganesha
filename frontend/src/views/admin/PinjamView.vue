@@ -1,5 +1,34 @@
 <template>
     <div class="peminjaman-container">
+        <!-- Modal Alert -->
+        <div v-if="alert.show" class="modal-overlay" @click="closeAlert">
+            <div class="modal-content alert-modal" @click.stop>
+                <div class="modal-header" :class="`alert-${alert.type}`">
+                    <span class="alert-icon">{{ getAlertIcon() }}</span>
+                    <span class="alert-title">{{ alert.title }}</span>
+                    <button class="modal-close" @click="closeAlert">✕</button>
+                </div>
+                <div class="modal-body">
+                    <p class="alert-message">{{ alert.message }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button 
+                        v-if="alert.type === 'confirm'" 
+                        @click="closeAlert" 
+                        class="btn btn-secondary-modal"
+                    >
+                        Batal
+                    </button>
+                    <button 
+                        @click="handleAlertConfirm" 
+                        :class="`btn btn-${alert.type}-modal`"
+                    >
+                        {{ alert.confirmText || 'OK' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="header">
             <h1>Manajemen Peminjaman Buku</h1>
             <p class="subtitle">Kelola status peminjaman buku perpustakaan</p>
@@ -16,13 +45,16 @@
                 <option value="Dikembalikan">Dikembalikan</option>
                 <option value="Terlambat">Terlambat</option>
             </select>
-            <button @click="checkLateStatus" class="btn btn-warning" style="margin-left: 10px;">
-                Cek Status Terlambat
+            <button @click="manualCheckLateStatus" class="btn btn-warning" style="margin-left: 10px;">
+                🔄 Cek Status Terlambat
             </button>
         </div>
 
         <!-- Loading State -->
-        <div v-if="loading" class="loading">Memuat data...</div>
+        <div v-if="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Memuat data...</p>
+        </div>
 
         <!-- Tabel Peminjaman -->
         <div v-else class="table-container">
@@ -57,31 +89,41 @@
                                 <button 
                                     v-if="item.status === 'Pending'" 
                                     @click="updateStatus(item, 'Approved')"
-                                    class="btn btn-success">
-                                    Setujui
+                                    class="btn-icon-action approve-btn"
+                                    title="Setujui"
+                                >
+                                    ✓
                                 </button>
                                 <button 
                                     v-if="item.status === 'Pending'" 
-                                    @click="rejectPeminjaman(item)"
-                                    class="btn btn-danger">
-                                    Tolak
+                                    @click="confirmReject(item)"
+                                    class="btn-icon-action reject-btn"
+                                    title="Tolak"
+                                >
+                                    ✕
                                 </button>
                                 <button 
                                     v-if="item.status === 'Approved'" 
                                     @click="updateStatus(item, 'Dipinjam')"
-                                    class="btn btn-primary">
-                                    Dipinjam
+                                    class="btn-icon-action borrow-btn"
+                                    title="Dipinjam"
+                                >
+                                    📤
                                 </button>
                                 <button 
                                     v-if="item.status === 'Dipinjam' || item.status === 'Terlambat'" 
                                     @click="showReturnModal(item)"
-                                    class="btn btn-info">
-                                    Kembalikan
+                                    class="btn-icon-action return-btn"
+                                    title="Kembalikan"
+                                >
+                                    📥
                                 </button>
                                 <button 
                                     @click="showDetail(item)"
-                                    class="btn btn-secondary">
-                                    Detail
+                                    class="btn-icon-action detail-btn"
+                                    title="Detail"
+                                >
+                                    ℹ️
                                 </button>
                             </div>
                         </td>
@@ -96,7 +138,7 @@
         <!-- Modal Detail -->
         <div v-if="showDetailModal" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header detail-header">
                     <h2>Detail Peminjaman</h2>
                     <button @click="closeModal" class="close-btn">&times;</button>
                 </div>
@@ -158,7 +200,7 @@
         <!-- Modal Pengembalian -->
         <div v-if="showReturnModalFlag" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header detail-header">
                     <h2>Pengembalian Buku</h2>
                     <button @click="closeModal" class="close-btn">&times;</button>
                 </div>
@@ -216,16 +258,22 @@ export default {
             keterangan: '',
             lateDays: 0,
             loading: false,
-            // 🔴 API Base dari environment variable
+            pendingCallback: null,
+            alert: {
+                show: false,
+                type: 'alert',
+                title: '',
+                message: '',
+                confirmText: 'OK',
+            },
+            autoCheckDone: false,
             apiBase: import.meta.env.VITE_API_BASE || 'http://localhost:5000'
         }
     },
     mounted() {
         this.loadPeminjaman();
-        this.checkLateStatus(); // Auto check setiap refresh
     },
     methods: {
-        // 🔴 Method untuk mendapatkan config dengan Authorization header
         getAuthHeaders() {
             const token = localStorage.getItem('token');
             return {
@@ -234,14 +282,62 @@ export default {
             };
         },
 
-        // 🔴 Error handler untuk unauthorized
         handleUnauthorized(response) {
             if (response.status === 401 || response.status === 403) {
                 console.error('⚠️ Unauthorized - Token invalid atau expired');
                 localStorage.removeItem('token');
-                // Optional: redirect ke login
-                // window.location.href = '/login';
             }
+        },
+
+        showAlert(title, message, type = 'alert') {
+            this.alert = {
+                show: true,
+                type,
+                title,
+                message,
+                confirmText: 'OK',
+            };
+        },
+
+        showSuccess(title, message) {
+            this.showAlert(title, message, 'success');
+        },
+
+        showError(title, message) {
+            this.showAlert(title, message, 'error');
+        },
+
+        showConfirm(title, message, callback) {
+            this.pendingCallback = callback;
+            this.alert = {
+                show: true,
+                type: 'confirm',
+                title,
+                message,
+                confirmText: 'Lanjutkan',
+            };
+        },
+
+        getAlertIcon() {
+            const icons = {
+                'alert': 'ℹ️',
+                'success': '✓',
+                'error': '✕',
+                'confirm': '❓'
+            };
+            return icons[this.alert.type] || 'ℹ️';
+        },
+
+        closeAlert() {
+            this.alert.show = false;
+            this.pendingCallback = null;
+        },
+
+        handleAlertConfirm() {
+            if (this.alert.type === 'confirm' && this.pendingCallback) {
+                this.pendingCallback();
+            }
+            this.closeAlert();
         },
 
         async loadPeminjaman() {
@@ -260,11 +356,72 @@ export default {
                 this.peminjaman = await response.json();
                 this.filteredPeminjaman = [...this.peminjaman];
                 console.log('✅ Data peminjaman dimuat:', this.peminjaman.length);
+
+                // Auto check late status hanya sekali saat load pertama
+                if (!this.autoCheckDone) {
+                    this.autoCheckDone = true;
+                    await this.autoCheckLateStatus();
+                }
             } catch (error) {
                 console.error('❌ Error loading peminjaman:', error);
-                alert('Gagal memuat data peminjaman: ' + error.message);
+                this.showError('Error', 'Gagal memuat data peminjaman: ' + error.message);
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async autoCheckLateStatus() {
+            try {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/check/late`, {
+                    method: 'GET',
+                    headers: this.getAuthHeaders()
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.updated > 0) {
+                    await this.loadPeminjamanSilent();
+                }
+            } catch (error) {
+                console.error('❌ Error auto checking late status:', error);
+            }
+        },
+
+        async loadPeminjamanSilent() {
+            try {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann`, {
+                    method: 'GET',
+                    headers: this.getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    this.peminjaman = await response.json();
+                    this.filterPeminjaman();
+                }
+            } catch (error) {
+                console.error('❌ Error reloading data:', error);
+            }
+        },
+
+        async manualCheckLateStatus() {
+            try {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/check/late`, {
+                    method: 'GET',
+                    headers: this.getAuthHeaders()
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    this.showSuccess('Sukses', `Pengecekan status terlambat berhasil. ${result.updated} data diperbarui.`);
+                    await this.loadPeminjamanSilent();
+                } else {
+                    this.handleUnauthorized(response);
+                    throw new Error(result.message || 'Gagal mengecek status terlambat');
+                }
+            } catch (error) {
+                console.error('❌ Error checking late status:', error);
+                this.showError('Error', 'Gagal mengecek status terlambat: ' + error.message);
             }
         },
 
@@ -278,56 +435,63 @@ export default {
             }
         },
 
-        async updateStatus(item, newStatus) {
-            if (!confirm(`Apakah Anda yakin ingin mengubah status menjadi ${newStatus}?`)) return;
+        updateStatus(item, newStatus) {
+            this.showConfirm(
+                'Ubah Status',
+                `Apakah Anda yakin ingin mengubah status menjadi ${newStatus}?`,
+                async () => {
+                    try {
+                        const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${item.id_peminjaman}/status`, {
+                            method: 'PUT',
+                            headers: this.getAuthHeaders(),
+                            body: JSON.stringify({ status: newStatus })
+                        });
 
-            try {
-                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${item.id_peminjaman}/status`, {
-                    method: 'PUT',
-                    headers: this.getAuthHeaders(),
-                    body: JSON.stringify({ status: newStatus })
-                });
+                        const result = await response.json();
+                        
+                        if (!response.ok) {
+                            this.handleUnauthorized(response);
+                            throw new Error(result.message || 'Gagal mengubah status');
+                        }
 
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    this.handleUnauthorized(response);
-                    throw new Error(result.message || 'Gagal mengubah status');
+                        item.status = newStatus;
+                        this.showSuccess('Sukses', `Status berhasil diubah menjadi ${newStatus}`);
+                        this.filterPeminjaman();
+                    } catch (error) {
+                        console.error('❌ Error updating status:', error);
+                        this.showError('Error', 'Gagal mengubah status: ' + error.message);
+                    }
                 }
-
-                item.status = newStatus;
-                alert(`Status berhasil diubah menjadi ${newStatus}`);
-                this.filterPeminjaman();
-                console.log('✅ Status updated successfully');
-            } catch (error) {
-                console.error('❌ Error updating status:', error);
-                alert('Gagal mengubah status: ' + error.message);
-            }
+            );
         },
 
-        async rejectPeminjaman(item) {
-            if (!confirm('Apakah Anda yakin ingin menolak peminjaman ini?')) return;
-            try {
-                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${item.id_peminjaman}`, {
-                    method: 'DELETE',
-                    headers: this.getAuthHeaders()
-                });
+        confirmReject(item) {
+            this.showConfirm(
+                'Tolak Peminjaman',
+                'Apakah Anda yakin ingin menolak peminjaman ini?',
+                async () => {
+                    try {
+                        const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${item.id_peminjaman}`, {
+                            method: 'DELETE',
+                            headers: this.getAuthHeaders()
+                        });
 
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    this.handleUnauthorized(response);
-                    throw new Error(result.message || 'Gagal menolak peminjaman');
+                        const result = await response.json();
+                        
+                        if (!response.ok) {
+                            this.handleUnauthorized(response);
+                            throw new Error(result.message || 'Gagal menolak peminjaman');
+                        }
+
+                        this.peminjaman = this.peminjaman.filter(p => p.id_peminjaman !== item.id_peminjaman);
+                        this.filterPeminjaman();
+                        this.showSuccess('Sukses', 'Peminjaman berhasil ditolak');
+                    } catch (error) {
+                        console.error('❌ Error rejecting peminjaman:', error);
+                        this.showError('Error', 'Gagal menolak peminjaman: ' + error.message);
+                    }
                 }
-
-                this.peminjaman = this.peminjaman.filter(p => p.id_peminjaman !== item.id_peminjaman);
-                this.filterPeminjaman();
-                alert('Peminjaman berhasil ditolak');
-                console.log('✅ Peminjaman rejected successfully');
-            } catch (error) {
-                console.error('❌ Error rejecting peminjaman:', error);
-                alert('Gagal menolak peminjaman: ' + error.message);
-            }
+            );
         },
 
         showReturnModal(item) {
@@ -372,13 +536,13 @@ export default {
                 }
 
                 this.selectedItem.status = 'Dikembalikan';
-                alert(`Buku berhasil dikembalikan${denda > 0 ? ` dengan denda Rp ${denda.toLocaleString('id-ID')}` : ''}`);
+                const message = `Buku berhasil dikembalikan${denda > 0 ? ` dengan denda Rp ${denda.toLocaleString('id-ID')}` : ''}`;
+                this.showSuccess('Sukses', message);
                 this.closeModal();
                 this.filterPeminjaman();
-                console.log('✅ Book returned successfully');
             } catch (error) {
                 console.error('❌ Error returning book:', error);
-                alert('Gagal memproses pengembalian: ' + error.message);
+                this.showError('Error', 'Gagal memproses pengembalian: ' + error.message);
             }
         },
 
@@ -391,29 +555,6 @@ export default {
             this.showDetailModal = false;
             this.showReturnModalFlag = false;
             this.selectedItem = null;
-        },
-
-        async checkLateStatus() {
-            try {
-                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/check/late`, {
-                    method: 'GET',
-                    headers: this.getAuthHeaders()
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert(`Pengecekan status terlambat berhasil. ${result.updated} data diperbarui.`);
-                    await this.loadPeminjaman();
-                    console.log('✅ Late status checked successfully');
-                } else {
-                    this.handleUnauthorized(response);
-                    throw new Error(result.message || 'Gagal mengecek status terlambat');
-                }
-            } catch (error) {
-                console.error('❌ Error checking late status:', error);
-                alert('Gagal mengecek status terlambat: ' + error.message);
-            }
         },
 
         calculateLateDays(dueDate) {
@@ -450,6 +591,221 @@ export default {
 </script>
 
 <style scoped>
+/* Alert Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 90%;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+.alert-modal {
+    max-width: 400px;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+    position: relative;
+}
+
+.modal-header.alert-alert {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.modal-header.alert-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.modal-header.alert-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.modal-header.alert-confirm {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.modal-header.detail-header {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+}
+
+.alert-icon {
+    font-size: 1.75rem;
+    flex-shrink: 0;
+}
+
+.alert-title,
+.modal-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    flex: 1;
+    margin: 0;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: white;
+    line-height: 1;
+    transition: opacity 0.2s ease;
+}
+
+.close-btn:hover {
+    opacity: 0.7;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: #374151;
+}
+
+.alert-message {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.btn-alert-modal,
+.btn-success-modal,
+.btn-error-modal,
+.btn-confirm-modal {
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-alert-modal {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-alert-modal:hover {
+    background: #2563eb;
+}
+
+.btn-success-modal {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success-modal:hover {
+    background: #059669;
+}
+
+.btn-error-modal {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-error-modal:hover {
+    background: #dc2626;
+}
+
+.btn-confirm-modal {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-confirm-modal:hover {
+    background: #d97706;
+}
+
+.btn-secondary-modal {
+    padding: 0.625rem 1.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    color: #374151;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary-modal:hover {
+    background: #f3f4f6;
+}
+
+/* Main Container */
 .peminjaman-container {
     padding: 20px;
     max-width: 1400px;
@@ -480,11 +836,12 @@ export default {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .filter-section label {
     font-weight: 600;
-    margin-right: 10px;
     color: #2c3e50;
 }
 
@@ -498,9 +855,31 @@ export default {
 
 .loading {
     text-align: center;
-    padding: 40px;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #34495e;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading p {
     color: #7f8c8d;
     font-size: 16px;
+    margin: 0;
 }
 
 .table-container {
@@ -572,16 +951,81 @@ export default {
 
 .action-buttons {
     display: flex;
-    gap: 5px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
+.btn-icon-action {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.approve-btn {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.approve-btn:hover {
+    background: #a7f3d0;
+    transform: scale(1.1);
+}
+
+.reject-btn {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.reject-btn:hover {
+    background: #fecaca;
+    transform: scale(1.1);
+}
+
+.borrow-btn {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.borrow-btn:hover {
+    background: #bfdbfe;
+    transform: scale(1.1);
+}
+
+.return-btn {
+    background: #f3e8ff;
+    color: #6b21a8;
+}
+
+.return-btn:hover {
+    background: #ede9fe;
+    transform: scale(1.1);
+}
+
+.detail-btn {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.detail-btn:hover {
+    background: #fde68a;
+    transform: scale(1.1);
+}
+
 .btn {
-    padding: 6px 12px;
+    padding: 8px 16px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     transition: all 0.3s;
 }
@@ -640,60 +1084,6 @@ export default {
     background-color: #e0a800;
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.modal-header {
-    padding: 20px;
-    border-bottom: 1px solid #ecf0f1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h2 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 20px;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: #7f8c8d;
-    line-height: 1;
-}
-
-.close-btn:hover {
-    color: #2c3e50;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
 .detail-row {
     display: flex;
     padding: 12px 0;
@@ -727,14 +1117,6 @@ export default {
     resize: vertical;
 }
 
-.modal-footer {
-    padding: 20px;
-    border-top: 1px solid #ecf0f1;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
 .text-center {
     text-align: center;
     color: #7f8c8d;
@@ -750,12 +1132,22 @@ export default {
         padding: 10px;
     }
     
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+    
     .table-container {
         overflow-x: auto;
     }
     
     .peminjaman-table {
         font-size: 12px;
+        min-width: 800px;
     }
     
     .peminjaman-table th,
@@ -767,8 +1159,10 @@ export default {
         flex-direction: column;
     }
     
-    .btn {
+    .btn-icon-action {
         width: 100%;
+        height: auto;
+        padding: 8px;
     }
     
     .detail-row {
@@ -777,6 +1171,15 @@ export default {
     
     .detail-label {
         margin-bottom: 5px;
+        min-width: auto;
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .btn {
+        width: 100%;
     }
 }
 </style>

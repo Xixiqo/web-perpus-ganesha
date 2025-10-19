@@ -26,7 +26,7 @@
               @error="onImageError"
             />
             
-            <!-- Share Button (Absolute positioned) -->
+            <!-- Share Button -->
             <button 
               :class="['btn-share', { copied: isLinkCopied }]" 
               @click="copyLink"
@@ -76,7 +76,16 @@
 
         <!-- Description -->
         <div class="book-description" v-if="book.description">
-          <p>{{ book.description }}</p>
+          <div class="description-content" :class="{ expanded: isDescriptionExpanded }">
+            <p>{{ book.description }}</p>
+          </div>
+          <button 
+            v-if="book.description && book.description.length > 300" 
+            class="btn-read-more" 
+            @click="isDescriptionExpanded = !isDescriptionExpanded"
+          >
+            {{ isDescriptionExpanded ? 'Tampilkan Lebih Sedikit' : 'Baca Selengkapnya' }}
+          </button>
         </div>
 
         <!-- Detail Buku -->
@@ -182,70 +191,70 @@
     </div>
 
     <!-- Member Modal (untuk non-member) -->
-<transition name="modal-fade">
-  <div v-if="showMemberModal" class="modal-overlay" @click="closeMemberModal">
-    <div class="modal-content member-modal" @click.stop>
-      <div class="modal-header">
-        <h3></h3>
-        <button class="btn-close" @click="closeMemberModal">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <div class="modal-body">
-          <div class="member-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+    <transition name="modal-fade">
+      <div v-if="showMemberModal" class="modal-overlay" @click="closeMemberModal">
+        <div class="modal-content member-modal" @click.stop>
+          <div class="modal-header">
+            <h3></h3>
+            <button class="btn-close" @click="closeMemberModal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
 
-          <h4>Jadilah Member Perpustakaan</h4>
-          <p class="member-description">
-            Untuk meminjam buku, Anda harus menjadi member terdaftar. Kunjungi perpustakaan kami dan lakukan pendaftaran untuk mendapatkan akses penuh ke koleksi buku.
-          </p>
+          <div class="modal-body">
+            <div class="member-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
 
-          <div class="member-benefits">
-            <h5>Keuntungan Member:</h5>
-            <ul>
-              <li>
-                <span class="benefit-icon">✓</span>
-                <span>Pinjam buku hingga 5 judul sekaligus</span>
-              </li>
-              <li>
-                <span class="benefit-icon">✓</span>
-                <span>Durasi peminjaman 14 hari</span>
-              </li>
-              <li>
-                <span class="benefit-icon">✓</span>
-                <span>Prioritas pemesanan buku</span>
-              </li>
-            </ul>
-          </div>
+            <h4>Jadilah Member Perpustakaan</h4>
+            <p class="member-description">
+              Untuk meminjam buku, Anda harus menjadi member terdaftar. Kunjungi perpustakaan kami dan lakukan pendaftaran untuk mendapatkan akses penuh ke koleksi buku.
+            </p>
 
-          <div class="member-contact">
-            <h5>Hubungi Kami:</h5>
-            <div class="contact-info">
-              <div class="info-item">
-                <span class="info-icon material-icons">access_time</span>
-                <div>
-                  <p class="info-label">Jam Operasional</p>
-                  <p class="info-value">Senin - Jumat: 07:00 - 15:00</p>
+            <div class="member-benefits">
+              <h5>Keuntungan Member:</h5>
+              <ul>
+                <li>
+                  <span class="benefit-icon">✓</span>
+                  <span>Pinjam buku hingga 5 judul sekaligus</span>
+                </li>
+                <li>
+                  <span class="benefit-icon">✓</span>
+                  <span>Durasi peminjaman 14 hari</span>
+                </li>
+                <li>
+                  <span class="benefit-icon">✓</span>
+                  <span>Prioritas pemesanan buku</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="member-contact">
+              <h5>Hubungi Kami:</h5>
+              <div class="contact-info">
+                <div class="info-item">
+                  <span class="info-icon">⏰</span>
+                  <div>
+                    <p class="info-label">Jam Operasional</p>
+                    <p class="info-value">Senin - Jumat: 07:00 - 15:00</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="modal-footer">
-          <button class="btn-confirm" @click="closeMemberModal">Tutup</button>
+          <div class="modal-footer">
+            <button class="btn-confirm" @click="closeMemberModal">Tutup</button>
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
 
     <!-- Borrow Confirmation Modal -->
     <transition name="modal-fade">
@@ -262,6 +271,19 @@
           </div>
 
           <div class="modal-body">
+            <!-- Warning untuk data tidak lengkap -->
+            <!-- <div v-if="!userDataStatus.isComplete" class="data-warning">
+              <div class="warning-icon">⚠️</div>
+              <div class="warning-content">
+                <h5>Data Profil Belum Lengkap</h5>
+                <p>Beberapa data Anda masih kosong. Mohon lengkapi data berikut di halaman profil:</p>
+                <ul class="missing-fields">
+                  <li v-for="field in userDataStatus.missingFields" :key="field">{{ field }}</li>
+                </ul>
+                <p class="warning-note">Anda tetap dapat mengajukan peminjaman, namun kami menyarankan untuk melengkapi data terlebih dahulu.</p>
+              </div>
+            </div> -->
+
             <p class="modal-question">Apakah Anda yakin ingin mengajukan peminjaman buku ini?</p>
             
             <div class="book-summary">
@@ -345,6 +367,7 @@ const book = ref(null)
 const relatedBooks = ref([])
 const isLoading = ref(true)
 const isLoadingRelated = ref(true)
+const isDescriptionExpanded = ref(false)
 
 // ===== MODAL STATE =====
 const isLinkCopied = ref(false)
@@ -352,30 +375,26 @@ const showModal = ref(false)
 const showConfirmation = ref(false)
 const showMemberModal = ref(false)
 const selectedBook = ref(null)
+const userDataStatus = ref({ isComplete: true, missingFields: [] })
 
-
-// ===== FETCH CURRENT USER (FIXED!) =====
+// ===== FETCH CURRENT USER =====
 const fetchCurrentUser = async () => {
   isLoadingAuth.value = true
   try {
     const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-    
-    // 🔴 AMBIL TOKEN DARI LOCALSTORAGE
     const token = localStorage.getItem('token')
     
     if (!token) {
-      console.log('⚠️ No token found')
       currentUser.value = null
       isLoadingAuth.value = false
       return
     }
 
-    // 🔴 KIRIM TOKEN DI AUTHORIZATION HEADER
     const res = await fetch(`${apiBase}/api/profile`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // 🔴 INI YANG PENTING!
+        'Authorization': `Bearer ${token}`
       }
     })
 
@@ -385,11 +404,9 @@ const fetchCurrentUser = async () => {
       console.log('✅ User logged in:', currentUser.value)
     } else {
       currentUser.value = null
-      // 🔴 Kalau token invalid/expired, hapus dari localStorage
       if (res.status === 401 || res.status === 403) {
         localStorage.removeItem('token')
       }
-      console.log('⚠️ User not authenticated')
     }
   } catch (err) {
     console.error('❌ Error fetching user:', err)
@@ -399,7 +416,51 @@ const fetchCurrentUser = async () => {
   }
 }
 
-// ===== BOOK DETAIL FUNCTIONS (TETAP SAMA) =====
+// ===== CHECK USER DATA COMPLETENESS =====
+const checkUserDataCompleteness = (user) => {
+  const requiredFields = [
+    { key: 'nama_lengkap', label: 'Nama Lengkap' },
+    { key: 'email', label: 'Email' },
+    { key: 'no_telp', label: 'Nomor Telepon' },
+    { key: 'alamat', label: 'Alamat' }
+  ]
+
+  const missingFields = []
+
+  requiredFields.forEach(field => {
+    const value = user[field.key]
+    if (!value || value.toString().trim() === '' || value === null) {
+      missingFields.push(field.label)
+    }
+  })
+
+  return {
+    isComplete: missingFields.length === 0,
+    missingFields
+  }
+}
+
+// ===== CHECK MEMBERSHIP STATUS =====
+const checkMembershipStatus = (user) => {
+  if (!user.id_anggota && !user.id) {
+    return { isActive: false, reason: 'not_member' }
+  }
+
+  if (!user.member_expired) {
+    return { isActive: false, reason: 'no_expiry_date' }
+  }
+
+  const today = new Date()
+  const expiryDate = new Date(user.member_expired)
+  
+  if (expiryDate < today) {
+    return { isActive: false, reason: 'expired' }
+  }
+
+  return { isActive: true }
+}
+
+// ===== BOOK DETAIL FUNCTIONS =====
 const onImageError = (event) => {
   event.target.src = '/default_cover.png'
 }
@@ -476,26 +537,23 @@ const fetchRelatedBooks = async () => {
   }
 }
 
-// ===== BORROW FUNCTIONS (DIPERBAIKI) =====
+// ===== BORROW FUNCTIONS =====
 const openBorrowModal = () => {
-  console.log('🔍 Open borrow modal clicked')
-  console.log('Current user:', currentUser.value)
-  
   if (!currentUser.value) {
     showAlert('error', 'Silakan login terlebih dahulu untuk meminjam buku')
     return
   }
 
-  // Cek apakah user memiliki data anggota dan membership masih aktif
   const isMember = checkMembershipStatus(currentUser.value)
-
-  console.log('Is member?', isMember.isActive)
-  console.log('Member data:', currentUser.value)
 
   if (!isMember.isActive) {
     showMemberModal.value = true
     return
   }
+
+  // Check data completeness
+  const dataStatus = checkUserDataCompleteness(currentUser.value)
+  userDataStatus.value = dataStatus
 
   if (book.value?.availability?.length > 0) {
     const available = book.value.availability
@@ -511,26 +569,6 @@ const openBorrowModal = () => {
   } else {
     showAlert('error', 'Informasi ketersediaan buku tidak tersedia.')
   }
-}
-
-// Helper function untuk cek status membership
-const checkMembershipStatus = (user) => {
-  if (!user.id_anggota && !user.id) {
-    return { isActive: false, reason: 'not_member' }
-  }
-
-  if (!user.member_expired) {
-    return { isActive: false, reason: 'no_expiry_date' }
-  }
-
-  const today = new Date()
-  const expiryDate = new Date(user.member_expired)
-  
-  if (expiryDate < today) {
-    return { isActive: false, reason: 'expired' }
-  }
-
-  return { isActive: true }
 }
 
 const confirmBorrow = async () => {
@@ -571,7 +609,6 @@ const confirmBorrow = async () => {
     showAlert('error', 'Terjadi kesalahan saat memproses peminjaman.')
   }
 }
-
 
 // ===== MODAL & NAVIGATION =====
 const closeModal = () => {
@@ -619,7 +656,7 @@ const copyLink = () => {
   })
 }
 
-// ===== ALERT (TETAP SAMA) =====
+// ===== ALERT =====
 const alert = reactive({
   show: false,
   type: 'success',
@@ -636,10 +673,8 @@ const showAlert = (type, message) => {
   }, 4000)
 }
 
-// ===== COMPONENT LIFECYCLE (TETAP SAMA) =====
+// ===== COMPONENT LIFECYCLE =====
 onMounted(async () => {
-  console.log('🚀 DetailView mounted')
-  
   await fetchCurrentUser()
   
   const id = route.params.id
@@ -923,6 +958,7 @@ onMounted(async () => {
   color: #6B7280;
 }
 
+/* Description with Read More */
 .book-description {
   margin-bottom: 40px;
   padding: 24px;
@@ -931,10 +967,40 @@ onMounted(async () => {
   border-left: 4px solid #2C64F9;
 }
 
-.book-description p {
+.description-content {
+  position: relative;
+  overflow: hidden;
+  max-height: 150px;
+  transition: max-height 0.4s ease;
+}
+
+.description-content.expanded {
+  max-height: none;
+}
+
+.description-content p {
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.8;
   color: #374151;
+  margin: 0;
+}
+
+.btn-read-more {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #2C64F9;
+  color: #2C64F9;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-read-more:hover {
+  background: #2C64F9;
+  color: white;
 }
 
 .section-title {
@@ -1148,15 +1214,19 @@ onMounted(async () => {
   z-index: 9999;
   padding: 20px;
   backdrop-filter: blur(4px);
+  overflow-y: auto;
 }
 
 .modal-content {
   background: white;
   border-radius: 16px;
-  max-width: 500px;
+  max-width: 550px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   animation: modalSlideUp 0.3s ease-out;
+  margin: auto;
 }
 
 @keyframes modalSlideUp {
@@ -1176,6 +1246,10 @@ onMounted(async () => {
   justify-content: space-between;
   padding: 24px 24px 0 24px;
   margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
 }
 
 .modal-header h3 {
@@ -1196,6 +1270,7 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.3s ease;
   color: #6B7280;
+  flex-shrink: 0;
 }
 
 .btn-close:hover {
@@ -1205,6 +1280,72 @@ onMounted(async () => {
 
 .modal-body {
   padding: 0 24px 24px 24px;
+}
+
+/* Data Warning */
+.data-warning {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.warning-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-content h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #92400E;
+  margin: 0 0 8px 0;
+}
+
+.warning-content > p {
+  font-size: 0.9rem;
+  color: #78350F;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.missing-fields {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.missing-fields li {
+  font-size: 0.85rem;
+  color: #92400E;
+  padding-left: 20px;
+  position: relative;
+  font-weight: 600;
+}
+
+.missing-fields li::before {
+  content: "•";
+  position: absolute;
+  left: 8px;
+  font-weight: 700;
+}
+
+.warning-note {
+  font-size: 0.85rem !important;
+  color: #78350F !important;
+  font-style: italic;
+  margin: 0 !important;
 }
 
 .modal-question {
@@ -1238,6 +1379,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .summary-info h4 {
@@ -1249,6 +1391,7 @@ onMounted(async () => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
 }
 
 .summary-author {
@@ -1261,6 +1404,7 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 .code-label {
@@ -1284,42 +1428,21 @@ onMounted(async () => {
   gap: 6px;
   font-size: 0.85rem;
   color: #6B7280;
+  flex-wrap: wrap;
 }
 
 .location-icon {
   font-size: 1rem;
 }
 
-.modal-note {
-  display: flex;
-  gap: 12px;
-  padding: 16px;
-  background: #FEF3C7;
-  border-radius: 8px;
-  border-left: 4px solid #F59E0B;
-}
-
-.modal-note svg {
-  flex-shrink: 0;
-  color: #F59E0B;
-  margin-top: 2px;
-}
-
-.modal-note p {
-  font-size: 0.9rem;
-  color: #78350F;
-  line-height: 1.6;
-}
-
-.modal-note strong {
-  font-weight: 700;
-  color: #92400E;
-}
-
 .modal-footer {
   display: flex;
   gap: 12px;
   padding: 0 24px 24px 24px;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding-top: 16px;
 }
 
 .btn-cancel, .btn-confirm {
@@ -1388,41 +1511,6 @@ onMounted(async () => {
   margin-bottom: 24px;
 }
 
-.contact-methods {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-bottom: 32px;
-}
-
-.contact-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 20px;
-  background: #F9FAFB;
-  border-radius: 12px;
-  border: 2px solid #E5E7EB;
-  flex: 1;
-  transition: all 0.3s ease;
-}
-
-.contact-item:hover {
-  border-color: #2C64F9;
-  background: #EFF6FF;
-}
-
-.contact-item svg {
-  color: #2C64F9;
-}
-
-.contact-item span {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #374151;
-}
-
 .btn-primary-full {
   width: 100%;
   padding: 14px 20px;
@@ -1441,92 +1529,7 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(44, 100, 249, 0.3);
 }
 
-/* Alert Notifications */
-.alert-notification {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  min-width: 320px;
-  max-width: 420px;
-  padding: 16px 20px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-  border-left: 4px solid;
-}
-
-.alert-success {
-  background: #D1FAE5;
-  border-left-color: #059669;
-  color: #065F46;
-}
-
-.alert-error {
-  background: #FEE2E2;
-  border-left-color: #DC2626;
-  color: #991B1B;
-}
-
-.alert-info {
-  background: #DBEAFE;
-  border-left-color: #3B82F6;
-  color: #1E40AF;
-}
-
-.alert-icon {
-  font-size: 1.2rem;
-  line-height: 1;
-  font-weight: 700;
-}
-
-.alert-success .alert-icon { color: #059669; }
-.alert-error .alert-icon { color: #DC2626; }
-.alert-info .alert-icon { color: #3B82F6; }
-
-.alert-content {
-  flex: 1;
-}
-
-.alert-message {
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-/* Transition Animations */
-.slide-fade-enter-active {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.slide-fade-leave-active {
-  transition: all 0.3s ease-out;
-}
-
-.slide-fade-enter-from {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.slide-fade-leave-to {
-  transform: translateY(20px);
-  opacity: 0;
-}
-
-.modal-fade-enter-active, .modal-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-fade-enter-from, .modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-active .modal-content {
-  animation: modalSlideUp 0.3s ease-out;
-}
-
+/* Member Modal */
 .member-modal {
   max-width: 550px;
 }
@@ -1662,6 +1665,92 @@ onMounted(async () => {
   margin: 4px 0 0 0;
 }
 
+/* Alert Notifications */
+.alert-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  border-left: 4px solid;
+}
+
+.alert-success {
+  background: #D1FAE5;
+  border-left-color: #059669;
+  color: #065F46;
+}
+
+.alert-error {
+  background: #FEE2E2;
+  border-left-color: #DC2626;
+  color: #991B1B;
+}
+
+.alert-info {
+  background: #DBEAFE;
+  border-left-color: #3B82F6;
+  color: #1E40AF;
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.alert-success .alert-icon { color: #059669; }
+.alert-error .alert-icon { color: #DC2626; }
+.alert-info .alert-icon { color: #3B82F6; }
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-message {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Transition Animations */
+.slide-fade-enter-active {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+.modal-fade-enter-active, .modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from, .modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active .modal-content {
+  animation: modalSlideUp 0.3s ease-out;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .book-detail-wrapper {
@@ -1677,23 +1766,47 @@ onMounted(async () => {
   }
 }
 
-@media (max-width: 640px) {
-    .member-modal {
-    max-width: 100%;
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .book-summary {
+    flex-direction: row;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .summary-cover {
+    width: 70px;
+    height: 105px;
+  }
+
+  .summary-info h4 {
+    font-size: 1rem;
+  }
+
+  .data-warning {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .warning-icon {
+    font-size: 1.5rem;
   }
 
   .member-description {
     padding: 0;
   }
+}
 
-  .contact-info {
-    gap: 12px;
-  }
-
-  .info-item {
-    gap: 10px;
-  }
-
+@media (max-width: 640px) {
   .book-detail-container {
     padding: 20px 16px;
   }
@@ -1706,15 +1819,18 @@ onMounted(async () => {
     font-size: 1.8rem;
   }
 
+  .book-description {
+    padding: 20px;
+  }
+
+  .description-content {
+    max-height: 120px;
+  }
+
   .details-grid {
     grid-template-columns: 1fr;
   }
   
-  .availability-header, .availability-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
   .availability-header {
     display: none;
   }
@@ -1722,6 +1838,8 @@ onMounted(async () => {
   .availability-row {
     display: flex;
     flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 8px;
     padding: 16px;
     background: white;
     border-radius: 8px;
@@ -1740,6 +1858,42 @@ onMounted(async () => {
 
   .books-grid {
     grid-template-columns: 1fr;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-cancel, .btn-confirm {
+    width: 100%;
+  }
+
+  .alert-notification {
+    left: 16px;
+    right: 16px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-content {
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 20px 20px 0 20px;
+  }
+
+  .modal-body {
+    padding: 0 20px 20px 20px;
+  }
+
+  .modal-footer {
+    padding: 16px 20px 20px 20px;
   }
 
   .book-summary {
@@ -1761,32 +1915,56 @@ onMounted(async () => {
     justify-content: center;
   }
 
-  .contact-methods {
-    flex-direction: column;
+  .data-warning {
+    padding: 12px;
   }
 
-  .alert-notification {
-    left: 16px;
-    right: 16px;
-    min-width: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-content {
-    margin: 0 16px;
+  .warning-content h5 {
+    font-size: 0.95rem;
   }
 
-  .modal-header h3 {
-    font-size: 1.2rem;
+  .warning-content > p,
+  .warning-note {
+    font-size: 0.85rem;
   }
 
-  .modal-footer {
-    flex-direction: column;
+  .missing-fields li {
+    font-size: 0.8rem;
   }
 
-  .btn-cancel, .btn-confirm {
-    width: 100%;
+  .confirmation-modal {
+    padding: 30px 20px;
+  }
+
+  .confirmation-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .confirmation-modal h3 {
+    font-size: 1.5rem;
+  }
+
+  .confirmation-modal > p {
+    font-size: 0.9rem;
+  }
+
+  .member-modal .modal-body h4 {
+    font-size: 1.3rem;
+  }
+
+  .member-description {
+    font-size: 0.9rem;
+  }
+
+  .member-benefits,
+  .member-contact {
+    padding: 16px;
+  }
+
+  .member-benefits li,
+  .info-value {
+    font-size: 0.85rem;
   }
 }
 </style>

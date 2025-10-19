@@ -58,7 +58,7 @@
           <div class="step third">
             <div class="avatar crown bronze">🥉</div>
             <div class="name">Zulhamdono</div>
-            <div class="points">-1 Peminjaman</div>
+            <div class="points">20 Peminjaman</div>
             <div class="block">3rd</div>
           </div>
         </div>

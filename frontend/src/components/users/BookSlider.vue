@@ -73,19 +73,34 @@ const sliderContainer = ref(null)
 const slideWidth = ref(0)
 const cardsPerView = ref(5)
 
+// Drag scroll variables
+const isDragging = ref(false)
+const startX = ref(0)
+const scrollLeft = ref(0)
+
 const calculateSlideWidth = () => {
   if (sliderContainer.value) {
     const containerWidth = sliderContainer.value.offsetWidth
     const windowWidth = window.innerWidth
-    const cardWidth = 174 // sesuaikan dengan lebar card
-    const gap = 20
     
-    if (windowWidth <= 768) {
-      // Di mobile: slide per 1 card
+    let cardWidth, gap
+    
+    if (windowWidth <= 480) {
+      // Mobile kecil
+      cardWidth = containerWidth - 80 // Kurangi padding kiri kanan (45px x 2 = 90px, sisa 10px untuk spacing)
+      gap = 12
+      cardsPerView.value = 1
+      slideWidth.value = cardWidth + gap
+    } else if (windowWidth <= 768) {
+      // Tablet
+      cardWidth = containerWidth - 100 // Kurangi padding
+      gap = 16
       cardsPerView.value = 1
       slideWidth.value = cardWidth + gap
     } else {
-      // Desktop: tetap seperti semula
+      // Desktop
+      cardWidth = 174
+      gap = 20
       cardsPerView.value = Math.floor(containerWidth / (cardWidth + gap))
       slideWidth.value = cardWidth + gap
     }
@@ -123,13 +138,77 @@ const goToSlide = (index) => {
   }
 }
 
+const startDrag = (e) => {
+  isDragging.value = true
+  const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX
+  startX.value = clientX
+  scrollLeft.value = currentIndex.value
+  
+  if (sliderContainer.value) {
+    sliderContainer.value.style.cursor = 'grabbing'
+  }
+}
+
+const onDrag = (e) => {
+  if (!isDragging.value) return
+  e.preventDefault()
+  
+  const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX
+  const diff = startX.value - clientX
+  const threshold = slideWidth.value / 3 // Minimal 1/3 card width untuk pindah
+  
+  if (Math.abs(diff) > threshold) {
+    if (diff > 0 && currentIndex.value < maxIndex.value) {
+      // Drag ke kiri, pindah ke next
+      currentIndex.value = scrollLeft.value + 1
+      startX.value = clientX
+      scrollLeft.value = currentIndex.value
+    } else if (diff < 0 && currentIndex.value > 0) {
+      // Drag ke kanan, pindah ke prev
+      currentIndex.value = scrollLeft.value - 1
+      startX.value = clientX
+      scrollLeft.value = currentIndex.value
+    }
+  }
+}
+
+const stopDrag = () => {
+  isDragging.value = false
+  if (sliderContainer.value) {
+    sliderContainer.value.style.cursor = 'grab'
+  }
+}
+
 onMounted(() => {
   calculateSlideWidth()
   window.addEventListener('resize', calculateSlideWidth)
+  
+  // Add drag event listeners
+  if (sliderContainer.value) {
+    sliderContainer.value.addEventListener('mousedown', startDrag)
+    sliderContainer.value.addEventListener('touchstart', startDrag, { passive: false })
+    
+    document.addEventListener('mousemove', onDrag)
+    document.addEventListener('touchmove', onDrag, { passive: false })
+    
+    document.addEventListener('mouseup', stopDrag)
+    document.addEventListener('touchend', stopDrag)
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', calculateSlideWidth)
+  
+  // Remove drag event listeners
+  if (sliderContainer.value) {
+    sliderContainer.value.removeEventListener('mousedown', startDrag)
+    sliderContainer.value.removeEventListener('touchstart', startDrag)
+  }
+  
+  document.removeEventListener('mousemove', onDrag)
+  document.removeEventListener('touchmove', onDrag)
+  document.removeEventListener('mouseup', stopDrag)
+  document.removeEventListener('touchend', stopDrag)
 })
 </script>
 
@@ -169,11 +248,15 @@ onUnmounted(() => {
 .slider-wrapper {
   position: relative;
   padding: 0 60px;
+  overflow: hidden;
 }
 
 .slider-container {
   overflow: hidden;
   width: 100%;
+  position: relative;
+  cursor: grab;
+  user-select: none;
 }
 
 .slider-track {
@@ -265,6 +348,7 @@ onUnmounted(() => {
   
   .slider-wrapper {
     padding: 0 50px;
+    overflow: hidden;
   }
   
   .slider-track {
@@ -298,6 +382,32 @@ onUnmounted(() => {
 
   .dot.active {
     width: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-wrapper {
+    padding: 0 45px;
+    overflow: hidden;
+  }
+
+  .slider-track {
+    gap: 12px;
+    padding: 0 16px;
+  }
+
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .nav-btn.prev {
+    left: 5px;
+  }
+
+  .nav-btn.next {
+    right: 5px;
   }
 }
 </style>

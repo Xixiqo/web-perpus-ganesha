@@ -1,5 +1,34 @@
 <template>
   <div class="books-admin">
+    <!-- Modal Alert -->
+    <div v-if="modal.show" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header" :class="`modal-${modal.type}`">
+          <span class="modal-icon">{{ getModalIcon() }}</span>
+          <span class="modal-title">{{ modal.title }}</span>
+          <button class="modal-close" @click="closeModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-message">{{ modal.message }}</p>
+        </div>
+        <div class="modal-footer">
+          <button 
+            v-if="modal.type === 'confirm'" 
+            @click="closeModal" 
+            class="btn btn-secondary-modal"
+          >
+            {{ modal.cancelText || 'Batal' }}
+          </button>
+          <button 
+            @click="handleConfirm" 
+            :class="`btn btn-${modal.type}-modal`"
+          >
+            {{ modal.confirmText || 'OK' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="admin-header">
       <h2 class="admin-title">Manajemen Buku</h2>
       <p class="admin-subtitle">Kelola koleksi buku perpustakaan Anda</p>
@@ -138,7 +167,7 @@
                   <button class="btn-action btn-edit" @click="editBook(book)" title="Edit">
                     <span>✎</span>
                   </button>
-                  <button class="btn-action btn-delete" @click="deleteBook(book.id)" title="Hapus">
+                  <button class="btn-action btn-delete" @click="confirmDelete(book.id)" title="Hapus">
                     <span>🗑</span>
                   </button>
                 </div>
@@ -166,6 +195,8 @@ import axios from "axios";
 const books = ref([]);
 const editMode = ref(false);
 const currentId = ref(null);
+const pendingCallback = ref(null);
+
 const form = ref({
   kode_buku: "",
   judul: "",
@@ -180,10 +211,17 @@ const form = ref({
   cover: null,
 });
 
-// 🔴 Ambil API Base dari environment variable
+const modal = ref({
+  show: false,
+  type: 'alert', // 'alert', 'success', 'error', 'confirm'
+  title: '',
+  message: '',
+  confirmText: 'OK',
+  cancelText: 'Batal',
+});
+
 const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
-// 🔴 Function untuk mendapatkan config dengan Authorization header
 const getAuthConfig = (additionalHeaders = {}) => {
   const token = localStorage.getItem('token');
   return {
@@ -194,30 +232,91 @@ const getAuthConfig = (additionalHeaders = {}) => {
   };
 };
 
-// Fetch data buku dari backend
+// Modal Functions
+const showAlert = (title, message) => {
+  modal.value = {
+    show: true,
+    type: 'alert',
+    title,
+    message,
+    confirmText: 'OK',
+  };
+};
+
+const showSuccess = (title, message) => {
+  modal.value = {
+    show: true,
+    type: 'success',
+    title,
+    message,
+    confirmText: 'OK',
+  };
+};
+
+const showError = (title, message) => {
+  modal.value = {
+    show: true,
+    type: 'error',
+    title,
+    message,
+    confirmText: 'OK',
+  };
+};
+
+const showConfirm = (title, message, callback) => {
+  modal.value = {
+    show: true,
+    type: 'confirm',
+    title,
+    message,
+    confirmText: 'Hapus',
+    cancelText: 'Batal',
+  };
+  pendingCallback.value = callback;
+};
+
+const getModalIcon = () => {
+  const icons = {
+    'alert': 'ℹ️',
+    'success': '✓',
+    'error': '✕',
+    'confirm': '❓'
+  };
+  return icons[modal.value.type] || 'ℹ️';
+};
+
+const closeModal = () => {
+  modal.value.show = false;
+  pendingCallback.value = null;
+};
+
+const handleConfirm = () => {
+  if (modal.value.type === 'confirm' && pendingCallback.value) {
+    pendingCallback.value();
+  }
+  closeModal();
+};
+
+// Fetch data buku
 const fetchBooks = async () => {
   try {
     const res = await axios.get(`${apiBase}/api/admin/books`, getAuthConfig());
     books.value = res.data;
   } catch (err) {
     console.error('❌ Error fetching books:', err);
-    // Jika unauthorized, redirect ke login atau hapus token
     if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.removeItem('token');
-      // Optional: redirect ke halaman login
-      // window.location.href = '/login';
+      showError('Error', 'Session expired. Please login again.');
     }
   }
 };
 
 onMounted(fetchBooks);
 
-// Upload file
 const handleFileUpload = (event) => {
   form.value.cover = event.target.files[0];
 };
 
-// Submit form
 const submitForm = async () => {
   try {
     const formData = new FormData();
@@ -225,7 +324,6 @@ const submitForm = async () => {
       formData.append(key, form.value[key]);
     });
 
-    // 🔴 Config untuk multipart/form-data dengan Authorization
     const config = getAuthConfig({ "Content-Type": "multipart/form-data" });
 
     if (editMode.value) {
@@ -234,8 +332,10 @@ const submitForm = async () => {
         formData,
         config
       );
+      showSuccess('Sukses', 'Buku berhasil diperbarui!');
     } else {
       await axios.post(`${apiBase}/api/admin/books`, formData, config);
+      showSuccess('Sukses', 'Buku berhasil ditambahkan!');
     }
 
     await fetchBooks();
@@ -244,18 +344,19 @@ const submitForm = async () => {
     console.error('❌ Error submitting form:', err);
     if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.removeItem('token');
+      showError('Error', 'Unauthorized access');
+    } else {
+      showError('Error', 'Gagal menyimpan data buku');
     }
   }
 };
 
-// Edit
 const editBook = (book) => {
   editMode.value = true;
   currentId.value = book.id;
   Object.assign(form.value, book);
 };
 
-// Cancel edit
 const cancelEdit = () => {
   editMode.value = false;
   currentId.value = null;
@@ -274,23 +375,209 @@ const cancelEdit = () => {
   };
 };
 
-// Delete
+const confirmDelete = (id) => {
+  showConfirm('Hapus Buku', 'Apakah Anda yakin ingin menghapus buku ini?', () => {
+    deleteBook(id);
+  });
+};
+
 const deleteBook = async (id) => {
-  if (confirm("Apakah yakin ingin menghapus buku ini?")) {
-    try {
-      await axios.delete(`${apiBase}/api/admin/books/${id}`, getAuthConfig());
-      fetchBooks();
-    } catch (err) {
-      console.error('❌ Error deleting book:', err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem('token');
-      }
+  try {
+    await axios.delete(`${apiBase}/api/admin/books/${id}`, getAuthConfig());
+    showSuccess('Sukses', 'Buku berhasil dihapus!');
+    fetchBooks();
+  } catch (err) {
+    console.error('❌ Error deleting book:', err);
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      localStorage.removeItem('token');
+      showError('Error', 'Unauthorized access');
+    } else {
+      showError('Error', 'Gagal menghapus buku');
     }
   }
 };
 </script>
 
 <style scoped>
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  position: relative;
+}
+
+.modal-header.modal-alert {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.modal-header.modal-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.modal-header.modal-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.modal-header.modal-confirm {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.modal-icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.modal-close {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  color: #374151;
+}
+
+.modal-message {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-alert-modal,
+.btn-success-modal,
+.btn-error-modal,
+.btn-confirm-modal {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-alert-modal,
+.btn-success-modal,
+.btn-error-modal {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-alert-modal:hover,
+.btn-success-modal:hover,
+.btn-error-modal:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-confirm-modal {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-confirm-modal:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-secondary-modal {
+  padding: 0.625rem 1.25rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-modal:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
 /* Container Utama */
 .books-admin {
   max-width: 1400px;
@@ -704,6 +991,18 @@ const deleteBook = async (id) => {
 
   .data-table {
     min-width: 800px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn-alert-modal,
+  .btn-success-modal,
+  .btn-error-modal,
+  .btn-confirm-modal,
+  .btn-secondary-modal {
+    width: 100%;
   }
 }
 </style>

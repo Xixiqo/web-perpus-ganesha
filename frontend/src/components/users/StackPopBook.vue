@@ -381,7 +381,7 @@ export default {
 
 .star {
   font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: #FFD700;
   margin-right: 5px;
 }
 

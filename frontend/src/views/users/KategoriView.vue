@@ -20,9 +20,12 @@ import CategoryCard from '@/components/users/CategoryCard.vue';
 const router = useRouter();
 const categories = ref([]);
 
+// Dynamic API Base URL
+const apiBaseUrl = import.meta.env.VITE_API_BASE || process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000';
+
 const fetchCategories = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/search/categories');
+    const response = await fetch(`${apiBaseUrl}/api/search/categories`);
     if (response.ok) {
       const data = await response.json();
       if (data.success) {
@@ -42,6 +45,26 @@ onMounted(() => {
   fetchCategories();
 });
 </script>
+
+<template>
+  <div class="categories-container">
+    <CategoryCard 
+      v-for="category in categories" 
+      :key="category.id"
+      :category="category"
+      @click="handleCategoryClick(category)"
+    />
+  </div>
+</template>
+
+<style scoped>
+.categories-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+</style>>
 
 <style scoped>
 .kategori-page {

@@ -13,7 +13,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-<<<<<<< HEAD
 console.log("🧩 Loaded .env from:", path.join(__dirname, ".env"));
 console.log("🧩 ENV TEST:", {
   DB_HOST: process.env.DB_HOST,
@@ -26,8 +25,6 @@ console.log("🧩 ENV TEST:", {
 // ============================================
 // 📦 EXPRESS APP SETUP
 // ============================================
-=======
->>>>>>> 3dc189ca18af8506c74561ffe8b01a18d686b088
 const app = express();
 
 app.use(cors({ origin: process.env.CORS_ORIGIN || "*", credentials: true }));
@@ -70,6 +67,10 @@ import adminPeminjamanRoutes from "./api/admin/peminjaman.js";
 import adminPengembalianRoutes from "./api/admin/pengembalian.js";
 import adminUsersRoutes from "./api/admin/users.js";
 import ProcessPeminjamanRoutes from "./api/peminjaman.js";
+import searchRoutes from "./api/search.js";
+import peminjamanRoutes from "./api/riwayat.js";
+import categoriesRoutes from "./api/categories.js";
+
 
 // === ADMIN ROUTES (lainnya) ===
 import adminBooksRoutes from "./api/admin/books.js";
@@ -106,7 +107,6 @@ console.log("   ✓ Registered: /api/admin/books");
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/books", booksRoutes);
-<<<<<<< HEAD
 console.log("   ✓ Registered: /api/books");
 
 app.use("/api/search", searchRoutes);
@@ -126,34 +126,14 @@ console.log("✅ All API routes registered\n");
 // ============================================
 // 🌐 FRONTEND HANDLER (Vue Build)
 // ============================================
-=======
 app.use("/api/riwayat", riwayatRoutes);
 
 // ===== Frontend Vue build =====
->>>>>>> 3dc189ca18af8506c74561ffe8b01a18d686b088
 const frontendPath = path.join(__dirname, "../frontend/dist");
 if (fs.existsSync(frontendPath)) {
-<<<<<<< HEAD
-  console.log("📁 Frontend build folder found:", frontendPath);
-  
-  // Serve static files dari Vue build
-  app.use(express.static(frontendPath));
-  console.log("   ✓ Static files served from:", frontendPath);
-
-  // ⚠️ CATCH-ALL ROUTE - HARUS PALING AKHIR
-  app.get("*", (req, res) => {
-    if (req.url.startsWith('/api/')) {
-      return res.status(404).json({ 
-        error: 'API endpoint not found',
-        path: req.url 
-      });
-    }
-    console.log("   → Serving index.html for:", req.url);
-=======
   app.use(express.static(frontendPath));
   app.get("*", (req, res) => {
     if (req.url.startsWith("/api/")) return res.status(404).json({ error: "API not found" });
->>>>>>> 3dc189ca18af8506c74561ffe8b01a18d686b088
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }

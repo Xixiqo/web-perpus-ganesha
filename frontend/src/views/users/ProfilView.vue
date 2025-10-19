@@ -549,6 +549,7 @@ export default {
   name: 'ProfilePage',
   data() {
     return {
+      apiBaseUrl: import.meta.env.VITE_API_BASE || 'http://localhost:5000',
       profile: {},
       editableProfile: {},
       isLoading: true,
@@ -610,7 +611,7 @@ export default {
           return;
         }
 
-        const res = await fetch('http://localhost:5000/api/profile', {
+        const res = await fetch(`${this.apiBaseUrl}/api/profile`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -671,7 +672,7 @@ export default {
         
         console.log('Sending update data:', dataToSend);
         
-        const res = await fetch('http://localhost:5000/api/profile', {
+        const res = await fetch(`${this.apiBaseUrl}/api/profile`, {
           method: 'PUT',
           headers: { 
             'Authorization': `Bearer ${token}`,
@@ -739,7 +740,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         
-        const res = await fetch('http://localhost:5000/api/profile/change-password', {
+        const res = await fetch(`${this.apiBaseUrl}/api/profile/change-password`, {
           method: 'POST',
           headers: { 
             'Authorization': `Bearer ${token}`,
@@ -868,7 +869,7 @@ export default {
         // Kirim ke server untuk sinkronisasi (jika ada)
         const token = localStorage.getItem('token');
         if (token) {
-          await fetch('http://localhost:5000/api/profile/preferences', {
+          await fetch(`${this.apiBaseUrl}/api/profile/preferences`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,

@@ -135,6 +135,7 @@ export default {
   },
   data() {
     return {
+      apiBaseUrl: import.meta.env.VITE_API_BASE|| 'http://localhost:5000',
       searchQuery: '',
       books: [],
       categories: [],
@@ -164,10 +165,9 @@ export default {
 
     // Build a full URL for a cover filename or pass-through full URLs
     getCoverUrl(filename) {
-      const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
       if (!filename) return '/placeholder-cover.svg'
       if (/^https?:\/\//i.test(filename)) return filename
-      return `${base}/uploads/${filename}`
+      return `${this.apiBaseUrl}/uploads/${filename}`
     },
 
     async handleSearch() {
@@ -176,8 +176,7 @@ export default {
       console.log('Starting search with query:', this.searchQuery);
 
       try {
-  const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-  const baseUrl = `${apiBase}/api/search`;
+        const baseUrl = `${this.apiBaseUrl}/api/search`;
         const params = new URLSearchParams();
         
         if (this.searchQuery.trim()) {
@@ -246,8 +245,7 @@ export default {
       this.loading = true;
 
       try {
-        const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-        const response = await fetch(`${apiBase}/api/books`, {
+        const response = await fetch(`${this.apiBaseUrl}/api/books`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
@@ -297,7 +295,7 @@ export default {
 
     async fetchCategories() {
       try {
-        const response = await fetch('http://localhost:5000/api/categories', {
+        const response = await fetch(`${this.apiBaseUrl}/api/categories`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'

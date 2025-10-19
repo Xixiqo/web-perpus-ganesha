@@ -86,21 +86,30 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      autoplayTimer: null
+      autoplayTimer: null,
+      shuffledBooks: []
     }
   },
   computed: {
     currentBook() {
-      return this.books[this.currentIndex] || {}
+      return this.shuffledBooks[this.currentIndex] || {}
     },
     visibleBooks() {
       const visible = []
-      const totalBooks = this.books.length
+      const totalBooks = this.shuffledBooks.length
       for (let i = 0; i < Math.min(4, totalBooks); i++) {
         const index = (this.currentIndex + i) % totalBooks
-        visible.push(this.books[index])
+        visible.push(this.shuffledBooks[index])
       }
       return visible
+    }
+  },
+  watch: {
+    books: {
+      handler() {
+        this.initializeShuffledBooks()
+      },
+      immediate: true
     }
   },
   mounted() {
@@ -110,8 +119,33 @@ export default {
     this.stopAutoplay()
   },
   methods: {
+    // Seeded random function untuk konsistensi
+    seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000
+      return x - Math.floor(x)
+    },
+    // Shuffle array dengan seed konsisten
+    shuffleArray(array) {
+      const shuffled = [...array]
+      // Gunakan seed berdasarkan panjang array dan timestamp hari ini
+      const today = new Date().setHours(0, 0, 0, 0)
+      let seed = today + shuffled.length
+      
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(this.seededRandom(seed + i) * (i + 1))
+        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      }
+      
+      return shuffled
+    },
+    initializeShuffledBooks() {
+      if (this.books.length > 0) {
+        this.shuffledBooks = this.shuffleArray(this.books)
+        this.currentIndex = 0
+      }
+    },
     getCoverUrl(filename) {
-      if (!filename) return '/default_cover.png' // null atau ''
+      if (!filename) return '/default_cover.png'
       if (/^https?:\/\//i.test(filename)) return filename
       const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
       return `${base}/uploads/${filename}`
@@ -130,11 +164,11 @@ export default {
       }
     },
     prevSlide() {
-      this.currentIndex = (this.currentIndex - 1 + this.books.length) % this.books.length
+      this.currentIndex = (this.currentIndex - 1 + this.shuffledBooks.length) % this.shuffledBooks.length
       this.resetAutoplay()
     },
     nextSlide() {
-      this.currentIndex = (this.currentIndex + 1) % this.books.length
+      this.currentIndex = (this.currentIndex + 1) % this.shuffledBooks.length
       this.resetAutoplay()
     },
     startAutoplay() {

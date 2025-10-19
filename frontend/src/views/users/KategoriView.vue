@@ -46,17 +46,6 @@ onMounted(() => {
 });
 </script>
 
-<template>
-  <div class="categories-container">
-    <CategoryCard 
-      v-for="category in categories" 
-      :key="category.id"
-      :category="category"
-      @click="handleCategoryClick(category)"
-    />
-  </div>
-</template>
-
 <style scoped>
 .categories-container {
   display: grid;
@@ -64,7 +53,7 @@ onMounted(() => {
   gap: 1.5rem;
   padding: 1rem;
 }
-</style>>
+</style>
 
 <style scoped>
 .kategori-page {

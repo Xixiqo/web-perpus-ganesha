@@ -55,7 +55,6 @@ Bangun kebiasaan membaca yang menyenangkan, dan jadikan perpustakaan sebagai sah
         <RouterLink to="/" class="footer-link">Beranda</RouterLink>
         <RouterLink to="/informasi" class="footer-link">Informasi</RouterLink>
         <RouterLink to="/cari" class="footer-link">Pencarian</RouterLink>
-        <RouterLink to="/pinjam" class="footer-link">Peminjaman</RouterLink>
         <RouterLink to="/artikel" class="footer-link">Artikel</RouterLink>
       </div>
     </div>

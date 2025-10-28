@@ -1,4 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @import './base.css';
+
 
 /* src/assets/base.css atau main.css */
 @font-face {

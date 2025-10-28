@@ -1,142 +1,290 @@
 <template>
-  <nav class="navbar">
-    <div class="nav-container">
-      <!-- Tombol menu mobile -->
-      <button class="menu-btn" @click="toggleMenu">
-        <span class="bar" />
-        <span class="bar" />
-        <span class="bar" />
-      </button>
-      
-      <!-- Brand dengan Logo -->
-      <div class="nav-brand">
-        <img 
-          src="@/../public/logo.png" 
-          alt="Logo Ganesha" 
-          class="logo-img"
-        />
-        <h2>Ganesha Stembayo</h2>
-      </div>
-      
-      <!-- Link navigasi -->
-      <div :class="['nav-links', { active: menuOpen }]">
-        <RouterLink to="/" class="nav-link" @click="closeMenu">Beranda</RouterLink>
-        <RouterLink to="/informasi" class="nav-link" @click="closeMenu">Informasi</RouterLink>
-        <RouterLink to="/cari" class="nav-link" @click="closeMenu">Pencarian</RouterLink>
-        <RouterLink to="/article" class="nav-link" @click="closeMenu">Artikel</RouterLink>
-      </div>
-      
-      <!-- User Section -->
-      <div class="nav-right">
-        <DyslexiaToggle />
+  <nav class="bg-white sticky top-0 z-[1000] shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[70px]">
+        <!-- Mobile Menu Button -->
+        <button 
+          @click="toggleMenu"
+          class="lg:hidden flex flex-col justify-between w-6 h-[18px] p-0 border-0 bg-transparent cursor-pointer"
+          aria-label="Toggle menu"
+        >
+          <span class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300" />
+          <span class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300" />
+          <span class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300" />
+        </button>
         
-        <!-- Jika belum login -->
-        <RouterLink v-if="!isLoggedIn" to="/login" class="user-chip-link">
-          <div class="btn-login">
-            <span>Login</span>
-          </div>
+        <!-- Brand Logo -->
+        <RouterLink to="/" class="flex items-center gap-2 sm:gap-3">
+          <img 
+            src="@/../public/logo.png" 
+            alt="Logo Ganesha" 
+            class="w-9 h-9 sm:w-10 sm:h-10 lg:w-[45px] lg:h-[45px] object-contain"
+          />
+          <h2 class="text-gray-900 font-bold text-sm sm:text-base lg:text-lg m-0 whitespace-nowrap">
+            Ganesha Stembayo
+          </h2>
         </RouterLink>
         
-        <!-- Jika sudah login -->
-        <div v-else class="user-menu">
-          <div class="user-chip logged-in" @click="toggleUserMenu">
-            <img
-              class="avatar"
-              :src="getAvatarUrl()"
-              :alt="getUserName()"
-              @error="handleAvatarError"
-            />
-            <span class="user-name">{{ getUserName() }}</span>
-            <svg 
-              class="dropdown-icon" 
-              :class="{ open: userMenuOpen }"
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              stroke-width="2" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
+        <!-- Desktop Navigation Links -->
+        <div class="hidden lg:flex items-center gap-4">
+          <RouterLink 
+            to="/" 
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            @click="closeMenu"
+          >
+            Beranda
+          </RouterLink>
+          <RouterLink 
+            to="/informasi" 
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            @click="closeMenu"
+          >
+            Informasi
+          </RouterLink>
+          <RouterLink 
+            to="/cari" 
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            @click="closeMenu"
+          >
+            Pencarian
+          </RouterLink>
+          <RouterLink 
+            to="/article" 
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            @click="closeMenu"
+          >
+            Artikel
+          </RouterLink>
+        </div>
+        
+        <!-- Right Section: Dyslexia Toggle & User Menu -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Dyslexia Toggle - Hidden on small mobile, visible on sm+ -->
+          <div class="hidden sm:block">
+            <DyslexiaToggle />
           </div>
           
-          <!-- Dropdown Menu -->
-          <div v-if="userMenuOpen" class="dropdown-menu">
-            <RouterLink to="/profil" class="dropdown-item" @click="closeUserMenu">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Profil Saya
-            </RouterLink>
-            <!-- Tampilkan tombol berbeda berdasarkan role -->
-            <RouterLink
-              v-if="getUserRole() === 'siswa'"
-              to="/riwayat"
-              class="dropdown-item"
-              @click="closeUserMenu"
+          <!-- Login Button (Not Logged In) -->
+          <RouterLink 
+            v-if="!isLoggedIn" 
+            to="/login" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 sm:px-6 py-2 rounded-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 text-sm"
+          >
+            Login
+          </RouterLink>
+          
+          <!-- User Menu (Logged In) -->
+          <div v-else class="relative">
+            <button
+              @click="toggleUserMenu"
+              class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 rounded-full px-2 sm:px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
+              <img
+                :src="getAvatarUrl()"
+                :alt="getUserName()"
+                @error="handleAvatarError"
+                class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white object-cover"
+              />
+              <span class="hidden sm:inline text-gray-900 font-semibold text-sm max-w-[100px] lg:max-w-[150px] truncate">
+                {{ getUserName() }}
+              </span>
+              <svg 
+                class="hidden sm:block w-4 h-4 transition-transform duration-300 flex-shrink-0"
+                :class="{ 'rotate-180': userMenuOpen }"
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
-              Riwayat Peminjaman
-            </RouterLink>
-
-            <RouterLink
-              v-else-if="getUserRole() === 'pustakawan'"
-              to="/admin"
-              class="dropdown-item"
-              @click="closeUserMenu"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 12h18M3 6h18M3 18h18"></path>
-              </svg>
-              Admin Panel
-            </RouterLink>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item logout" @click="openLogoutModal">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              Keluar
             </button>
+            
+            <!-- Dropdown Menu -->
+            <Transition
+              enter-active-class="transition duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-2"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-2"
+            >
+              <div 
+                v-if="userMenuOpen" 
+                class="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl p-2 z-50"
+              >
+                <RouterLink 
+                  to="/profil" 
+                  class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                  @click="closeUserMenu"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Profil Saya
+                </RouterLink>
+                
+                <!-- Role-based Menu Item -->
+                <RouterLink
+                  v-if="getUserRole() === 'siswa'"
+                  to="/riwayat"
+                  class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                  @click="closeUserMenu"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
+                  </svg>
+                  Riwayat Peminjaman
+                </RouterLink>
+
+                <RouterLink
+                  v-else-if="getUserRole() === 'pustakawan'"
+                  to="/admin"
+                  class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                  @click="closeUserMenu"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12h18M3 6h18M3 18h18"></path>
+                  </svg>
+                  Admin Panel
+                </RouterLink>
+                
+                <!-- Dyslexia Toggle in Dropdown - Only on small mobile -->
+                <div class="sm:hidden px-4 py-3">
+                  <DyslexiaToggle />
+                </div>
+                
+                <div class="h-px bg-gray-200 my-2"></div>
+                
+                <button 
+                  @click="openLogoutModal"
+                  class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium w-full text-left"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  Keluar
+                </button>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
+      
+      <!-- Mobile Navigation Links -->
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="max-h-0 opacity-0"
+        enter-to-class="max-h-96 opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="max-h-96 opacity-100"
+        leave-to-class="max-h-0 opacity-0"
+      >
+        <div 
+          v-if="menuOpen" 
+          class="lg:hidden overflow-hidden bg-white border-t border-gray-200"
+        >
+          <div class="py-4 space-y-1">
+            <RouterLink 
+              to="/" 
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              @click="closeMenu"
+            >
+              Beranda
+            </RouterLink>
+            <RouterLink 
+              to="/informasi" 
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              @click="closeMenu"
+            >
+              Informasi
+            </RouterLink>
+            <RouterLink 
+              to="/cari" 
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              @click="closeMenu"
+            >
+              Pencarian
+            </RouterLink>
+            <RouterLink 
+              to="/article" 
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              @click="closeMenu"
+            >
+              Artikel
+            </RouterLink>
+            
+            <!-- Dyslexia Toggle in Mobile Menu - Only on small mobile -->
+            <div class="sm:hidden px-4 py-3">
+              <DyslexiaToggle />
+            </div>
+          </div>
+        </div>
+      </Transition>
     </div>
   </nav>
 
   <!-- Logout Confirmation Modal -->
   <Teleport to="body">
-    <div v-if="showLogoutModal" class="modal-overlay" @click="closeLogoutModal">
-      <div class="modal-content" @click.stop>
-        <h2 class="modal-title">Logout Confirmation</h2>
-        <p class="modal-message">Apakah Anda yakin ingin keluar?</p>
-        
-        <div class="modal-buttons">
-          <button 
-            class="btn-confirm" 
-            @click="confirmLogout"
-            :disabled="isLoggingOut"
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div 
+        v-if="showLogoutModal" 
+        @click="closeLogoutModal"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] px-4"
+      >
+        <Transition
+          enter-active-class="transition duration-300 ease-out"
+          enter-from-class="opacity-0 translate-y-4"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 translate-y-4"
+        >
+          <div 
+            v-if="showLogoutModal"
+            @click.stop
+            class="bg-white rounded-xl p-6 sm:p-8 max-w-md w-full shadow-2xl"
           >
-            {{ isLoggingOut ? 'Loading...' : 'Logout' }}
-          </button>
-          <button 
-            class="btn-cancel" 
-            @click="closeLogoutModal"
-            :disabled="isLoggingOut"
-          >
-            Cancel
-          </button>
-        </div>
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+              Logout Confirmation
+            </h2>
+            <p class="text-gray-600 text-sm sm:text-base mb-6">
+              Apakah Anda yakin ingin keluar?
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button 
+                @click="confirmLogout"
+                :disabled="isLoggingOut"
+                class="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-300 hover:shadow-lg"
+              >
+                {{ isLoggingOut ? 'Loading...' : 'Logout' }}
+              </button>
+              <button 
+                @click="closeLogoutModal"
+                :disabled="isLoggingOut"
+                class="flex-1 bg-white hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed text-blue-600 font-semibold py-2.5 px-4 rounded-lg border-2 border-blue-600 transition-all duration-300 hover:shadow-lg"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -169,7 +317,6 @@ const checkLoginStatus = async () => {
   
   if (token) {
     try {
-      // Panggil API untuk mendapatkan data profile
       const response = await axios.get('/api/profile', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -179,7 +326,6 @@ const checkLoginStatus = async () => {
       if (response.data.success) {
         isLoggedIn.value = true
         user.value = response.data.data
-        // Simpan ke localStorage untuk cache
         localStorage.setItem('user', JSON.stringify(response.data.data))
         console.log('User data loaded:', user.value)
       } else {
@@ -187,7 +333,6 @@ const checkLoginStatus = async () => {
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
-      // Jika error, coba gunakan data dari localStorage
       const userData = localStorage.getItem('user')
       if (userData) {
         try {
@@ -211,11 +356,9 @@ const checkLoginStatus = async () => {
   }
 }
 
-// Helper function untuk mendapatkan nama user
 const getUserName = () => {
   if (!user.value) return 'Pengguna'
   
-  // Cek berbagai kemungkinan field name
   return user.value.name || 
          user.value.nama || 
          user.value.username || 
@@ -224,7 +367,6 @@ const getUserName = () => {
          'Pengguna'
 }
 
-// Helper function untuk mendapatkan role user
 const getUserRole = () => {
   if (!user.value) return 'siswa'
   
@@ -234,7 +376,6 @@ const getUserRole = () => {
          'siswa'
 }
 
-// Helper function untuk mendapatkan URL avatar
 const getAvatarUrl = () => {
   if (avatarError.value) {
     return 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'
@@ -246,33 +387,48 @@ const getAvatarUrl = () => {
   
   const avatar = user.value.avatar
   
-  // Jika sudah URL lengkap
   if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
     return avatar
   }
   
-  // Jika path relatif, gabungkan dengan base URL
   const baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
   return `${baseURL}/uploads/${avatar}`
 }
 
-// Handle error saat load avatar
 const handleAvatarError = (e) => {
   console.error('Error loading avatar, using default')
   avatarError.value = true
   e.target.src = 'https://i.pinimg.com/736x/05/11/45/051145a8e366876f859378154aa7df8b.jpg'
 }
 
-const toggleMenu = () => (menuOpen.value = !menuOpen.value)
-const closeMenu = () => (menuOpen.value = false)
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value
+  if (menuOpen.value) {
+    userMenuOpen.value = false
+  }
+}
+
+const closeMenu = () => {
+  menuOpen.value = false
+}
+
 const toggleUserMenu = (e) => {
   e.stopPropagation()
   userMenuOpen.value = !userMenuOpen.value
+  if (userMenuOpen.value) {
+    menuOpen.value = false
+  }
 }
-const closeUserMenu = () => (userMenuOpen.value = false)
+
+const closeUserMenu = () => {
+  userMenuOpen.value = false
+}
+
 const handleClickOutside = (e) => {
-  const menu = document.querySelector('.user-menu')
-  if (menu && !menu.contains(e.target)) userMenuOpen.value = false
+  const menu = document.querySelector('.relative')
+  if (menu && !menu.contains(e.target)) {
+    userMenuOpen.value = false
+  }
 }
 
 const openLogoutModal = () => {
@@ -305,547 +461,3 @@ const confirmLogout = async () => {
   }
 }
 </script>
-
-<style scoped>
-.navbar {
-  background: #ffffff;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.nav-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 70px;
-}
-
-/* Logo dan Brand */
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-img {
-  width: 45px;
-  height: 45px;
-  object-fit: contain;
-}
-
-.nav-brand h2 {
-  color: #131313;
-  font-weight: 700;
-  font-size: 1.125rem;
-  margin: 0;
-}
-
-/* Link utama */
-.nav-links {
-  display: flex;
-  gap: 1rem;
-  transition: all 0.3s ease;
-}
-
-.nav-link {
-  position: relative;
-  text-decoration: none;
-  color: #444;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  transition: color 0.3s ease;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background-color: var(--primary);
-  transition: width 0.3s ease, opacity 0.3s ease;
-  opacity: 0;
-}
-
-.nav-link:hover {
-  color: var(--primary);
-}
-
-.nav-link:hover::after {
-  width: 100%;
-  opacity: 1;
-}
-
-.nav-link.router-link-exact-active {
-  color: var(--primary);
-}
-
-.nav-link.router-link-exact-active::after {
-  width: 100%;
-  opacity: 1;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* User chip */
-.user-chip-link {
-  text-decoration: none;
-}
-
-.user-chip {
-  background: #f3f4f6;
-  border-radius: 20px;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #374151;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.user-chip:hover {
-  background: #e5e7eb;
-  transform: translateY(-2px);
-}
-
-.btn-login {
-  background: #2C64E3;
-  border-radius: 20px;
-  padding: 8px 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #fafafa;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-login span {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.btn-login:hover {
-  background: #1e40af;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-  transform: translateY(-2px);
-}
-
-.user-chip.logged-in {
-  color: #131313;
-}
-
-.user-chip .avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid white;
-  object-fit: cover;
-}
-
-.user-name {
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dropdown-icon {
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
-}
-
-.dropdown-icon.open {
-  transform: rotate(180deg);
-}
-
-/* User Menu Dropdown */
-.user-menu {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 12px);
-  right: 0;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  width: 250px;
-  padding: 8px;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  color: #374151;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-.dropdown-item:hover {
-  background: #f3f4f6;
-  color: var(--primary);
-}
-
-.dropdown-item.logout {
-  color: #ef4444;
-}
-
-.dropdown-item.logout:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.dropdown-divider {
-  height: 1px;
-  background: #e5e7eb;
-  margin: 8px 0;
-}
-
-/* Tombol menu (hamburger) */
-.menu-btn {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 24px;
-  height: 18px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.menu-btn .bar {
-  height: 3px;
-  width: 100%;
-  background: #374151;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-/* Modal Logout */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 32px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from { 
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modal-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #131313;
-  margin: 0 0 8px 0;
-}
-
-.modal-message {
-  color: #6b7280;
-  font-size: 0.95rem;
-  margin: 0 0 24px 0;
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-confirm,
-.btn-cancel {
-  flex: 1;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  border: 2px solid;
-  transition: all 0.3s ease;
-}
-
-.btn-confirm {
-  background: #ef4444;
-  color: white;
-  border-color: #ef4444;
-}
-
-.btn-confirm:hover:not(:disabled) {
-  background: #dc2626;
-  border-color: #dc2626;
-  box-shadow: 0 6px 16px rgba(235, 37, 37, 0.4);
-}
-
-.btn-confirm:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-cancel {
-  background: white;
-  color: #2C64E3;
-  border-color: #2C64E3;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background: #eff6ff;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-}
-
-.btn-cancel:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Responsif Tablet */
-@media (max-width: 968px) {
-  .nav-container {
-    padding: 0 1rem;
-  }
-
-  .nav-links {
-    gap: 0.5rem;
-  }
-
-  .nav-link {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .nav-brand h2 {
-    font-size: 1rem;
-  }
-
-  .logo-img {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* Responsif Mobile */
-@media (max-width: 768px) {
-  .menu-btn {
-    display: flex;
-  }
-  
-  .nav-container {
-    height: 60px;
-    padding: 0 0.75rem;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0.5rem;
-  }
-  
-  .menu-btn {
-    order: 1;
-  }
-  
-  .nav-brand {
-    order: 2;
-    justify-self: start;
-    margin-left: 0.5rem;
-  }
-
-  .nav-brand h2 {
-    font-size: 0.9rem;
-  }
-
-  .logo-img {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .nav-right {
-    order: 3;
-    justify-self: end;
-    gap: 8px;
-  }
-  
-  .nav-links {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    flex-direction: column;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    order: 4;
-    grid-column: 1 / -1;
-  }
-  
-  .nav-links.active {
-    max-height: 400px;
-    opacity: 1;
-    padding: 1rem 0;
-  }
-  
-  .nav-link {
-    display: block;
-    padding: 0.875rem 1rem;
-    text-align: left;
-    width: 100%;
-    font-size: 0.95rem;
-  }
-
-  .nav-link::after {
-    display: none;
-  }
-
-  .btn-login {
-    padding: 6px 16px;
-  }
-
-  .btn-login span {
-    font-size: 0.85rem;
-  }
-
-  .user-chip {
-    padding: 4px 8px;
-  }
-
-  .user-chip .avatar {
-    width: 28px;
-    height: 28px;
-  }
-
-  .user-name {
-    font-size: 0.85rem;
-    max-width: 100px;
-  }
-
-  .dropdown-menu {
-    width: 220px;
-  }
-}
-
-/* Mobile sangat kecil */
-@media (max-width: 480px) {
-  .nav-container {
-    padding: 0 0.5rem;
-    gap: 0.25rem;
-  }
-
-  .nav-brand h2 {
-    font-size: 0.8rem;
-  }
-
-  .logo-img {
-    width: 32px;
-    height: 32px;
-  }
-
-  .nav-right {
-    gap: 6px;
-  }
-
-  .user-name {
-    display: none;
-  }
-  
-  .user-chip {
-    padding: 4px;
-  }
-
-  .user-chip .avatar {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .dropdown-icon {
-    display: none;
-  }
-  
-  .dropdown-menu {
-    width: calc(100vw - 2rem);
-    right: 1rem;
-  }
-
-  .btn-login {
-    padding: 6px 12px;
-  }
-
-  .btn-login span {
-    font-size: 0.8rem;
-  }
-
-  .modal-content {
-    padding: 24px;
-    width: calc(100% - 2rem);
-  }
-
-  .modal-title {
-    font-size: 1rem;
-  }
-
-  .modal-message {
-    font-size: 0.875rem;
-  }
-
-  .modal-buttons {
-    flex-direction: column;
-  }
-
-  .btn-confirm,
-  .btn-cancel {
-    width: 100%;
-  }
-}
-</style>

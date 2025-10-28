@@ -1,13 +1,12 @@
 <template>
-  <div class="home">
+  <div class="home bg-white">
     <!-- Hero Section -->
     <HeroSec
       @scroll-next="scrollToNextSection"
       @go-search="goToSearchPage"
     />
-
     <!-- Top 10 Book -->
-    <section class="container section stack">
+    <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
       <StackPopBook
         v-if="topBooks.length > 0"
         :books="topBooks"
@@ -15,11 +14,13 @@
         :interval="5000"
         @view-book="handleViewBook"
       />
-      <div v-else class="placeholder-text">Belum ada data buku.</div>
+      <div v-else class="text-center text-slate-600 text-sm sm:text-base py-8">
+        Belum ada data buku.
+      </div>
     </section>
 
     <!-- Rekomendasi Koleksi -->
-    <section class="container section">
+    <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <BookSlider 
         title="Rekomendasi Untukmu"
         :books="recommendedBooks"
@@ -36,39 +37,63 @@
         @view-all="handleViewAll('new')"
         @book-click="handleBookClick"
       />
-    </section> 
+    </section>
 
     <!-- Wave + Podium Top Readers -->
-    <section class="podium">
-      <div class="podium-inner container">
-        <div class="podium-title">Penikmat Koleksi <span>Tahun 2025</span></div>
-        <div class="steps">
-          <div class="step second">
-            <div class="avatar crown silver">🥈</div>
-            <div class="name">Ikra</div>
-            <div class="points">72 Peminjaman</div>
-            <div class="block">2nd</div>
+    <section class="podium mt-8 sm:mt-12 lg:mt-16 bg-gradient-to-b from-white via-blue-50 to-blue-100 pt-8 sm:pt-12 lg:pt-16">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 lg:pb-20">
+        <div class="text-center mb-12 sm:mb-16 lg:mb-20">
+          <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-wide">
+            Penikmat Koleksi <span class="text-blue-500 font-bold">Tahun 2025</span>
+          </h2>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 items-end max-w-4xl mx-auto">
+          <!-- 2nd Place -->
+          <div class="step text-center">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center mx-auto mb-2 sm:mb-3 text-xl sm:text-2xl lg:text-3xl">
+              🥈
+            </div>
+            <div class="font-bold text-slate-900 text-xs sm:text-sm lg:text-base mb-1">Ikra</div>
+            <div class="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-3">72 Peminjaman</div>
+            <div class="bg-gradient-to-b from-blue-500 to-blue-600 text-white font-extrabold rounded-t-3xl w-full h-32 sm:h-40 lg:h-48 flex items-center justify-center shadow-lg shadow-blue-500/35 text-2xl sm:text-3xl lg:text-5xl">
+              2nd
+            </div>
           </div>
-          <div class="step first">
-            <div class="avatar crown gold">👑</div>
-            <div class="name">Bambang</div>
-            <div class="points">91 Peminjaman</div>
-            <div class="block">1st</div>
+
+          <!-- 1st Place -->
+          <div class="step text-center">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center mx-auto mb-2 sm:mb-3 text-xl sm:text-2xl lg:text-3xl">
+              👑
+            </div>
+            <div class="font-bold text-slate-900 text-xs sm:text-sm lg:text-base mb-1">Bambang</div>
+            <div class="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-3">91 Peminjaman</div>
+            <div class="bg-gradient-to-b from-blue-500 to-blue-600 text-white font-extrabold rounded-t-3xl w-full h-48 sm:h-56 lg:h-72 flex items-center justify-center shadow-lg shadow-blue-500/35 text-2xl sm:text-3xl lg:text-5xl">
+              1st
+            </div>
           </div>
-          <div class="step third">
-            <div class="avatar crown bronze">🥉</div>
-            <div class="name">Zulhamdono</div>
-            <div class="points">20 Peminjaman</div>
-            <div class="block">3rd</div>
+
+          <!-- 3rd Place -->
+          <div class="step text-center">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center mx-auto mb-2 sm:mb-3 text-xl sm:text-2xl lg:text-3xl">
+              🥉
+            </div>
+            <div class="font-bold text-slate-900 text-xs sm:text-sm lg:text-base mb-1">Zulhamdono</div>
+            <div class="text-slate-600 text-xs sm:text-sm mb-2 sm:mb-3">20 Peminjaman</div>
+            <div class="bg-gradient-to-b from-blue-500 to-blue-600 text-white font-extrabold rounded-t-3xl w-full h-24 sm:h-32 lg:h-36 flex items-center justify-center shadow-lg shadow-blue-500/35 text-2xl sm:text-3xl lg:text-5xl">
+              3rd
+            </div>
           </div>
         </div>
       </div>
     </section>
 
+    <Sponsor />
+
     <!-- Loading State -->
-    <div v-if="loading" class="loading-overlay">
-      <div class="spinner"></div>
-      <p>Memuat data...</p>
+    <div v-if="loading" class="fixed inset-0 bg-white/90 flex flex-col items-center justify-center z-[9999]">
+      <div class="w-12 h-12 sm:w-14 sm:h-14 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4 sm:mb-6"></div>
+      <p class="text-blue-600 text-sm sm:text-base font-medium">Memuat data...</p>
     </div>
   </div>
 </template>
@@ -79,9 +104,9 @@ import { useRouter } from 'vue-router'
 import BookSlider from '@/components/users/BookSlider.vue'
 import StackPopBook from '@/components/users/StackPopBook.vue'
 import HeroSec from '@/components/users/HeroSec.vue'
+import Sponsor from '@/components/users/Sponsor.vue'
 
 const router = useRouter()
-const stackSection = ref(null)
 
 // State
 const books = ref([])
@@ -135,7 +160,6 @@ const fetchBooks = async () => {
 
 // Update jumlah buku per kategori
 const updateCategoryCount = (booksData) => {
-  // Kategori unik dari database
   const categoryMap = {}
   booksData.forEach(book => {
     if (book.kategori) {
@@ -148,7 +172,7 @@ const updateCategoryCount = (booksData) => {
     id: idx + 1,
     name,
     bookCount: count,
-    icon: '📖', // bisa ganti sesuai kategori
+    icon: '📖',
     color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
   }))
 }
@@ -163,7 +187,7 @@ const handleBookClick = (book) => {
 }
 
 const scrollToNextSection = () => {
-  const target = document.querySelector('.stack')
+  const target = document.querySelector('.container')
   if (target) {
     target.scrollIntoView({ behavior: 'smooth' })
   }
@@ -190,235 +214,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.home {
-  background: #ffffff;
-}
-
-.container {
-  margin: 0 32px;
-  padding: 1rem;
-}
-
-.container.stack {
-  margin: 0;
-  padding: 1rem;
-}
-
-/* Banner */
-.banner {
-  margin-top: 1rem;
-}
-
-.banner-img {
-  height: 220px;
-  border-radius: 14px;
-  background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-}
-
-/* Sections */
-.section {
-  margin-top: 28px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.section-header h3 {
-  color: #0f172a;
-  font-size: 1.2rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.grid.categories {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* Podium */
-.podium {
-  margin-top: 36px;
-  background: linear-gradient(#ffffff 0, #e9f0ff 40%, #d8e5ff 100%);
-  padding-top: 20px;
-}
-
-.podium-inner {
-  padding-bottom: 30px;
-}
-
-.podium-title {
-  text-align: center;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  font-size: 2.4rem;
-  color: #0f172a;
-  margin: 0 auto 64px;
-}
-
-.podium-title span {
-  color: #3b82f6;
-  font-weight: 700;
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  align-items: end;
-}
-
-.step {
-  text-align: center;
-  position: relative;
-}
-
-.avatar {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 8px;
-  font-size: 28px;
-  color: #fff;
-}
-
-.crown.gold {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-}
-
-.crown.silver {
-  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-}
-
-.crown.bronze {
-  background: linear-gradient(135deg, #f59e0b, #ea580c);
-}
-
-.name {
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.points {
-  color: #334155;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-}
-
-.block {
-  background: linear-gradient(180deg, #3b82f6, #5b8df7);
-  color: #fff;
-  font-weight: 800;
-  border-radius: 30px 30px 0 0;
-  width: 100%;
-  height: 10px;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.35);
-  font-size: 3rem;
-}
-
-.first .block {
-  height: 300px;
-}
-
-.second .block {
-  height: 190px;
-}
-
-.third .block {
-  height: 130px;
-}
-
-/* Loading State */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  color: #2C64E3;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(44, 100, 227, 0.2);
-  border-top-color: #2C64E3;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive */
-@media (max-width: 980px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .grid.categories {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 680px) {
-  .container {
-    margin: 0 32px;
-  }
-  
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .grid.categories {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .banner-img {
-    height: 170px;
-  }
-  
-  .podium-title {
-    font-size: 1.8rem;
-  }
-}
-
-@media (max-width: 420px) {
-  .container {
-    margin: 0 16px;
-  }
-  
-  .grid {
-    grid-template-columns: 1fr;
-  }
-  .grid.categories {
-    grid-template-columns: 1fr;
-  }
-  
-  .banner-img {
-    height: 140px;
-  }
-  
-  .podium-title {
-    font-size: 1.5rem;
-  }
-}
 </style>

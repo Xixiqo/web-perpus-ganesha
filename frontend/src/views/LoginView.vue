@@ -169,7 +169,7 @@ export default {
 
 <style scoped>
 .login-page {
-  background-image: url('background.jpg');
+  background-image: url('/background.jpg');
   background-size: cover;           
   background-position: center;      
   background-repeat: no-repeat;    
@@ -201,7 +201,7 @@ export default {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background-image: url(back-icon.png);
+  background-image: url(/back-icon.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

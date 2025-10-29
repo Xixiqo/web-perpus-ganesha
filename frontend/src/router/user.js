@@ -1,5 +1,6 @@
 import LoginView from '@/views/LoginView.vue'
 import userlayout from '@/layout/user.vue'
+import Sidebar from '@/components/psidebar.vue';
 
 const routes = [
   {
@@ -62,6 +63,11 @@ const routes = [
     name: 'login',
     component: LoginView,
   },
+  {
+    path: '/side',
+    name: 'side',
+    component: Sidebar,
+  }
 ]
 
 // Export the routes array so the main router can compose them

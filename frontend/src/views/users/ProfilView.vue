@@ -1,83 +1,14 @@
 <template>
   <div class="min-h-screen flex bg-gray-50">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-      <!-- Profile Section -->
-      <div class="p-6 border-b border-gray-200">
-        <button @click="goBack" class="flex items-center text-gray-600 hover:text-gray-900 mb-6">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          Settings
-        </button>
-        
-        <div class="flex flex-col items-center">
-          <div class="relative">
-            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">
-              {{ getInitials(profile.nama) }}
-            </div>
-            <div class="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          <h2 class="text-base font-semibold text-gray-900 mt-3">{{ profile.nama || 'Nama Pengguna' }}</h2>
-          <p class="text-sm text-gray-500">{{ profile.angkatan || '-' }}</p>
-        </div>
-      </div>
-
-      <!-- Navigation -->
-      <nav class="flex-1 p-4">
-        <ul class="space-y-1">
-          <li>
-            <button 
-              @click="activeSection = 'personal'" 
-              :class="['w-full text-left px-4 py-2.5 rounded-lg flex items-center transition-colors', 
-                       activeSection === 'personal' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50']"
-            >
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-              Informasi Personal
-            </button>
-          </li>
-          <li>
-            <button 
-              @click="activeSection = 'notifications'" 
-              :class="['w-full text-left px-4 py-2.5 rounded-lg flex items-center transition-colors', 
-                       activeSection === 'notifications' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50']"
-            >
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-              </svg>
-              Notifikasi
-            </button>
-          </li>
-          <li>
-            <button 
-              @click="activeSection = 'security'" 
-              :class="['w-full text-left px-4 py-2.5 rounded-lg flex items-center transition-colors', 
-                       activeSection === 'security' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50']"
-            >
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-              </svg>
-              Privasi dan Keamanan
-            </button>
-          </li>
-          <li>
-            <button 
-              @click="activeSection = 'integrations'" 
-              :class="['w-full text-left px-4 py-2.5 rounded-lg flex items-center transition-colors', 
-                       activeSection === 'integrations' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50']"
-            >
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-              Integrasi
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
+    <!-- Sidebar Component -->
+    <Sidebar 
+      :user-name="profile.nama || 'Nama Pengguna'"
+      :user-year="profile.angkatan || '-'"
+      :active-section="activeSection"
+      @back="goBack"
+      @select-section="activeSection = $event"
+    />
+    
     <!-- Main Content -->
     <main class="flex-1 overflow-auto">
       <!-- Loading State -->
@@ -200,11 +131,11 @@
                     type="date"
                     :disabled="!isEditing"
                     :class="['w-full px-4 py-2.5 rounded-lg border', isEditing ? 'border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent' : 'border-gray-200 bg-gray-50 text-gray-700']"
-                  >
-                  <p class="text-xs text-gray-500 mt-1">Tanggal lahir Anda. Umur: {{ calculateAge(editableProfile.tanggal_lahir) }} tahun</p>
-                </div>
-
-                <!-- Jenis Kelamin -->
+                    >
+                    <p class="text-xs text-gray-500 mt-1">Tanggal lahir Anda. Umur: {{ calculateAge(editableProfile.tanggal_lahir) }} tahun</p>
+                  </div>
+                  
+                  <!-- Jenis Kelamin -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin</label>
                   <div class="flex gap-4">
@@ -213,8 +144,8 @@
                       @click="isEditing && (editableProfile.jenis_kelamin = 'Laki-laki')"
                       :disabled="!isEditing"
                       :class="['flex-1 px-4 py-3 rounded-lg border-2 transition-colors flex items-center justify-center', 
-                               editableProfile.jenis_kelamin === 'Laki-laki' ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-200 bg-white text-gray-700',
-                               !isEditing && 'cursor-not-allowed opacity-60']"
+                              editableProfile.jenis_kelamin === 'Laki-laki' ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-200 bg-white text-gray-700',
+                              !isEditing && 'cursor-not-allowed opacity-60']"
                     >
                       <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>
@@ -355,7 +286,7 @@
             </div>
           </div>
         </div>
-
+        
         <!-- Privasi dan Keamanan -->
         <div v-if="activeSection === 'security'" class="max-w-3xl">
           <h1 class="text-2xl font-bold text-gray-900 mb-6">Privasi dan Keamanan</h1>
@@ -391,8 +322,8 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Kata Sandi Baru</label>
                 <div class="relative">
                   <input 
-                    v-model="passwordForm.newPassword"
-                    :type="showNewPassword ? 'text' : 'password'"
+                  v-model="passwordForm.newPassword"
+                  :type="showNewPassword ? 'text' : 'password'"
                     placeholder="••••••••" 
                     class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
                   >
@@ -442,18 +373,18 @@
                 :disabled="isChangingPassword"
                 class="w-full bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
               >
-                {{ isChangingPassword ? 'Mengubah Password...' : 'Ubah Password' }}
-              </button>
-
-              <div v-if="passwordMessage" :class="['p-3 rounded-lg', passwordSuccess ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800']">
-                {{ passwordMessage }}
-              </div>
-            </form>
-
-            <div class="pt-6 border-t border-gray-200 mt-6">
-              <h3 class="text-base font-medium text-gray-900 mb-2">Verifikasi Dua Langkah</h3>
-              <p class="text-sm text-gray-600 mb-4">Tambahkan lapisan keamanan ekstra dengan mengaktifkan verifikasi dua langkah</p>
-              <button class="text-blue-600 hover:text-blue-700 font-medium text-sm">Aktifkan 2FA (Segera Hadir)</button>
+              {{ isChangingPassword ? 'Mengubah Password...' : 'Ubah Password' }}
+            </button>
+            
+            <div v-if="passwordMessage" :class="['p-3 rounded-lg', passwordSuccess ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800']">
+              {{ passwordMessage }}
+            </div>
+          </form>
+          
+          <div class="pt-6 border-t border-gray-200 mt-6">
+            <h3 class="text-base font-medium text-gray-900 mb-2">Verifikasi Dua Langkah</h3>
+            <p class="text-sm text-gray-600 mb-4">Tambahkan lapisan keamanan ekstra dengan mengaktifkan verifikasi dua langkah</p>
+            <button class="text-blue-600 hover:text-blue-700 font-medium text-sm">Aktifkan 2FA (Segera Hadir)</button>
             </div>
 
             <div class="pt-6 border-t border-gray-200 mt-6">
@@ -545,8 +476,13 @@
 </template>
 
 <script>
+import Sidebar from '@/components/psidebar.vue'; 
+
 export default {
   name: 'ProfilePage',
+  components: {
+    Sidebar  // Daftarkan component
+  },
   data() {
     return {
       apiBaseUrl: import.meta.env.VITE_API_BASE || 'http://localhost:5000',
@@ -944,15 +880,6 @@ export default {
     
     goBack() {
       this.$router.push('/');
-    },
-    
-    getInitials(name) {
-      if (!name) return '?';
-      const parts = name.split(' ');
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-      }
-      return name.substring(0, 2).toUpperCase();
     },
     
     formatDate(dateStr) {

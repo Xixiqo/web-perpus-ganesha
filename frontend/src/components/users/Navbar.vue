@@ -1,7 +1,7 @@
 <template>
   <nav class="bg-white sticky top-0 z-[1000] shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 lg:h-[70px]">
+      <div class="flex items-center justify-between h-24 lg:h-[70px]">
         <!-- Mobile Menu Button -->
         <button 
           @click="toggleMenu"

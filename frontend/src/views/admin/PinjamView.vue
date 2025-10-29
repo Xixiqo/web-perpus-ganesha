@@ -26,6 +26,46 @@
       <p class="text-gray-500 text-sm">Memuat data...</p>
     </div>
 
+    <!--Detail Peminjaman-->
+    <div v-if="showDetailModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg animate-slide-up">
+        <h2 class="text-xl font-bold mb-4">Detail Peminjaman</h2>
+        <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-lg font-bold">✕</button>
+
+        <div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
+        <div class="font-semibold">Nama Anggota</div>
+        <div>: {{ selectedItem.nama_anggota }}</div>
+
+        <div class="font-semibold">Judul Buku</div>
+        <div>: {{ selectedItem.judul_buku }}</div>
+
+        <div class="font-semibold">Kode Buku</div>
+        <div>: {{ selectedItem.kode_buku }}</div>
+
+        <div class="font-semibold">Tanggal Pinjam</div>
+        <div>: {{ formatDate(selectedItem.tanggal_pinjam) }}</div>
+
+        <div class="font-semibold">Tenggat Pengembalian</div>
+        <div>: {{ formatDate(selectedItem.tanggal_kembali) }}</div>
+
+        <div class="font-semibold">Tanggal Dikembalikan</div>
+        <div>: {{ selectedItem.tanggal_dikembalikan ? formatDate(selectedItem.tanggal_dikembalikan) : '-' }}</div>
+
+        <div class="font-semibold">Status</div>
+        <div>: {{ selectedItem.status }}</div>
+
+        <div class="font-semibold" v-if="selectedItem.keterangan">Keterangan:</div>
+        <div v-if="selectedItem.keterangan">{{ selectedItem.keterangan }}</div>
+        </div>
+
+        <div class="mt-6 text-right">
+        <button @click="closeModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Tutup</button>
+        </div>
+    </div>
+    </div>
+
+
+
     <!-- Table Peminjaman -->
     <div v-else class="bg-white rounded-lg shadow overflow-x-auto">
       <table class="w-full border-collapse min-w-[900px]">

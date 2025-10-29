@@ -199,14 +199,36 @@
 
     <!-- Tabel Buku -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden">
-      <!-- Table Header -->
-      <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <span class="text-2xl">📖</span>
-          Daftar Buku
-        </h2>
-        <div class="bg-blue-50 text-[#2C64E3] px-4 py-1 rounded-full text-sm font-medium">
-          {{ books.length }} Buku
+      <!-- Table Header with Search -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <span class="text-2xl">📖</span>
+              Daftar Buku
+            </h2>
+            <div class="bg-blue-50 text-[#2C64E3] px-4 py-1 rounded-full text-sm font-medium">
+              {{ filteredBooks.length }} Buku
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="relative w-full md:w-80">
+            <input 
+              v-model="searchQuery"
+              type="text" 
+              placeholder="Cari buku..."
+              class="w-full py-2.5 pl-4 pr-12 border-2 border-gray-200 rounded-full text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100 focus:shadow-md"
+            />
+            <button 
+              class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-gradient-to-r from-[#2C64E3] to-[#1e4bb8] rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+            >
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+                <path d="m21 21-4.35-4.35" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -224,7 +246,7 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="book in books" :key="book.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="book in filteredBooks" :key="book.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
                   {{ book.id }}
@@ -275,11 +297,13 @@
             </tr>
 
             <!-- Empty State -->
-            <tr v-if="books.length === 0">
+            <tr v-if="filteredBooks.length === 0">
               <td colspan="7" class="px-6 py-16 text-center">
                 <div class="flex flex-col items-center gap-4">
                   <span class="text-5xl opacity-20">📚</span>
-                  <p class="text-gray-500 font-medium">Belum ada data buku</p>
+                  <p class="text-gray-500 font-medium">
+                    {{ searchQuery ? 'Tidak ada buku yang ditemukan' : 'Belum ada data buku' }}
+                  </p>
                 </div>
               </td>
             </tr>
@@ -291,12 +315,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import BaseModal from '@/components/admin/BaseModal.vue';
 import BaseAlert from '@/components/admin/BaseAlert.vue';
 
 const books = ref([]);
+const searchQuery = ref("");
 const editMode = ref(false);
 const currentId = ref(null);
 const pendingCallback = ref(null);
@@ -331,6 +356,24 @@ const modal = ref({
 });
 
 const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
+// Computed property untuk filter buku berdasarkan search
+const filteredBooks = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return books.value;
+  }
+  
+  const query = searchQuery.value.toLowerCase();
+  return books.value.filter(book => {
+    return (
+      book.kode_buku?.toLowerCase().includes(query) ||
+      book.judul?.toLowerCase().includes(query) ||
+      book.pembuat?.toLowerCase().includes(query) ||
+      book.penerbit?.toLowerCase().includes(query) ||
+      book.kategori?.toLowerCase().includes(query)
+    );
+  });
+});
 
 const getAuthConfig = (additionalHeaders = {}) => {
   const token = localStorage.getItem('token');
@@ -450,6 +493,12 @@ const editBook = (book) => {
   editMode.value = true;
   currentId.value = book.id;
   Object.assign(form.value, book);
+  
+  // Smooth scroll ke atas halaman
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 };
 
 const cancelEdit = () => {
@@ -471,7 +520,7 @@ const cancelEdit = () => {
 };
 
 const confirmDelete = (id) => {
-  showConfirm('Hapus Buku', 'Apakah Anda yakin ingin menghapus buku ini?', () => {
+  showConfirmModal('Hapus Buku', 'Apakah Anda yakin ingin menghapus buku ini?', () => {
     deleteBook(id);
   });
 };

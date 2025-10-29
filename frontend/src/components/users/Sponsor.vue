@@ -5,7 +5,7 @@
       
       <div class="relative">
         <!-- Gradient Overlays -->
-        <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 via-gray-50 to-transparent z-10 pointer-events-none"></div>
         <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white via-white to-transparent z-10 pointer-events-none"></div>
         
         <!-- Slider Container -->
@@ -18,24 +18,25 @@
             <div 
               v-for="(sponsor, index) in sponsors" 
               :key="`sponsor-1-${index}`"
-              class="flex-shrink-0 w-48 h-32 bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 flex items-center justify-center p-6 group"
+              class="flex-shrink-0 w-48 h-32 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center p-6 hover:scale-105"
             >
               <img 
                 :src="sponsor.logo" 
                 :alt="sponsor.name"
-                class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                class="max-w-full max-h-full object-contain transition-transform duration-300"
               />
             </div>
             
+            <!-- Second Set (Duplicate for seamless loop) -->
             <div 
               v-for="(sponsor, index) in sponsors" 
               :key="`sponsor-2-${index}`"
-              class="flex-shrink-0 w-48 h-32 bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 flex items-center justify-center p-6 group"
+              class="flex-shrink-0 w-48 h-32 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center p-6 hover:scale-105"
             >
               <img 
                 :src="sponsor.logo" 
                 :alt="sponsor.name"
-                class="max-w-full max-h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                class="max-w-full max-h-full object-contain transition-transform duration-300"
               />
             </div>
           </div>
@@ -101,7 +102,5 @@ export default {
   animation: scroll 20s linear infinite;
 }
 
-.animate-scroll:hover {
-  animation-play-state: paused;
-}
+/* Removed hover pause - animation continues even on hover */
 </style>

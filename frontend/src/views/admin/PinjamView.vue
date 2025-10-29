@@ -1,242 +1,274 @@
 <template>
-    <div class="peminjaman-container">
+    <div class="max-w-[1400px] mx-auto p-5 bg-gray-50 min-h-screen">
         <!-- Modal Alert -->
-        <div v-if="alert.show" class="modal-overlay" @click="closeAlert">
-            <div class="modal-content alert-modal" @click.stop>
-                <div class="modal-header" :class="`alert-${alert.type}`">
-                    <span class="alert-icon">{{ getAlertIcon() }}</span>
-                    <span class="alert-title">{{ alert.title }}</span>
-                    <button class="modal-close" @click="closeAlert">✕</button>
-                </div>
-                <div class="modal-body">
-                    <p class="alert-message">{{ alert.message }}</p>
-                </div>
-                <div class="modal-footer">
+        <div v-if="alert.show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm" @click="closeAlert">
+            <div class="bg-white rounded-xl shadow-2xl max-w-[600px] w-[90%] overflow-hidden animate-slideIn" @click.stop>
+                <div :class="[
+                    'p-6 flex items-center gap-4 text-white relative',
+                    alert.type === 'alert' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                    alert.type === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                    alert.type === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600' :
+                    'bg-gradient-to-r from-amber-500 to-amber-600'
+                ]">
+                    <div class="text-2xl">{{ alert.icon }}</div>
+                    <h2 class="text-lg font-semibold flex-1">{{ alert.title }}</h2>
                     <button 
-                        v-if="alert.type === 'confirm'" 
                         @click="closeAlert" 
-                        class="btn btn-secondary-modal"
-                    >
-                        Batal
-                    </button>
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-2xl hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                    >×</button>
+                </div>
+                <div class="p-6 text-gray-700 leading-relaxed">
+                    <p>{{ alert.message }}</p>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-4">
                     <button 
-                        @click="handleAlertConfirm" 
-                        :class="`btn btn-${alert.type}-modal`"
-                    >
-                        {{ alert.confirmText || 'OK' }}
-                    </button>
+                        @click="closeAlert"
+                        :class="[
+                            'px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:-translate-y-0.5 hover:shadow-lg',
+                            alert.type === 'alert' ? 'bg-blue-500 text-white' :
+                            alert.type === 'success' ? 'bg-green-500 text-white' :
+                            alert.type === 'error' ? 'bg-red-500 text-white' :
+                            'bg-amber-500 text-white'
+                        ]"
+                    >OK</button>
                 </div>
             </div>
         </div>
 
-        <div class="header">
-            <h1>Manajemen Peminjaman Buku</h1>
-            <p class="subtitle">Kelola status peminjaman buku perpustakaan</p>
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-800 mb-1">Manajemen Peminjaman</h1>
+            <p class="text-sm text-gray-600">Kelola semua transaksi peminjaman buku perpustakaan</p>
         </div>
 
-        <!-- Filter Status -->
-        <div class="filter-section">
-            <label>Filter Status:</label>
-            <select v-model="filterStatus" @change="filterPeminjaman" class="filter-select">
-                <option value="all">Semua Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Dipinjam">Dipinjam</option>
-                <option value="Dikembalikan">Dikembalikan</option>
-                <option value="Terlambat">Terlambat</option>
-            </select>
-            <button @click="manualCheckLateStatus" class="btn btn-warning" style="margin-left: 10px;">
-                🔄 Cek Status Terlambat
-            </button>
+        <!-- Navigation Tabs -->
+        <div class="bg-white p-5 rounded-lg shadow-sm mb-5">
+            <div class="flex flex-wrap gap-4">
+                <button 
+                    @click="filterStatus = ''"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                        !filterStatus ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ]"
+                >
+                    Semua ({{ peminjaman.length }})
+                </button>
+                <button 
+                    @click="filterStatus = 'Pending'"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                        filterStatus === 'Pending' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+                    ]"
+                >
+                    Menunggu ({{ getPendingCount }})
+                </button>
+                <button 
+                    @click="filterStatus = 'Approved'"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                        filterStatus === 'Approved' ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100'
+                    ]"
+                >
+                    Disetujui ({{ getApprovedCount }})
+                </button>
+                <button 
+                    @click="filterStatus = 'Dipinjam'"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                        filterStatus === 'Dipinjam' ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    ]"
+                >
+                    Dipinjam ({{ getBorrowedCount }})
+                </button>
+                <button 
+                    @click="filterStatus = 'Dikembalikan'"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                        filterStatus === 'Dikembalikan' ? 'bg-green-500 text-white' : 'bg-green-50 text-green-600 hover:bg-green-100'
+                    ]"
+                >
+                    Dikembalikan ({{ getReturnedCount }})
+                </button>
+                <button 
+                    @click="filterStatus = 'Terlambat'"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+                        filterStatus === 'Terlambat' ? 'bg-red-500 text-white' : 'bg-red-50 text-red-600 hover:bg-red-100'
+                    ]"
+                >
+                    Terlambat ({{ getLateCount }})
+                </button>
+            </div>
         </div>
 
         <!-- Loading State -->
-        <div v-if="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Memuat data...</p>
+        <div v-if="loading" class="bg-white rounded-lg shadow-sm p-[60px] text-center">
+            <div class="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-gray-500">Memuat data peminjaman...</p>
         </div>
 
         <!-- Tabel Peminjaman -->
-        <div v-else class="table-container">
-            <table class="peminjaman-table">
-                <thead>
+        <div v-else class="bg-white rounded-lg shadow-sm overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-800 text-white">
                     <tr>
-                        <th>ID</th>
-                        <th>Nama Anggota</th>
-                        <th>Judul Buku</th>
-                        <th>Kode Buku</th>
-                        <th>Tanggal Pinjam</th>
-                        <th>Tanggal Kembali</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th class="p-4 text-left font-semibold text-sm">ID</th>
+                        <th class="p-4 text-left font-semibold text-sm">Peminjam</th>
+                        <th class="p-4 text-left font-semibold text-sm">Buku</th>
+                        <th class="p-4 text-left font-semibold text-sm">Tgl Pinjam</th>
+                        <th class="p-4 text-left font-semibold text-sm">Tgl Kembali</th>
+                        <th class="p-4 text-left font-semibold text-sm">Status</th>
+                        <th class="p-4 text-left font-semibold text-sm">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in filteredPeminjaman" :key="item.id_peminjaman">
-                        <td>{{ item.id_peminjaman }}</td>
-                        <td>{{ item.nama_anggota }}</td>
-                        <td>{{ item.judul_buku }}</td>
-                        <td>{{ item.kode_buku }}</td>
-                        <td>{{ formatDate(item.tanggal_pinjam) }}</td>
-                        <td>{{ formatDate(item.tanggal_kembali) }}</td>
-                        <td>
-                            <span :class="['status-badge', getStatusClass(item.status)]">
+                    <tr v-for="item in filteredItems" :key="item.id_peminjaman" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                        <td class="p-4 text-sm text-gray-600">#{{ item.id_peminjaman }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ getPeminjamName(item.id_anggota) }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ getBookTitle(item.id_buku) }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ formatDate(item.tanggal_pinjam) }}</td>
+                        <td class="p-4 text-sm text-gray-600">{{ formatDate(item.tanggal_kembali) }}</td>
+                        <td class="p-4">
+                            <span :class="[
+                                'px-3 py-1 rounded-full text-xs font-semibold inline-block',
+                                item.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
+                                item.status === 'Approved' ? 'bg-cyan-100 text-cyan-700' :
+                                item.status === 'Dipinjam' ? 'bg-blue-100 text-blue-700' :
+                                item.status === 'Dikembalikan' ? 'bg-green-100 text-green-700' :
+                                'bg-red-100 text-red-700'
+                            ]">
                                 {{ item.status }}
                             </span>
                         </td>
-                        <td>
-                            <div class="action-buttons">
+                        <td class="p-4">
+                            <div class="flex gap-2">
                                 <button 
-                                    v-if="item.status === 'Pending'" 
-                                    @click="updateStatus(item, 'Approved')"
-                                    class="btn-icon-action approve-btn"
+                                    v-if="item.status === 'Pending'"
+                                    @click="approveLoan(item.id_peminjaman)"
+                                    class="w-9 h-9 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors flex items-center justify-center"
                                     title="Setujui"
-                                >
-                                    ✓
-                                </button>
+                                >✓</button>
                                 <button 
-                                    v-if="item.status === 'Pending'" 
-                                    @click="confirmReject(item)"
-                                    class="btn-icon-action reject-btn"
+                                    v-if="item.status === 'Pending'"
+                                    @click="rejectLoan(item.id_peminjaman)"
+                                    class="w-9 h-9 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors flex items-center justify-center"
                                     title="Tolak"
-                                >
-                                    ✕
-                                </button>
+                                >×</button>
                                 <button 
-                                    v-if="item.status === 'Approved'" 
-                                    @click="updateStatus(item, 'Dipinjam')"
-                                    class="btn-icon-action borrow-btn"
-                                    title="Dipinjam"
-                                >
-                                    📤
-                                </button>
+                                    v-if="item.status === 'Approved'"
+                                    @click="markBorrowed(item.id_peminjaman)"
+                                    class="w-9 h-9 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors flex items-center justify-center"
+                                    title="Tandai Dipinjam"
+                                >↗</button>
                                 <button 
-                                    v-if="item.status === 'Dipinjam' || item.status === 'Terlambat'" 
+                                    v-if="item.status === 'borrowed'"
                                     @click="showReturnModal(item)"
-                                    class="btn-icon-action return-btn"
+                                    class="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors flex items-center justify-center"
                                     title="Kembalikan"
-                                >
-                                    📥
-                                </button>
+                                >↙</button>
                                 <button 
                                     @click="showDetail(item)"
-                                    class="btn-icon-action detail-btn"
+                                    class="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors flex items-center justify-center"
                                     title="Detail"
-                                >
-                                    ℹ️
-                                </button>
+                                >ℹ</button>
                             </div>
                         </td>
-                    </tr>
-                    <tr v-if="filteredPeminjaman.length === 0">
-                        <td colspan="8" class="text-center">Tidak ada data peminjaman</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <!-- Modal Detail -->
-        <div v-if="showDetailModal" class="modal-overlay" @click.self="closeModal">
-            <div class="modal-content">
-                <div class="modal-header detail-header">
-                    <h2>Detail Peminjaman</h2>
-                    <button @click="closeModal" class="close-btn">&times;</button>
+        <div v-if="showDetailModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm" @click.self="closeModal">
+            <div class="bg-white rounded-xl shadow-2xl max-w-[800px] w-[90%] max-h-[90vh] overflow-y-auto">
+                <div class="p-6 flex items-center gap-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-xl">
+                    <h2 class="text-xl font-semibold">Detail Peminjaman</h2>
+                    <button 
+                        @click="closeModal"
+                        class="ml-auto text-2xl hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                    >×</button>
                 </div>
-                <div class="modal-body" v-if="selectedItem">
-                    <div class="detail-row">
-                        <span class="detail-label">ID Peminjaman:</span>
-                        <span>{{ selectedItem.id_peminjaman }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Nama Anggota:</span>
-                        <span>{{ selectedItem.nama_anggota }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Username:</span>
-                        <span>{{ selectedItem.username }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">NIS/NIP:</span>
-                        <span>{{ selectedItem.nis_nip }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">No. Telp:</span>
-                        <span>{{ selectedItem.no_telp }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Judul Buku:</span>
-                        <span>{{ selectedItem.judul_buku }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Kode Buku:</span>
-                        <span>{{ selectedItem.kode_buku }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Penerbit:</span>
-                        <span>{{ selectedItem.penerbit }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Tanggal Pinjam:</span>
-                        <span>{{ formatDate(selectedItem.tanggal_pinjam) }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Tanggal Kembali:</span>
-                        <span>{{ formatDate(selectedItem.tanggal_kembali) }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Status:</span>
-                        <span :class="['status-badge', getStatusClass(selectedItem.status)]">
-                            {{ selectedItem.status }}
-                        </span>
-                    </div>
-                    <div class="detail-row" v-if="selectedItem.status === 'Terlambat'">
-                        <span class="detail-label">Hari Terlambat:</span>
-                        <span class="text-danger">{{ calculateLateDays(selectedItem.tanggal_kembali) }} hari</span>
+                <div class="p-6">
+                    <div v-if="selectedItem" class="space-y-4">
+                        <div class="flex border-b border-gray-200 py-3">
+                            <div class="font-semibold text-gray-700 w-[180px]">ID Peminjaman</div>
+                            <div class="text-gray-600">#{{ selectedItem.id }}</div>
+                        </div>
+                        <div class="flex border-b border-gray-200 py-3">
+                            <div class="font-semibold text-gray-700 w-[180px]">Peminjam</div>
+                            <div class="text-gray-600">{{ selectedItem.peminjam }}</div>
+                        </div>
+                        <div class="flex border-b border-gray-200 py-3">
+                            <div class="font-semibold text-gray-700 w-[180px]">Buku</div>
+                            <div class="text-gray-600">{{ selectedItem.buku }}</div>
+                        </div>
+                        <div class="flex border-b border-gray-200 py-3">
+                            <div class="font-semibold text-gray-700 w-[180px]">Tanggal Pinjam</div>
+                            <div class="text-gray-600">{{ formatDate(selectedItem.tanggal_pinjam) }}</div>
+                        </div>
+                        <div class="flex border-b border-gray-200 py-3">
+                            <div class="font-semibold text-gray-700 w-[180px]">Tanggal Kembali</div>
+                            <div class="text-gray-600">{{ formatDate(selectedItem.tanggal_kembali) }}</div>
+                        </div>
+                        <div class="flex border-b border-gray-200 py-3">
+                            <div class="font-semibold text-gray-700 w-[180px]">Status</div>
+                            <div>
+                                <span :class="[
+                                    'px-3 py-1 rounded-full text-xs font-semibold',
+                                    selectedItem.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                    selectedItem.status === 'approved' ? 'bg-cyan-100 text-cyan-700' :
+                                    selectedItem.status === 'borrowed' ? 'bg-blue-100 text-blue-700' :
+                                    selectedItem.status === 'returned' ? 'bg-green-100 text-green-700' :
+                                    'bg-red-100 text-red-700'
+                                ]">
+                                    {{ 
+                                        selectedItem.status === 'pending' ? 'Menunggu' :
+                                        selectedItem.status === 'approved' ? 'Disetujui' :
+                                        selectedItem.status === 'borrowed' ? 'Dipinjam' :
+                                        selectedItem.status === 'returned' ? 'Dikembalikan' :
+                                        'Terlambat'
+                                    }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Modal Pengembalian -->
-        <div v-if="showReturnModalFlag" class="modal-overlay" @click.self="closeModal">
-            <div class="modal-content">
-                <div class="modal-header detail-header">
-                    <h2>Pengembalian Buku</h2>
-                    <button @click="closeModal" class="close-btn">&times;</button>
+        <div v-if="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm" @click.self="closeReturnModal">
+            <div class="bg-white rounded-xl shadow-2xl max-w-[600px] w-[90%]">
+                <div class="p-6 flex items-center gap-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-t-xl">
+                    <h2 class="text-xl font-semibold">Pengembalian Buku</h2>
+                    <button 
+                        @click="closeReturnModal"
+                        class="ml-auto text-2xl hover:bg-white/20 w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                    >×</button>
                 </div>
-                <div class="modal-body" v-if="selectedItem">
-                    <div class="detail-row">
-                        <span class="detail-label">Judul Buku:</span>
-                        <span>{{ selectedItem.judul_buku }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Nama Anggota:</span>
-                        <span>{{ selectedItem.nama_anggota }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Tanggal Harus Kembali:</span>
-                        <span>{{ formatDate(selectedItem.tanggal_kembali) }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Tanggal Dikembalikan:</span>
-                        <input type="date" v-model="returnDate" class="form-input">
-                    </div>
-                    <div class="detail-row" v-if="lateDays > 0">
-                        <span class="detail-label">Hari Terlambat:</span>
-                        <span class="text-danger">{{ lateDays }} hari</span>
-                    </div>
-                    <div class="detail-row" v-if="lateDays > 0">
-                        <span class="detail-label">Denda (Rp 1.000/hari):</span>
-                        <span class="text-danger">Rp {{ calculateDenda().toLocaleString('id-ID') }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Keterangan:</span>
-                        <textarea v-model="keterangan" class="form-textarea" rows="3" placeholder="Kondisi buku, catatan, dll..."></textarea>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Pengembalian</label>
+                        <textarea 
+                            v-model="returnNote"
+                            class="w-full p-3 border-2 border-gray-200 rounded-lg text-sm resize-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
+                            rows="4"
+                            placeholder="Masukkan catatan pengembalian (opsional)"
+                        ></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button @click="closeModal" class="btn btn-secondary">Batal</button>
-                    <button @click="confirmReturn" class="btn btn-success">Konfirmasi Pengembalian</button>
+                <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-4 rounded-b-xl">
+                    <button 
+                        @click="closeReturnModal"
+                        class="px-5 py-2.5 border-2 border-gray-200 rounded-lg text-gray-600 text-sm font-semibold hover:bg-gray-100 transition-colors"
+                    >
+                        Batal
+                    </button>
+                    <button 
+                        @click="confirmReturn"
+                        class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-semibold shadow-purple-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+                    >
+                        Konfirmasi Pengembalian
+                    </button>
                 </div>
             </div>
         </div>
@@ -249,16 +281,16 @@ export default {
     data() {
         return {
             peminjaman: [],
-            filteredPeminjaman: [],
-            filterStatus: 'all',
+            users: [],
+            books: [],
+            filterStatus: '',
             showDetailModal: false,
-            showReturnModalFlag: false,
+            showReturnModal: false,
             selectedItem: null,
             returnDate: new Date().toISOString().split('T')[0],
             keterangan: '',
             lateDays: 0,
             loading: false,
-            pendingCallback: null,
             alert: {
                 show: false,
                 type: 'alert',
@@ -274,6 +306,27 @@ export default {
         this.loadPeminjaman();
     },
     methods: {
+        calculateStatus(item) {
+            if (!item.approved) {
+                return 'pending';
+            }
+            if (item.approved && !item.borrowed) {
+                return 'approved';
+            }
+            if (item.borrowed && !item.returned) {
+                const today = new Date();
+                const dueDate = new Date(item.tanggal_kembali);
+                if (today > dueDate) {
+                    return 'late';
+                }
+                return 'borrowed';
+            }
+            if (item.returned) {
+                return 'returned';
+            }
+            return 'unknown';
+        },
+
         getAuthHeaders() {
             const token = localStorage.getItem('token');
             return {
@@ -328,6 +381,23 @@ export default {
             return icons[this.alert.type] || 'ℹ️';
         },
 
+       getPeminjamName(id_anggota) {
+            const user = this.users.find(user => 
+                user.id === id_anggota || 
+                user.id_user === id_anggota || 
+                user.id_anggota === id_anggota
+            );
+            return user ? (user.username || user.nama || user.name || '-') : '-';
+        },
+
+        getBookTitle(id_buku) {
+            const book = this.books.find(book => 
+                book.id === id_buku || 
+                book.id_buku === id_buku
+            );
+            return book ? (book.judul || book.title || book.nama_buku || '-') : '-';
+        },
+
         closeAlert() {
             this.alert.show = false;
             this.pendingCallback = null;
@@ -343,47 +413,72 @@ export default {
         async loadPeminjaman() {
             this.loading = true;
             try {
-                const response = await fetch(`${this.apiBase}/api/admin/peminjamann`, {
-                    method: 'GET',
-                    headers: this.getAuthHeaders()
-                });
+                const [peminjamanRes, usersRes, booksRes] = await Promise.all([
+                    fetch(`${this.apiBase}/api/admin/peminjaman`, {
+                        method: 'GET',
+                        headers: this.getAuthHeaders()
+                    }),
+                    fetch(`${this.apiBase}/api/admin/users`, {
+                        method: 'GET',
+                        headers: this.getAuthHeaders()
+                    }),
+                    fetch(`${this.apiBase}/api/admin/books`, {
+                        method: 'GET',
+                        headers: this.getAuthHeaders()
+                    })
+                ]);
 
-                if (!response.ok) {
-                    this.handleUnauthorized(response);
+                if (!peminjamanRes.ok) {
+                    this.handleUnauthorized(peminjamanRes);
                     throw new Error('Gagal memuat data peminjaman');
                 }
+
+                if (!usersRes.ok || !booksRes.ok) {
+                    throw new Error('Gagal memuat data pendukung');
+                }
+
+                const [peminjaman, users, books] = await Promise.all([
+                    peminjamanRes.json(),
+                    usersRes.json(),
+                    booksRes.json()
+                ]);
+
+                this.peminjaman = peminjaman;
+                this.users = users;
+                this.books = books;
                 
-                this.peminjaman = await response.json();
-                this.filteredPeminjaman = [...this.peminjaman];
-                console.log('✅ Data peminjaman dimuat:', this.peminjaman.length);
+                console.log('✅ Data berhasil dimuat:', {
+                    peminjaman: this.peminjaman.length,
+                    users: this.users.length,
+                    books: this.books.length
+                });
 
                 // Auto check late status hanya sekali saat load pertama
                 if (!this.autoCheckDone) {
                     this.autoCheckDone = true;
-                    await this.autoCheckLateStatus();
+                    // try to auto-check late statuses on the server and refresh if updates exist
+                    try {
+                        const res = await fetch(`${this.apiBase}/api/admin/peminjamann/check/late`, {
+                            method: 'GET',
+                            headers: this.getAuthHeaders()
+                        });
+                        const result = await res.json();
+                        if (res.ok && result.updated > 0) {
+                            await this.loadPeminjamanSilent();
+                            this.showSuccess('Sukses', `${result.updated} status terlambat diperbarui.`);
+                        } else if (!res.ok) {
+                            this.handleUnauthorized(res);
+                            console.warn('Auto check returned non-ok:', result);
+                        }
+                    } catch (err) {
+                        console.error('❌ Error auto checking late status:', err);
+                    }
                 }
             } catch (error) {
                 console.error('❌ Error loading peminjaman:', error);
                 this.showError('Error', 'Gagal memuat data peminjaman: ' + error.message);
             } finally {
                 this.loading = false;
-            }
-        },
-
-        async autoCheckLateStatus() {
-            try {
-                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/check/late`, {
-                    method: 'GET',
-                    headers: this.getAuthHeaders()
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.updated > 0) {
-                    await this.loadPeminjamanSilent();
-                }
-            } catch (error) {
-                console.error('❌ Error auto checking late status:', error);
             }
         },
 
@@ -573,18 +668,41 @@ export default {
 
         getStatusClass(status) {
             const map = {
-                Pending: 'status-pending',
-                Approved: 'status-approved',
-                Dipinjam: 'status-dipinjam',
-                Dikembalikan: 'status-dikembalikan',
-                Terlambat: 'status-terlambat'
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'approved': 'bg-blue-100 text-blue-800',
+                'borrowed': 'bg-green-100 text-green-800',
+                'returned': 'bg-gray-100 text-gray-800',
+                'late': 'bg-red-100 text-red-800'
             };
-            return map[status] || '';
+            return map[status] || 'bg-gray-100 text-gray-800';
+        }
+    },
+    computed: {
+        filteredItems() {
+            if (!this.filterStatus || this.filterStatus === '') {
+                return this.peminjaman;
+            }
+            return this.peminjaman.filter(item => item.status === this.filterStatus);
+        },
+        getPendingCount() {
+            return this.peminjaman.filter(item => item.status === 'Pending').length;
+        },
+        getApprovedCount() {
+            return this.peminjaman.filter(item => item.status === 'Approved').length;
+        },
+        getBorrowedCount() {
+            return this.peminjaman.filter(item => item.status === 'Dipinjam').length;
+        },
+        getReturnedCount() {
+            return this.peminjaman.filter(item => item.status === 'Dikembalikan').length;
+        },
+        getLateCount() {
+            return this.peminjaman.filter(item => item.status === 'Terlambat').length;
         }
     },
     watch: {
         returnDate() {
-            if (this.selectedItem) this.calculateLateDaysForReturn();
+            this.calculateLateDays();
         }
     }
 }

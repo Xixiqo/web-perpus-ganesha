@@ -1,267 +1,338 @@
 <template>
-  <div class="manage-members">
+    <div class="p-5 max-w-[1400px] mx-auto">
     <!-- Alert Notification -->
     <transition name="slide-down">
-      <div v-if="showAlert" :class="['alert-notification', alertType]">
-        <div class="alert-content">
-          <div class="alert-icon">
-            <span v-if="alertType === 'success'">✓</span>
-            <span v-else>⚠</span>
+      <div v-if="showNotification" 
+        :class="[
+          'fixed top-5 right-5 z-50 min-w-[320px] max-w-[500px] p-4 px-5 rounded-xl shadow-lg flex items-center justify-between',
+          'animate-slideIn',
+          notificationType === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' :
+          'bg-gradient-to-r from-red-500 to-red-600 text-white'
+        ]"
+      >
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-lg font-bold">
+            {{ notificationType === 'success' ? '✓' : '✕' }}
           </div>
-          <p>{{ alertMessage }}</p>
+          <div class="text-white">{{ notificationMessage }}</div>
         </div>
-        <button @click="showAlert = false" class="alert-close">&times;</button>
+        <button 
+          @click="closeNotification"
+          class="bg-transparent border-0 text-white text-2xl cursor-pointer opacity-80 hover:opacity-100 transition-opacity w-6 h-6 flex items-center justify-center"
+        >
+          ×
+        </button>
       </div>
     </transition>
 
-    <div class="header">
-      <h1>Kelola Anggota & Pengguna</h1>
-      <button @click="openAddModal" class="btn-primary">
-        <span class="icon-plus">+</span> Tambah User & Anggota
-      </button>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-2xl text-gray-800">Kelola Anggota</h1>
+          <button 
+          @click="openAddModal()"
+          class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg cursor-pointer text-sm flex items-center gap-2 font-medium shadow-green-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+        >
+          <span class="text-lg font-bold">+</span>
+          Tambah Anggota
+        </button>
     </div>
 
-    <!-- Search & Filter Section -->
-    <div class="search-filter-container">
-      <div class="search-box">
+    <!-- Search & Filter -->
+    <div class="bg-white rounded-xl p-5 mb-5 shadow-sm">
+      <div class="relative mb-5">
         <input 
-          v-model="searchQuery" 
-          type="text" 
-          placeholder="Cari berdasarkan username, nama, NIS/NIP..."
-          class="search-input"
-        />
-        <span class="icon-search">🔍</span>
+          type="text"
+          v-model="searchQuery"
+          placeholder="Cari anggota..."
+          class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+        >
+        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-lg">🔍</span>
       </div>
 
-      <div class="filters">
-        <div class="filter-group">
-          <label>Role:</label>
-          <select v-model="filterRole" class="filter-select">
-            <option value="">Semua Role</option>
-            <option value="siswa">Siswa</option>
-            <option value="pustakawan">Pustakawan</option>
-            <option value="superadmin">Super Admin</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Tipe Keanggotaan:</label>
-          <select v-model="filterTipeKeanggotaan" class="filter-select">
-            <option value="">Semua Tipe</option>
-            <option value="siswa">Siswa</option>
-            <option value="guru">Guru</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Status Member:</label>
-          <select v-model="filterStatus" class="filter-select">
+      <div class="flex flex-wrap gap-4 items-end">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm text-gray-600 font-medium">Status</label>
+          <select 
+            v-model="filterStatus"
+            class="py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm bg-white cursor-pointer min-w-[180px] transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+          >
             <option value="">Semua Status</option>
             <option value="active">Aktif</option>
-            <option value="expired">Expired</option>
+            <option value="expired">Kadaluarsa</option>
           </select>
         </div>
 
-        <button @click="resetFilters" class="btn-reset">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm text-gray-600 font-medium">Role</label>
+          <select 
+            v-model="filterRole"
+            class="py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm bg-white cursor-pointer min-w-[180px] transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+          >
+            <option value="">Semua Role</option>
+            <option value="superadmin">Super Admin</option>
+            <option value="pustakawan">Pustakawan</option>
+            <option value="siswa">Siswa</option>
+          </select>
+        </div>
+
+        <button 
+          @click="resetFilters"
+          class="py-2.5 px-5 bg-gray-100 text-gray-600 border-2 border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+        >
           Reset Filter
         </button>
       </div>
     </div>
 
-    <!-- Result Info -->
-    <div class="result-info">
-      <p>Menampilkan {{ filteredUsers.length }} dari {{ users.length }} data</p>
+    <!-- Results Info -->
+    <div class="text-sm text-gray-600 mb-4">
+      Menampilkan {{ filteredUsers.length }} anggota
     </div>
 
-    <!-- Tabel Users & Anggota -->
-    <div class="table-container">
-      <table>
-        <thead>
+    <!-- Members Table -->
+    <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
           <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>NIS/NIP</th>
-            <th>Nama Lengkap</th>
-            <th>Jenis Kelamin</th>
-            <th>Tipe Keanggotaan</th>
-            <th>Institute</th>
-            <th>Expired</th>
-            <th>Aksi</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">ID</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Nama/NIS-NIP</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Username/Institusi</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Role</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm min-w-[140px]">Status Keanggotaan</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Aksi</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in filteredUsers" :key="user.id">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>
-              <span :class="'badge badge-' + user.role">
+          <tr v-for="user in filteredUsers" :key="user.id" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+            <td class="py-4 px-4 text-sm text-gray-600">{{ user.id }}</td>
+            <td class="py-4 px-4">
+              <div class="text-sm text-gray-900 font-medium">{{ user.nama }}</div>
+              <div class="text-xs text-gray-500">{{ user.nis_nip }}</div>
+            </td>
+            <td class="py-4 px-4">
+              <div class="text-sm text-gray-600">{{ user.username }}</div>
+              <div class="text-xs text-gray-500 mt-1">{{ user.major ? `${user.major}, ${user.institute}` : user.institute }}</div>
+            </td>
+            <td class="py-4 px-4">
+              <span 
+                :class="[
+                  'px-3 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center',
+                  user.role === 'superadmin' ? 'bg-red-100 text-red-700' :
+                  user.role === 'pustakawan' ? 'bg-blue-100 text-blue-700' :
+                  'bg-green-100 text-green-700'
+                ]"
+              >
                 {{ user.role }}
               </span>
             </td>
-            <td>{{ user.nis_nip || '-' }}</td>
-            <td>{{ user.nama || '-' }}</td>
-            <td>{{ user.jenis_kelamin || '-' }}</td>
-            <td>{{ user.tipe_keanggotaan || '-' }}</td>
-            <td>{{ user.institute || '-' }}</td>
-            <td>
-              <span v-if="user.member_expired" :class="isExpired(user.member_expired) ? 'expired' : 'active'">
-                {{ formatDate(user.member_expired) }}
+            <td class="py-4 px-4">
+              <span 
+                :class="[
+                  'text-sm font-medium flex items-center gap-1.5',
+                  isExpired(user.member_expired) ? 'text-red-600' : 'text-green-600'
+                ]"
+              >
+                <span class="w-2 h-2 rounded-full" 
+                  :class="isExpired(user.member_expired) ? 'bg-red-500' : 'bg-green-500'"
+                ></span>
+                {{ isExpired(user.member_expired) ? 'Kadaluarsa' : 'Aktif' }}
               </span>
-              <span v-else>-</span>
+              <div class="text-xs text-gray-500 mt-1">
+                {{ formatDate(user.member_expired) }}
+              </div>
             </td>
-            <td>
-              <div class="action-buttons">
-                <button @click="openEditModal(user)" class="btn-action btn-edit" title="Edit">
-                  <span class="icon-edit">✏️</span>
+            <td class="py-4 px-4">
+              <div class="flex gap-2">
+                <button 
+                  @click="openEditModal(user)"
+                  class="w-9 h-9 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+                >
+                  ✎
                 </button>
-                <button @click="deleteUser(user.id)" class="btn-action btn-delete" title="Hapus">
-                  <span class="icon-trash">🗑️</span>
+                <button 
+                  @click="deleteUser(user.id)"
+                  class="w-9 h-9 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+                >
+                  ×
                 </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-
-      <div v-if="filteredUsers.length === 0" class="empty-state">
-        <p>{{ users.length === 0 ? 'Belum ada data user' : 'Tidak ada data yang sesuai dengan pencarian' }}</p>
-      </div>
     </div>
 
-    <!-- Modal Add/Edit -->
-    <transition name="fade">
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal">
-          <div class="modal-header">
-            <h2>{{ isEditMode ? 'Edit User & Anggota' : 'Tambah User & Anggota' }}</h2>
-            <button @click="closeModal" class="btn-close">&times;</button>
+    <!-- Add/Edit Modal -->
+    <div v-if="showModal" class="fixed inset-0 bg-black/60 flex justify-center items-center z-50 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl w-[90%] max-w-[800px] max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-2xl">
+          <h2 class="text-xl text-gray-800 font-semibold">
+            {{ isEditMode ? 'Edit Anggota' : 'Tambah Anggota Baru' }}
+          </h2>
+          <button 
+            @click="closeModal"
+            class="bg-transparent border-0 text-2xl cursor-pointer text-gray-500 w-9 h-9 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-red-500 transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="p-6">
+          <div class="mb-8">
+            <h3 class="text-lg text-gray-800 mb-5 pb-2.5 border-b-3 border-green-500 font-semibold">
+              Informasi Dasar
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div v-if="!isEditMode" class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Password</label>
+                <input 
+                  type="password"
+                  v-model="formData.password"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                  :required="!isEditMode"
+                >
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Nama Lengkap</label>
+                <input 
+                  type="text"
+                  v-model="formData.nama"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Username</label>
+                <input 
+                  type="text"
+                  v-model="formData.username"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
+              </div>
+            </div>
           </div>
 
-          <form @submit.prevent="submitForm" class="modal-body">
-            <!-- Data User -->
-            <div class="section">
-              <h3>Data Login</h3>
-              <div class="form-group">
-                <label>Username *</label>
-                <input v-model="formData.username" type="text" required />
+          <div class="mb-8">
+            <h3 class="text-lg text-gray-800 mb-5 pb-2.5 border-b-3 border-green-500 font-semibold">
+              Informasi Institusi
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Institusi</label>
+                <input 
+                  type="text"
+                  v-model="formData.institute"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
               </div>
-
-              <div class="form-group">
-                <label>Password {{ isEditMode ? '(kosongkan jika tidak diubah)' : '*' }}</label>
-                <input v-model="formData.password" type="password" :required="!isEditMode" />
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Jurusan</label>
+                <input 
+                  type="text"
+                  v-model="formData.major"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
               </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Angkatan</label>
+                <input 
+                  type="text"
+                  v-model="formData.angkatan"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">No. Telepon</label>
+                <input 
+                  type="text"
+                  v-model="formData.no_telp"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
+              </div>
+            </div>
+          </div>
 
-              <div class="form-group">
-                <label>Role *</label>
-                <select v-model="formData.role" required>
+          <div class="mb-8">
+            <h3 class="text-lg text-gray-800 mb-5 pb-2.5 border-b-3 border-green-500 font-semibold">
+              Akses & Keamanan
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Role</label>
+                <select 
+                  v-model="formData.role"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
                   <option value="siswa">Siswa</option>
                   <option value="pustakawan">Pustakawan</option>
                   <option value="superadmin">Super Admin</option>
                 </select>
               </div>
-            </div>
-
-            <!-- Data Anggota -->
-            <div class="section">
-              <h3>Data Anggota</h3>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>NIS/NIP</label>
-                  <input v-model="formData.nis_nip" type="text" />
-                </div>
-
-                <div class="form-group">
-                  <label>Nama Lengkap</label>
-                  <input v-model="formData.nama" type="text" />
-                </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">NIS/NIP</label>
+                <input 
+                  type="text"
+                  v-model="formData.nis_nip"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
               </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Jenis Kelamin</label>
-                  <select v-model="formData.jenis_kelamin">
-                    <option value="">Pilih</option>
-                    <option value="Laki-laki">Laki-laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Tanggal Lahir</label>
-                  <input v-model="formData.tanggal_lahir" type="date" />
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Tipe Keanggotaan</label>
-                  <select v-model="formData.tipe_keanggotaan">
-                    <option value="">Pilih</option>
-                    <option value="siswa">Siswa</option>
-                    <option value="guru">Guru</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Member Expired</label>
-                  <input v-model="formData.member_expired" type="date" />
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Institute</label>
-                  <input v-model="formData.institute" type="text" placeholder="Nama Sekolah/Instansi" />
-                </div>
-
-                <div class="form-group">
-                  <label>Jurusan/Major</label>
-                  <input v-model="formData.major" type="text" />
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Angkatan</label>
-                  <input v-model="formData.angkatan" type="text" />
-                </div>
-
-                <div class="form-group">
-                  <label>No. Telepon</label>
-                  <input v-model="formData.no_telp" type="text" />
-                </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-600 font-semibold">Tanggal Expired</label>
+                <input 
+                  type="date"
+                  v-model="formData.member_expired"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+                >
               </div>
             </div>
+          </div>
+        </div>
 
-            <div class="modal-footer">
-              <button type="button" @click="closeModal" class="btn-secondary">Batal</button>
-              <button type="submit" class="btn-primary">
-                {{ isEditMode ? 'Update' : 'Simpan' }}
-              </button>
-            </div>
-          </form>
+        <div class="flex justify-end gap-3 p-5 border-t-2 border-gray-200 bg-gray-50 rounded-b-2xl">
+          <button 
+            @click="closeModal"
+            class="px-6 py-3 bg-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+          >
+            Batal
+          </button>
+          <button 
+            @click="submitForm"
+            class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-sm font-medium shadow-green-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+          >
+            {{ isEditMode ? 'Simpan Perubahan' : 'Tambah Anggota' }}
+          </button>
         </div>
       </div>
-    </transition>
+    </div>
 
     <!-- Confirm Delete Modal -->
-    <transition name="fade">
-      <div v-if="showConfirmDelete" class="modal-overlay" @click.self="cancelDelete">
-        <div class="confirm-modal">
-          <div class="confirm-icon">
-            <span class="icon-warning">⚠️</span>
-          </div>
-          <h3>Konfirmasi Hapus</h3>
-          <p>Apakah Anda yakin ingin menghapus user ini?</p>
-          <p class="warning-text">Tindakan ini tidak dapat dibatalkan!</p>
-          <div class="confirm-actions">
-            <button @click="cancelDelete" class="btn-cancel">Batal</button>
-            <button @click="confirmDelete" class="btn-confirm-delete">Ya, Hapus</button>
-          </div>
+    <div v-if="showConfirmDelete" class="fixed inset-0 bg-black/60 flex justify-center items-center z-50 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl p-8 w-[90%] max-w-[440px] text-center shadow-2xl animate-scaleIn">
+        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-amber-100 to-amber-200 rounded-full flex items-center justify-center text-4xl">
+          ⚠️
+        </div>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-2">Konfirmasi Hapus</h3>
+        <p class="text-gray-600 mb-6">
+          Apakah Anda yakin ingin menghapus anggota ini? Tindakan ini tidak dapat dibatalkan.
+        </p>
+        <p class="text-red-500 text-sm font-medium mb-6">
+          Semua data yang terkait dengan anggota ini juga akan dihapus.
+        </p>
+        <div class="flex gap-3 justify-center">
+          <button 
+            @click="cancelDelete"
+            class="px-6 py-3 border-2 border-gray-200 rounded-lg text-gray-600 text-sm font-medium hover:bg-gray-100 transition-colors"
+          >
+            Batal
+          </button>
+          <button 
+            @click="confirmDelete"
+            class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg text-sm font-medium shadow-red-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+          >
+            Ya, Hapus
+          </button>
         </div>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -276,9 +347,9 @@ export default {
       filterRole: '',
       filterTipeKeanggotaan: '',
       filterStatus: '',
-      showAlert: false,
-      alertMessage: '',
-      alertType: 'success',
+      showNotification: false,
+      notificationMessage: '',
+      notificationType: 'success',
       showConfirmDelete: false,
       userToDelete: null,
       formData: {
@@ -304,32 +375,40 @@ export default {
     filteredUsers() {
       let filtered = this.users;
 
+      // Filter berdasarkan pencarian
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(user => {
-          return (
-            (user.username && user.username.toLowerCase().includes(query)) ||
-            (user.nama && user.nama.toLowerCase().includes(query)) ||
-            (user.nis_nip && user.nis_nip.toLowerCase().includes(query)) ||
-            (user.institute && user.institute.toLowerCase().includes(query))
+          const searchableFields = [
+            user.username,
+            user.nama,
+            user.nis_nip,
+            user.institute,
+            user.major
+          ];
+          return searchableFields.some(field => 
+            field && field.toString().toLowerCase().includes(query)
           );
         });
       }
 
+      // Filter berdasarkan role
       if (this.filterRole) {
         filtered = filtered.filter(user => user.role === this.filterRole);
       }
 
+      // Filter berdasarkan tipe keanggotaan
       if (this.filterTipeKeanggotaan) {
         filtered = filtered.filter(user => user.tipe_keanggotaan === this.filterTipeKeanggotaan);
       }
 
+      // Filter berdasarkan status keanggotaan
       if (this.filterStatus) {
         filtered = filtered.filter(user => {
           if (this.filterStatus === 'active') {
             return user.member_expired && !this.isExpired(user.member_expired);
           } else if (this.filterStatus === 'expired') {
-            return user.member_expired && this.isExpired(user.member_expired);
+            return !user.member_expired || this.isExpired(user.member_expired);
           }
           return true;
         });
@@ -376,11 +455,11 @@ export default {
         } else {
           this.handleUnauthorized(response);
           console.error('❌ Failed to fetch users');
-          this.showErrorAlert('Gagal mengambil data users');
+          this.showErrorNotification('Gagal mengambil data users');
         }
       } catch (error) {
         console.error('❌ Error fetching users:', error);
-        this.showErrorAlert('Gagal mengambil data users');
+        this.showErrorNotification('Gagal mengambil data users');
       }
     },
 
@@ -463,17 +542,17 @@ export default {
         const result = await response.json();
 
         if (response.ok) {
-          this.showSuccessAlert(result.message);
+          this.showSuccessNotification(result.message);
           this.closeModal();
           this.fetchUsers();
           console.log('✅ User saved successfully');
         } else {
           this.handleUnauthorized(response);
-          this.showErrorAlert(result.message || 'Terjadi kesalahan');
+          this.showErrorNotification(result.message || 'Terjadi kesalahan');
         }
       } catch (error) {
         console.error('❌ Error submitting form:', error);
-        this.showErrorAlert('Gagal menyimpan data');
+        this.showErrorNotification('Gagal menyimpan data');
       }
     },
 
@@ -496,16 +575,16 @@ export default {
         const result = await response.json();
 
         if (response.ok) {
-          this.showSuccessAlert(result.message);
+          this.showSuccessNotification(result.message);
           this.fetchUsers();
           console.log('✅ User deleted successfully');
         } else {
           this.handleUnauthorized(response);
-          this.showErrorAlert(result.message || 'Gagal menghapus data');
+          this.showErrorNotification(result.message || 'Gagal menghapus data');
         }
       } catch (error) {
         console.error('❌ Error deleting user:', error);
-        this.showErrorAlert('Gagal menghapus data');
+        this.showErrorNotification('Gagal menghapus data');
       } finally {
         this.showConfirmDelete = false;
         this.userToDelete = null;
@@ -517,22 +596,26 @@ export default {
       this.userToDelete = null;
     },
 
-    showSuccessAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'success';
-      this.showAlert = true;
+    showSuccessNotification(message) {
+      this.notificationMessage = message;
+      this.notificationType = 'success';
+      this.showNotification = true;
       setTimeout(() => {
-        this.showAlert = false;
+        this.showNotification = false;
       }, 3000);
     },
 
-    showErrorAlert(message) {
-      this.alertMessage = message;
-      this.alertType = 'error';
-      this.showAlert = true;
+    showErrorNotification(message) {
+      this.notificationMessage = message;
+      this.notificationType = 'error';
+      this.showNotification = true;
       setTimeout(() => {
-        this.showAlert = false;
+        this.showNotification = false;
       }, 3000);
+    },
+
+    closeNotification() {
+      this.showNotification = false;
     },
 
     formatDate(date) {
@@ -548,37 +631,48 @@ export default {
 };
 </script>
 
-<style scoped>
-:root {
-  --primary: #4CAF50;
-  --secondary: #45a049;
-  --danger: #f44336;
-  --danger-hover: #d32f2f;
-  --info: #2196F3;
-  --info-hover: #1976D2;
-  --warning: #ff9800;
-  --success: #4CAF50;
+<style>
+/* Custom animations and transitions */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.manage-members {
-  padding: 20px;
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-/* Alert Notification */
-.alert-notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 2000;
-  min-width: 320px;
-  max-width: 500px;
-  padding: 16px 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.animate-slideIn {
   animation: slideIn 0.3s ease;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease;
+}
+
+/* Transition classes */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  transform: translateY(-100px);
+  opacity: 0;
 }
 
 .alert-notification.success {

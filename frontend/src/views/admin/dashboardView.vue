@@ -1,23 +1,28 @@
 <template>
-  <div class="dashboard-container">
+  <div class="max-w-[1400px] mx-auto p-8 bg-white min-h-screen">
     <!-- Header -->
-    <div class="dashboard-header">
-      <h1 class="dashboard-title">Administrasi Perpustakaan</h1>
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-[#1a1a1a] m-0">Administrasi Perpustakaan</h1>
     </div>
 
     <!-- Alert Notifications -->
-    <div v-if="!hasBackupToday" class="alert alert-info">
-      <div class="alert-content">
-        <span class="alert-icon">ℹ️</span>
-        <span class="alert-text">Hari ini Anda belum membuat cadangan basis data.</span>
-        <button class="btn-alert" @click="createBackup">Cadangkan sekarang</button>
+    <div v-if="!hasBackupToday" class="p-4 px-6 rounded-lg mb-6 bg-[#D1ECF1] border border-[#BEE5EB]">
+      <div class="flex items-center gap-4 flex-wrap">
+        <span class="text-2xl">ℹ️</span>
+        <span class="flex-1 text-[#1a1a1a] leading-relaxed">Hari ini Anda belum membuat cadangan basis data.</span>
+        <button 
+          @click="createBackup" 
+          class="px-5 py-2 bg-[#2C64E3] text-white rounded-md font-semibold hover:bg-[#1e4bb8] transform hover:-translate-y-0.5 transition-all duration-300"
+        >
+          Cadangkan sekarang
+        </button>
       </div>
     </div>
 
-    <div v-if="overdueMembers > 0" class="alert alert-warning">
-      <div class="alert-content">
-        <span class="alert-icon">⚠️</span>
-        <span class="alert-text">
+    <div v-if="overdueMembers > 0" class="p-4 px-6 rounded-lg mb-6 bg-[#FFF3CD] border border-[#FFEAA7]">
+      <div class="flex items-center gap-4 flex-wrap">
+        <span class="text-2xl">⚠️</span>
+        <span class="flex-1 text-[#1a1a1a] leading-relaxed">
           Saat ini ada <strong>{{ overdueMembers }}</strong> anggota perpustakaan yang memiliki keterlambatan. 
           Lihat modul <strong>Sirkulasi</strong> pada bagian <strong>Daftar Keterlambatan</strong> untuk informasi lebih lanjut
         </span>
@@ -25,128 +30,128 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-xl p-6 flex items-center gap-6 shadow-sm border border-[#e5e7eb] transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div class="w-15 h-15 bg-[#f3f4f6] rounded-full flex items-center justify-center text-[#9ca3af] flex-shrink-0">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
         </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ formatNumber(stats.totalKoleksi) }}</div>
-          <div class="stat-label">Total Koleksi</div>
+        <div class="flex-1">
+          <div class="text-4xl font-bold text-[#1a1a1a] leading-none mb-2">{{ formatNumber(stats.totalKoleksi) }}</div>
+          <div class="text-[0.95rem] text-[#6b7280] font-medium">Total Koleksi</div>
         </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="bg-white rounded-xl p-6 flex items-center gap-6 shadow-sm border border-[#e5e7eb] transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div class="w-15 h-15 bg-[#f3f4f6] rounded-full flex items-center justify-center text-[#9ca3af] flex-shrink-0">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
             <line x1="16" y1="2" x2="16" y2="6"></line>
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
         </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ formatNumber(stats.totalEksemplar) }}</div>
-          <div class="stat-label">Total Eksemplar</div>
+        <div class="flex-1">
+          <div class="text-4xl font-bold text-[#1a1a1a] leading-none mb-2">{{ formatNumber(stats.totalEksemplar) }}</div>
+          <div class="text-[0.95rem] text-[#6b7280] font-medium">Total Eksemplar</div>
         </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="bg-white rounded-xl p-6 flex items-center gap-6 shadow-sm border border-[#e5e7eb] transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div class="w-15 h-15 bg-[#f3f4f6] rounded-full flex items-center justify-center text-[#9ca3af] flex-shrink-0">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
         </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ formatNumber(stats.dipinjamkan) }}</div>
-          <div class="stat-label">Dipinjamkan</div>
+        <div class="flex-1">
+          <div class="text-4xl font-bold text-[#1a1a1a] leading-none mb-2">{{ formatNumber(stats.dipinjamkan) }}</div>
+          <div class="text-[0.95rem] text-[#6b7280] font-medium">Dipinjamkan</div>
         </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="bg-white rounded-xl p-6 flex items-center gap-6 shadow-sm border border-[#e5e7eb] transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div class="w-15 h-15 bg-[#f3f4f6] rounded-full flex items-center justify-center text-[#9ca3af] flex-shrink-0">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ formatNumber(stats.tersedia) }}</div>
-          <div class="stat-label">Tersedia</div>
+        <div class="flex-1">
+          <div class="text-4xl font-bold text-[#1a1a1a] leading-none mb-2">{{ formatNumber(stats.tersedia) }}</div>
+          <div class="text-[0.95rem] text-[#6b7280] font-medium">Tersedia</div>
         </div>
       </div>
     </div>
 
     <!-- Charts Section -->
-    <div class="charts-container">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Transaksi Terkini -->
-      <div class="chart-card">
-        <h3 class="chart-title">Transaksi Terkini</h3>
-        <div class="chart-wrapper">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-[#e5e7eb]">
+        <h3 class="text-xl font-semibold text-[#1a1a1a] mb-6">Transaksi Terkini</h3>
+        <div class="h-[300px] mb-4">
           <canvas ref="transactionChart"></canvas>
         </div>
-        <div class="chart-legend">
-          <div class="legend-item">
-            <span class="legend-color" style="background: #F4C430"></span>
+        <div class="flex gap-6 justify-center flex-wrap pt-4 border-t border-[#e5e7eb]">
+          <div class="flex items-center gap-2 text-sm text-[#4b5563]">
+            <span class="w-4 h-4 rounded bg-[#F4C430]"></span>
             <span>Pinjam</span>
           </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background: #00BCD4"></span>
+          <div class="flex items-center gap-2 text-sm text-[#4b5563]">
+            <span class="w-4 h-4 rounded bg-[#00BCD4]"></span>
             <span>Kembali</span>
           </div>
-          <div class="legend-item">
-            <span class="legend-color" style="background: #9C27B0"></span>
+          <div class="flex items-center gap-2 text-sm text-[#4b5563]">
+            <span class="w-4 h-4 rounded bg-[#9C27B0]"></span>
             <span>Perpanjang</span>
           </div>
         </div>
       </div>
 
       <!-- Ringkasan -->
-      <div class="chart-card">
-        <h3 class="chart-title">Ringkasan</h3>
-        <div class="chart-wrapper">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-[#e5e7eb]">
+        <h3 class="text-xl font-semibold text-[#1a1a1a] mb-6">Ringkasan</h3>
+        <div class="h-[300px] mb-4">
           <canvas ref="summaryChart"></canvas>
         </div>
-        <div class="summary-list">
-          <div class="summary-item">
-            <div class="summary-info">
-              <span class="summary-dot" style="background: #E0E0E0"></span>
-              <span class="summary-label">Total</span>
+        <div class="flex flex-col gap-3 pt-4 border-t border-[#e5e7eb]">
+          <div class="flex justify-between items-center py-2">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-[#E0E0E0] flex-shrink-0"></span>
+              <span class="text-[0.95rem] text-[#4b5563]">Total</span>
             </div>
-            <span class="summary-value">{{ summary.total }}</span>
+            <span class="text-lg font-semibold text-[#1a1a1a]">{{ summary.total }}</span>
           </div>
-          <div class="summary-item">
-            <div class="summary-info">
-              <span class="summary-dot" style="background: #2C64E3"></span>
-              <span class="summary-label">Baru</span>
+          <div class="flex justify-between items-center py-2">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-[#2C64E3] flex-shrink-0"></span>
+              <span class="text-[0.95rem] text-[#4b5563]">Baru</span>
             </div>
-            <span class="summary-value">{{ summary.baru }}</span>
+            <span class="text-lg font-semibold text-[#1a1a1a]">{{ summary.baru }}</span>
           </div>
-          <div class="summary-item">
-            <div class="summary-info">
-              <span class="summary-dot" style="background: #00BCD4"></span>
-              <span class="summary-label">Kembali</span>
+          <div class="flex justify-between items-center py-2">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-[#00BCD4] flex-shrink-0"></span>
+              <span class="text-[0.95rem] text-[#4b5563]">Kembali</span>
             </div>
-            <span class="summary-value">{{ summary.kembali }}</span>
+            <span class="text-lg font-semibold text-[#1a1a1a]">{{ summary.kembali }}</span>
           </div>
-          <div class="summary-item">
-            <div class="summary-info">
-              <span class="summary-dot" style="background: #4DB6AC"></span>
-              <span class="summary-label">Perpanjang</span>
+          <div class="flex justify-between items-center py-2">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-[#4DB6AC] flex-shrink-0"></span>
+              <span class="text-[0.95rem] text-[#4b5563]">Perpanjang</span>
             </div>
-            <span class="summary-value">{{ summary.perpanjang }}</span>
+            <span class="text-lg font-semibold text-[#1a1a1a]">{{ summary.perpanjang }}</span>
           </div>
-          <div class="summary-item">
-            <div class="summary-info">
-              <span class="summary-dot" style="background: #F4C430"></span>
-              <span class="summary-label">Keterlambatan</span>
+          <div class="flex justify-between items-center py-2">
+            <div class="flex items-center gap-3">
+              <span class="w-3 h-3 rounded-full bg-[#F4C430] flex-shrink-0"></span>
+              <span class="text-[0.95rem] text-[#4b5563]">Keterlambatan</span>
             </div>
-            <span class="summary-value">{{ summary.keterlambatan }}</span>
+            <span class="text-lg font-semibold text-[#1a1a1a]">{{ summary.keterlambatan }}</span>
           </div>
         </div>
       </div>
@@ -439,269 +444,3 @@ onMounted(async () => {
   }, 100);
 });
 </script>
-
-<style scoped>
-.dashboard-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: #ffffff;
-  min-height: 100vh;
-}
-
-/* Header */
-.dashboard-header {
-  margin-bottom: 2rem;
-}
-
-.dashboard-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-/* Alerts */
-.alert {
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-}
-
-.alert-info {
-  background: #D1ECF1;
-  border: 1px solid #BEE5EB;
-}
-
-.alert-warning {
-  background: #FFF3CD;
-  border: 1px solid #FFEAA7;
-}
-
-.alert-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.alert-icon {
-  font-size: 1.5rem;
-}
-
-.alert-text {
-  flex: 1;
-  color: #1a1a1a;
-  line-height: 1.5;
-}
-
-.btn-alert {
-  padding: 0.5rem 1.25rem;
-  background: #2C64E3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-alert:hover {
-  background: #1e4bb8;
-  transform: translateY(-2px);
-}
-
-/* Statistics Cards */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  background: #f3f4f6;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #9ca3af;
-  flex-shrink: 0;
-}
-
-.stat-icon svg {
-  width: 30px;
-  height: 30px;
-}
-
-.stat-content {
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-
-.stat-label {
-  font-size: 0.95rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* Charts */
-.charts-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 2rem;
-}
-
-.chart-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
-}
-
-.chart-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 1.5rem 0;
-}
-
-.chart-wrapper {
-  height: 300px;
-  margin-bottom: 1rem;
-}
-
-.chart-legend {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #4b5563;
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-}
-
-/* Summary List */
-.summary-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.summary-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.summary-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.summary-label {
-  font-size: 0.95rem;
-  color: #4b5563;
-}
-
-.summary-value {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .charts-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: 1rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.5rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-
-  .stat-card {
-    padding: 1rem;
-  }
-
-  .stat-icon {
-    width: 50px;
-    height: 50px;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-  }
-
-  .alert-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .btn-alert {
-    width: 100%;
-  }
-}
-</style>

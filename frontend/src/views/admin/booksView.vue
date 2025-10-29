@@ -1,125 +1,196 @@
 <template>
-  <div class="books-admin">
-    <!-- Modal Alert -->
-    <div v-if="modal.show" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header" :class="`modal-${modal.type}`">
-          <span class="modal-icon">{{ getModalIcon() }}</span>
-          <span class="modal-title">{{ modal.title }}</span>
-          <button class="modal-close" @click="closeModal">✕</button>
-        </div>
-        <div class="modal-body">
-          <p class="modal-message">{{ modal.message }}</p>
-        </div>
-        <div class="modal-footer">
-          <button 
-            v-if="modal.type === 'confirm'" 
-            @click="closeModal" 
-            class="btn btn-secondary-modal"
-          >
-            {{ modal.cancelText || 'Batal' }}
-          </button>
-          <button 
-            @click="handleConfirm" 
-            :class="`btn btn-${modal.type}-modal`"
-          >
-            {{ modal.confirmText || 'OK' }}
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="max-w-[1400px] mx-auto p-5">
+    <!-- Alert Component -->
+    <BaseAlert
+      v-model="alert.show"
+      :type="alert.type"
+      :message="alert.message"
+    />
+    
+    <!-- Modal Component -->
+    <BaseModal
+      v-model="modal.show"
+      :title="modal.title"
+      :confirm-text="modal.confirmText || 'Konfirmasi'"
+      :cancel-text="modal.cancelText || 'Batal'"
+      @confirm="modal.onConfirm && modal.onConfirm()"
+    >
+      <p class="text-gray-700">{{ modal.message }}</p>
+    </BaseModal>
 
-    <div class="admin-header">
-      <h2 class="admin-title">Manajemen Buku</h2>
-      <p class="admin-subtitle">Kelola koleksi buku perpustakaan Anda</p>
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-[#2C64E3] to-[#1e4bb8] text-white rounded-xl p-6 mb-8">
+      <h1 class="text-3xl font-bold mb-2">📚 Manajemen Buku</h1>
+      <p class="text-white/80">Kelola koleksi buku perpustakaan Anda</p>
     </div>
 
     <!-- Form Tambah / Edit Buku -->
-    <div class="form-card">
-      <div class="form-header">
-        <h5 class="form-title">
-          <span class="icon">📚</span>
-          {{ editMode ? 'Edit Buku' : 'Tambah Buku Baru' }}
-        </h5>
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+      <div class="border-b pb-4 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+          {{ editMode ? '✏️ Edit Buku' : '📖 Tambah Buku Baru' }}
+        </h2>
       </div>
-      <form @submit.prevent="submitForm" class="book-form">
-        <div class="form-section">
-          <h6 class="section-title">Informasi Dasar</h6>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Kode Buku <span class="required">*</span></label>
-              <input v-model="form.kode_buku" type="text" class="form-input" placeholder="Masukkan kode buku" required />
+      
+      <form @submit.prevent="submitForm" class="space-y-8">
+        <!-- Informasi Dasar -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-[#2C64E3]">
+            Informasi Dasar
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">
+                Kode Buku <span class="text-red-500">*</span>
+              </label>
+              <input 
+                v-model="form.kode_buku" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Masukkan kode buku" 
+                required 
+              />
             </div>
-            <div class="form-group">
-              <label class="form-label">Judul <span class="required">*</span></label>
-              <input v-model="form.judul" type="text" class="form-input" placeholder="Masukkan judul buku" required />
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">
+                Judul <span class="text-red-500">*</span>
+              </label>
+              <input 
+                v-model="form.judul" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Masukkan judul buku" 
+                required 
+              />
             </div>
-            <div class="form-group">
-              <label class="form-label">Pembuat <span class="required">*</span></label>
-              <input v-model="form.pembuat" type="text" class="form-input" placeholder="Nama penulis" required />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h6 class="section-title">Detail Publikasi</h6>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Penerbit</label>
-              <input v-model="form.penerbit" type="text" class="form-input" placeholder="Nama penerbit" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Bahasa</label>
-              <input v-model="form.bahasa_buku" type="text" class="form-input" placeholder="Bahasa buku" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Tahun Rilis</label>
-              <input v-model="form.tahun_rilis" type="number" class="form-input" placeholder="YYYY" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h6 class="section-title">Klasifikasi</h6>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">ISBN / ISSN</label>
-              <input v-model="form.isbn_issn" type="text" class="form-input" placeholder="Nomor ISBN/ISSN" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Kategori</label>
-              <input v-model="form.kategori" type="text" class="form-input" placeholder="Kategori buku" />
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">
+                Penulis <span class="text-red-500">*</span>
+              </label>
+              <input 
+                v-model="form.pembuat" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Nama penulis" 
+                required 
+              />
             </div>
           </div>
         </div>
 
-        <div class="form-section">
-          <div class="form-group">
-            <label class="form-label">Sinopsis</label>
-            <textarea v-model="form.sinopsis" class="form-textarea" rows="4" placeholder="Deskripsi singkat tentang buku ini..."></textarea>
+        <!-- Detail Publikasi -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-[#2C64E3]">
+            Detail Publikasi
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">Penerbit</label>
+              <input 
+                v-model="form.penerbit" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Nama penerbit" 
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">Bahasa</label>
+              <input 
+                v-model="form.bahasa_buku" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Bahasa buku" 
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">Tahun Rilis</label>
+              <input 
+                v-model="form.tahun_rilis" 
+                type="number" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="YYYY" 
+              />
+            </div>
           </div>
         </div>
 
-        <div class="form-section">
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Stok</label>
-              <input v-model="form.stok" type="number" class="form-input" placeholder="Jumlah stok" min="0" />
+        <!-- Klasifikasi -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-[#2C64E3]">
+            Klasifikasi
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">ISBN / ISSN</label>
+              <input 
+                v-model="form.isbn_issn" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Nomor ISBN/ISSN" 
+              />
             </div>
-            <div class="form-group">
-              <label class="form-label">Cover Buku</label>
-              <input type="file" @change="handleFileUpload" class="form-input-file" accept="image/*" />
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700">Kategori</label>
+              <input 
+                v-model="form.kategori" 
+                type="text" 
+                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+                placeholder="Kategori buku" 
+              />
             </div>
           </div>
         </div>
 
-        <div class="form-actions">
-          <button type="button" v-if="editMode" @click="cancelEdit" class="btn btn-secondary">
-            <span class="btn-icon">✕</span>
+        <!-- Sinopsis -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700">Sinopsis</label>
+          <textarea 
+            v-model="form.sinopsis" 
+            rows="4" 
+            class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100 resize-y"
+            placeholder="Deskripsi singkat tentang buku ini..."
+          ></textarea>
+        </div>
+
+        <!-- Stok dan Cover -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700">Stok</label>
+            <input 
+              v-model="form.stok" 
+              type="number" 
+              class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
+              placeholder="Jumlah stok" 
+              min="0" 
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700">Cover Buku</label>
+            <input 
+              type="file" 
+              @change="handleFileUpload" 
+              accept="image/*"
+              class="w-full py-2 px-4 border-2 border-gray-200 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-[#2C64E3] hover:file:bg-blue-100 transition-all cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
+          <button 
+            type="button" 
+            v-if="editMode" 
+            @click="cancelEdit" 
+            class="px-6 py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50 transition-all flex items-center gap-2"
+          >
+            <span class="text-lg">✕</span>
             Batal
           </button>
-          <button type="submit" class="btn btn-primary">
-            <span class="btn-icon">{{ editMode ? '✓' : '+' }}</span>
+          <button 
+            type="submit" 
+            class="px-6 py-2.5 bg-[#2C64E3] text-white rounded-lg text-sm font-medium hover:bg-[#1e4bb8] shadow-blue-100 shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
+          >
+            <span class="text-lg">{{ editMode ? '✓' : '+' }}</span>
             {{ editMode ? 'Update Buku' : 'Tambah Buku' }}
           </button>
         </div>
@@ -127,57 +198,88 @@
     </div>
 
     <!-- Tabel Buku -->
-    <div class="table-card">
-      <div class="table-header">
-        <h5 class="table-title">
-          <span class="icon">📖</span>
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Table Header -->
+      <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <span class="text-2xl">📖</span>
           Daftar Buku
-        </h5>
-        <div class="table-info">
-          <span class="badge">{{ books.length }} Buku</span>
+        </h2>
+        <div class="bg-blue-50 text-[#2C64E3] px-4 py-1 rounded-full text-sm font-medium">
+          {{ books.length }} Buku
         </div>
       </div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th>ID</th>
-              <th>Kode Buku</th>
-              <th>Judul</th>
-              <th>Pembuat</th>
-              <th>Penerbit</th>
-              <th>Stok</th>
-              <th>Aksi</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Buku</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penulis</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerbit</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="book in books" :key="book.id" class="table-row">
-              <td><span class="id-badge">{{ book.id }}</span></td>
-              <td><strong>{{ book.kode_buku }}</strong></td>
-              <td class="book-title">{{ book.judul }}</td>
-              <td>{{ book.pembuat }}</td>
-              <td>{{ book.penerbit }}</td>
-              <td>
-                <span class="stock-badge" :class="book.stok > 0 ? 'in-stock' : 'out-stock'">
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="book in books" :key="book.id" class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
+                  {{ book.id }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                {{ book.kode_buku }}
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-gray-900 font-medium">{{ book.judul }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                {{ book.pembuat }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                {{ book.penerbit }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span 
+                  :class="[
+                    'px-3 py-1 rounded-full text-sm font-medium',
+                    book.stok > 0 
+                      ? 'bg-green-50 text-green-600' 
+                      : 'bg-red-50 text-red-600'
+                  ]"
+                >
                   {{ book.stok }}
                 </span>
               </td>
-              <td>
-                <div class="action-buttons">
-                  <button class="btn-action btn-edit" @click="editBook(book)" title="Edit">
-                    <span>✎</span>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex gap-2">
+                  <button 
+                    @click="editBook(book)" 
+                    class="p-2 bg-[#2C64E3] text-white rounded-lg hover:bg-[#1e4bb8] transition-all"
+                    title="Edit"
+                  >
+                    ✎
                   </button>
-                  <button class="btn-action btn-delete" @click="confirmDelete(book.id)" title="Hapus">
-                    <span>🗑</span>
+                  <button 
+                    @click="confirmDelete(book.id)" 
+                    class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
+                    title="Hapus"
+                  >
+                    🗑
                   </button>
                 </div>
               </td>
             </tr>
+
+            <!-- Empty State -->
             <tr v-if="books.length === 0">
-              <td colspan="7" class="empty-state">
-                <div class="empty-content">
-                  <span class="empty-icon">📚</span>
-                  <p>Belum ada data buku</p>
+              <td colspan="7" class="px-6 py-16 text-center">
+                <div class="flex flex-col items-center gap-4">
+                  <span class="text-5xl opacity-20">📚</span>
+                  <p class="text-gray-500 font-medium">Belum ada data buku</p>
                 </div>
               </td>
             </tr>
@@ -191,6 +293,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import BaseModal from '@/components/admin/BaseModal.vue';
+import BaseAlert from '@/components/admin/BaseAlert.vue';
 
 const books = ref([]);
 const editMode = ref(false);
@@ -211,13 +315,19 @@ const form = ref({
   cover: null,
 });
 
+const alert = ref({
+  show: false,
+  type: 'info',
+  message: ''
+});
+
 const modal = ref({
   show: false,
-  type: 'alert', // 'alert', 'success', 'error', 'confirm'
   title: '',
   message: '',
   confirmText: 'OK',
   cancelText: 'Batal',
+  onConfirm: null
 });
 
 const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
@@ -232,47 +342,32 @@ const getAuthConfig = (additionalHeaders = {}) => {
   };
 };
 
+// Alert Functions
+const showAlert = (message, type = 'info') => {
+  alert.value = {
+    show: true,
+    type,
+    message
+  };
+  setTimeout(() => {
+    alert.value.show = false;
+  }, 3000);
+};
+
+const showSuccess = (message) => showAlert(message, 'success');
+const showError = (message) => showAlert(message, 'error');
+const showWarning = (message) => showAlert(message, 'warning');
+
 // Modal Functions
-const showAlert = (title, message) => {
+const showConfirmModal = (title, message, onConfirm) => {
   modal.value = {
     show: true,
-    type: 'alert',
-    title,
-    message,
-    confirmText: 'OK',
-  };
-};
-
-const showSuccess = (title, message) => {
-  modal.value = {
-    show: true,
-    type: 'success',
-    title,
-    message,
-    confirmText: 'OK',
-  };
-};
-
-const showError = (title, message) => {
-  modal.value = {
-    show: true,
-    type: 'error',
-    title,
-    message,
-    confirmText: 'OK',
-  };
-};
-
-const showConfirm = (title, message, callback) => {
-  modal.value = {
-    show: true,
-    type: 'confirm',
     title,
     message,
     confirmText: 'Hapus',
     cancelText: 'Batal',
+    onConfirm
   };
-  pendingCallback.value = callback;
 };
 
 const getModalIcon = () => {
@@ -399,610 +494,23 @@ const deleteBook = async (id) => {
 </script>
 
 <style scoped>
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease;
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
-  overflow: hidden;
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modal-header {
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: white;
-  position: relative;
-}
-
-.modal-header.modal-alert {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.modal-header.modal-success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.modal-header.modal-error {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.modal-header.modal-confirm {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.modal-icon {
-  font-size: 1.75rem;
-  flex-shrink: 0;
-}
-
-.modal-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  flex: 1;
-}
-
-.modal-close {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  transition: background 0.2s ease;
-}
-
-.modal-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.modal-body {
-  padding: 1.5rem;
-  color: #374151;
-}
-
-.modal-message {
-  margin: 0;
-  line-height: 1.6;
-  font-size: 0.95rem;
-}
-
-.modal-footer {
-  padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-
-.btn-alert-modal,
-.btn-success-modal,
-.btn-error-modal,
-.btn-confirm-modal {
-  padding: 0.625rem 1.25rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-alert-modal,
-.btn-success-modal,
-.btn-error-modal {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-alert-modal:hover,
-.btn-success-modal:hover,
-.btn-error-modal:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-}
-
-.btn-confirm-modal {
-  background: #ef4444;
-  color: white;
-}
-
-.btn-confirm-modal:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
-}
-
-.btn-secondary-modal {
-  padding: 0.625rem 1.25rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  color: #374151;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary-modal:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-/* Container Utama */
-.books-admin {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: #ffffff;
-  min-height: 100vh;
-}
-
-/* Header */
-.admin-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid #2C64E3;
-}
-
-.admin-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem 0;
-}
-
-.admin-subtitle {
-  color: #666;
-  margin: 0;
-  font-size: 1rem;
-}
-
-/* Card Styles */
-.form-card,
-.table-card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-bottom: 2rem;
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-}
-
-.form-header,
-.table-header {
-  background: linear-gradient(135deg, #2C64E3 0%, #1e4bb8 100%);
-  padding: 1.5rem;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.form-title,
-.table-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: white;
-}
-
-.icon {
-  font-size: 1.5rem;
-}
-
-/* Form Styles */
-.book-form {
-  padding: 2rem;
-}
-
-.form-section {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.form-section:last-of-type {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-}
-
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 1rem;
-  background: #2C64E3;
-  margin-right: 0.5rem;
-  border-radius: 2px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.form-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.required {
-  color: #ef4444;
-}
-
-.form-input,
-.form-textarea,
-.form-input-file {
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  background: #ffffff;
-  color: #1a1a1a;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #2C64E3;
-  box-shadow: 0 0 0 3px rgba(44, 100, 227, 0.1);
-}
-
-.form-input::placeholder,
-.form-textarea::placeholder {
-  color: #9ca3af;
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.form-input-file {
-  padding: 0.5rem;
-  cursor: pointer;
-}
-
-.form-input-file::-webkit-file-upload-button {
-  padding: 0.5rem 1rem;
-  background: #f3f4f6;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  color: #374151;
-  transition: background 0.3s ease;
-}
-
-.form-input-file::-webkit-file-upload-button:hover {
-  background: #e5e7eb;
-}
-
-/* Buttons */
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #e5e7eb;
-}
-
-.btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-icon {
-  font-size: 1.1rem;
-}
-
-.btn-primary {
-  background: #2C64E3;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #1e4bb8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(44, 100, 227, 0.3);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-secondary {
-  background: #6b7280;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #4b5563;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
-}
-
-/* Table Styles */
-.table-info {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.badge {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-.data-table thead {
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.data-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.data-table td {
-  padding: 1rem;
-  color: #1f2937;
-  font-size: 0.95rem;
-}
-
-.table-row {
-  border-bottom: 1px solid #e5e7eb;
-  transition: background 0.2s ease;
-}
-
-.table-row:hover {
-  background: #f9fafb;
-}
-
-.id-badge {
-  background: #e5e7eb;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-weight: 600;
-  color: #4b5563;
-  font-size: 0.875rem;
-}
-
-.book-title {
-  font-weight: 500;
-  color: #1f2937;
-}
-
-.stock-badge {
-  display: inline-block;
-  padding: 0.375rem 0.75rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.stock-badge.in-stock {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.stock-badge.out-stock {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-action {
-  padding: 0.5rem 0.75rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-edit {
-  background: #2C64E3;
-  color: white;
-}
-
-.btn-edit:hover {
-  background: #1e4bb8;
-  transform: scale(1.1);
-}
-
-.btn-delete {
-  background: #ef4444;
-  color: white;
-}
-
-.btn-delete:hover {
-  background: #dc2626;
-  transform: scale(1.1);
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-}
-
-.empty-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  color: #9ca3af;
-}
-
-.empty-icon {
-  font-size: 3rem;
-  opacity: 0.5;
-}
-
-.empty-content p {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .books-admin {
-    padding: 1rem;
-  }
-
-  .admin-title {
-    font-size: 1.5rem;
-  }
-
-  .form-grid,
-  .form-grid-2 {
-    grid-template-columns: 1fr;
-  }
-
-  .book-form {
-    padding: 1rem;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .table-container {
-    overflow-x: scroll;
-  }
-
-  .data-table {
-    min-width: 800px;
-  }
-
-  .modal-footer {
-    flex-direction: column-reverse;
-  }
-
-  .btn-alert-modal,
-  .btn-success-modal,
-  .btn-error-modal,
-  .btn-confirm-modal,
-  .btn-secondary-modal {
-    width: 100%;
-  }
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
 }
 </style>

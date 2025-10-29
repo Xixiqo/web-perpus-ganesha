@@ -112,7 +112,7 @@ console.log("   ✓ Registered: /api/books");
 app.use("/api/search", searchRoutes);
 console.log("   ✓ Registered: /api/search");
 
-app.use("/api/riwayat", peminjamanRoutes);
+app.use("/api/riwayat", riwayatRoutes);
 console.log("   ✓ Registered: /api/riwayat");
 
 app.use("/api/categories", categoriesRoutes);
@@ -126,7 +126,6 @@ console.log("✅ All API routes registered\n");
 // ============================================
 // 🌐 FRONTEND HANDLER (Vue Build)
 // ============================================
-app.use("/api/riwayat", riwayatRoutes);
 
 // ===== Frontend Vue build =====
 const frontendPath = path.join(__dirname, "../frontend/dist");

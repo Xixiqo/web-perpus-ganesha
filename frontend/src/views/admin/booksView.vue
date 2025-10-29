@@ -234,13 +234,14 @@
 
       <div class="overflow-x-auto">
         <table class="w-full">
-          <thead class="bg-gray-50 border-b border-gray-200">
+         <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Buku</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penulis</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerbit</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
@@ -248,57 +249,30 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="book in filteredBooks" :key="book.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
-                  {{ book.id }}
-                </span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">{{ book.id }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                {{ book.kode_buku }}
-              </td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ book.kode_buku }}</td>
               <td class="px-6 py-4">
                 <div class="text-gray-900 font-medium">{{ book.judul }}</div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                {{ book.pembuat }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                {{ book.penerbit }}
-              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ book.pembuat }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ book.penerbit }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ book.kategori || '-' }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span 
-                  :class="[
-                    'px-3 py-1 rounded-full text-sm font-medium',
-                    book.stok > 0 
-                      ? 'bg-green-50 text-green-600' 
-                      : 'bg-red-50 text-red-600'
-                  ]"
-                >
-                  {{ book.stok }}
-                </span>
+                <span :class="[
+                  'px-3 py-1 rounded-full text-sm font-medium',
+                  book.stok > 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+                ]">{{ book.stok }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex gap-2">
-                  <button 
-                    @click="editBook(book)" 
-                    class="p-2 bg-[#2C64E3] text-white rounded-lg hover:bg-[#1e4bb8] transition-all"
-                    title="Edit"
-                  >
-                    ✎
-                  </button>
-                  <button 
-                    @click="confirmDelete(book.id)" 
-                    class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
-                    title="Hapus"
-                  >
-                    🗑
-                  </button>
+                  <button @click="editBook(book)" class="p-2 bg-[#2C64E3] text-white rounded-lg hover:bg-[#1e4bb8] transition-all" title="Edit">✎</button>
+                  <button @click="confirmDelete(book.id)" class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all" title="Hapus">🗑</button>
                 </div>
               </td>
             </tr>
-
-            <!-- Empty State -->
             <tr v-if="filteredBooks.length === 0">
-              <td colspan="7" class="px-6 py-16 text-center">
+              <td colspan="8" class="px-6 py-16 text-center">
                 <div class="flex flex-col items-center gap-4">
                   <span class="text-5xl opacity-20">📚</span>
                   <p class="text-gray-500 font-medium">

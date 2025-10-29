@@ -429,7 +429,41 @@ const handleFileUpload = (event) => {
   form.value.cover = event.target.files[0];
 };
 
+// Function untuk edit buku dengan scroll ke atas
+const editBook = (book) => {
+  editMode.value = true;
+  currentId.value = book.id;
+  Object.assign(form.value, book);
+  
+  // Smooth scroll ke atas halaman
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
+
+// Function submit form dengan konfirmasi untuk update
 const submitForm = async () => {
+  // Kalau mode edit, tampilkan konfirmasi dulu
+  if (editMode.value) {
+    modal.value = {
+      show: true,
+      title: 'Update Buku',
+      message: 'Apakah Anda yakin ingin mengupdate data buku ini?',
+      confirmText: 'Konfirmasi',
+      cancelText: 'Batal',
+      onConfirm: async () => {
+        await processSubmit();
+      }
+    };
+  } else {
+    // Kalau tambah buku baru, langsung proses tanpa konfirmasi
+    await processSubmit();
+  }
+};
+
+// Function untuk proses submit (dipanggil setelah konfirmasi)
+const processSubmit = async () => {
   try {
     const formData = new FormData();
     Object.keys(form.value).forEach((key) => {
@@ -444,35 +478,25 @@ const submitForm = async () => {
         formData,
         config
       );
-      showSuccess('Sukses', 'Buku berhasil diperbarui!');
+      modal.value.show = false; // Tutup modal
+      showSuccess('Buku berhasil diperbarui!');
     } else {
       await axios.post(`${apiBase}/api/admin/books`, formData, config);
-      showSuccess('Sukses', 'Buku berhasil ditambahkan!');
+      showSuccess('Buku berhasil ditambahkan!');
     }
 
     await fetchBooks();
     cancelEdit();
   } catch (err) {
     console.error('❌ Error submitting form:', err);
+    modal.value.show = false; // Tutup modal meskipun error
     if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.removeItem('token');
-      showError('Error', 'Unauthorized access');
+      showError('Unauthorized access');
     } else {
-      showError('Error', 'Gagal menyimpan data buku');
+      showError('Gagal menyimpan data buku');
     }
   }
-};
-
-const editBook = (book) => {
-  editMode.value = true;
-  currentId.value = book.id;
-  Object.assign(form.value, book);
-  
-  // Smooth scroll ke atas halaman
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
 };
 
 const cancelEdit = () => {

@@ -40,63 +40,33 @@
             <p class="text-sm text-gray-600">Kelola semua transaksi peminjaman buku perpustakaan</p>
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Status Dropdown -->
         <div class="bg-white p-5 rounded-lg shadow-sm mb-5">
-            <div class="flex flex-wrap gap-4">
-                <button 
-                    @click="filterStatus = ''"
-                    :class="[
-                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                        !filterStatus ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    ]"
+            <div class="relative w-64">
+                <select 
+                    v-model="filterStatus"
+                    class="w-full px-4 py-2 rounded-lg text-sm font-semibold appearance-none border border-gray-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 transition-all"
                 >
-                    Semua ({{ peminjaman.length }})
-                </button>
-                <button 
-                    @click="filterStatus = 'Pending'"
-                    :class="[
-                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                        filterStatus === 'Pending' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
-                    ]"
-                >
-                    Menunggu ({{ getPendingCount }})
-                </button>
-                <button 
-                    @click="filterStatus = 'Approved'"
-                    :class="[
-                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                        filterStatus === 'Approved' ? 'bg-cyan-500 text-white' : 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100'
-                    ]"
-                >
-                    Disetujui ({{ getApprovedCount }})
-                </button>
-                <button 
-                    @click="filterStatus = 'Dipinjam'"
-                    :class="[
-                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                        filterStatus === 'Dipinjam' ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                    ]"
-                >
-                    Dipinjam ({{ getBorrowedCount }})
-                </button>
-                <button 
-                    @click="filterStatus = 'Dikembalikan'"
-                    :class="[
-                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                        filterStatus === 'Dikembalikan' ? 'bg-green-500 text-white' : 'bg-green-50 text-green-600 hover:bg-green-100'
-                    ]"
-                >
-                    Dikembalikan ({{ getReturnedCount }})
-                </button>
-                <button 
-                    @click="filterStatus = 'Terlambat'"
-                    :class="[
-                        'px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                        filterStatus === 'Terlambat' ? 'bg-red-500 text-white' : 'bg-red-50 text-red-600 hover:bg-red-100'
-                    ]"
-                >
-                    Terlambat ({{ getLateCount }})
-                </button>
+                    <option 
+                        v-for="option in statusOptions" 
+                        :key="option.value" 
+                        :value="option.value"
+                        class="py-2"
+                    >
+                        {{ option.label }} {{ option.value === '' ? `(${peminjaman.length})` :
+                           option.value === 'Pending' ? `(${getPendingCount})` :
+                           option.value === 'Approved' ? `(${getApprovedCount})` :
+                           option.value === 'Dipinjam' ? `(${getBorrowedCount})` :
+                           option.value === 'Dikembalikan' ? `(${getReturnedCount})` :
+                           option.value === 'Terlambat' ? `(${getLateCount})` : ''
+                        }}
+                    </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
+                </div>
             </div>
         </div>
 
@@ -160,8 +130,8 @@
                                     title="Tandai Dipinjam"
                                 >↗</button>
                                 <button 
-                                    v-if="item.status === 'borrowed'"
-                                    @click="showReturnModal(item)"
+                                    v-if="item.status === 'Dipinjam'"
+                                    @click="openReturnModal(item)"
                                     class="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors flex items-center justify-center"
                                     title="Kembalikan"
                                 >↙</button>
@@ -236,7 +206,7 @@
         </div>
 
         <!-- Modal Pengembalian -->
-        <div v-if="showReturnModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm" @click.self="closeReturnModal">
+        <div v-if="showReturnModalVisible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm" @click.self="closeReturnModal">
             <div class="bg-white rounded-xl shadow-2xl max-w-[600px] w-[90%]">
                 <div class="p-6 flex items-center gap-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-t-xl">
                     <h2 class="text-xl font-semibold">Pengembalian Buku</h2>
@@ -285,7 +255,7 @@ export default {
             books: [],
             filterStatus: '',
             showDetailModal: false,
-            showReturnModal: false,
+            showReturnModalVisible: false,
             selectedItem: null,
             returnDate: new Date().toISOString().split('T')[0],
             keterangan: '',
@@ -298,6 +268,14 @@ export default {
                 message: '',
                 confirmText: 'OK',
             },
+            statusOptions: [
+                { label: 'Semua', value: '' },
+                { label: 'Menunggu', value: 'Pending' },
+                { label: 'Disetujui', value: 'Approved' },
+                { label: 'Dipinjam', value: 'Dipinjam' },
+                { label: 'Dikembalikan', value: 'Dikembalikan' },
+                { label: 'Terlambat', value: 'Terlambat' }
+            ],
             autoCheckDone: false,
             apiBase: import.meta.env.VITE_API_BASE || 'http://localhost:5000'
         }
@@ -414,7 +392,7 @@ export default {
             this.loading = true;
             try {
                 const [peminjamanRes, usersRes, booksRes] = await Promise.all([
-                    fetch(`${this.apiBase}/api/admin/peminjaman`, {
+                    fetch(`${this.apiBase}/api/admin/peminjamann`, {
                         method: 'GET',
                         headers: this.getAuthHeaders()
                     }),
@@ -520,6 +498,79 @@ export default {
             }
         },
 
+        async approveLoan(id) {
+            try {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${id}/status`, {
+                    method: 'PUT',
+                    headers: this.getAuthHeaders(),
+                    body: JSON.stringify({
+                        status: 'Approved'
+                    })
+                });
+
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    const result = await response.text();
+                    throw new Error(result || 'Gagal menyetujui peminjaman');
+                }
+
+                await this.loadPeminjamanSilent();
+                this.showSuccess('Sukses', 'Peminjaman berhasil disetujui');
+            } catch (error) {
+                console.error('❌ Error approving loan:', error);
+                this.showError('Error', 'Gagal menyetujui peminjaman: ' + error.message);
+            }
+        },
+
+        async rejectLoan(id) {
+            try {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${id}`, {
+                    method: 'PUT',
+                    headers: this.getAuthHeaders(),
+                    body: JSON.stringify({
+                        status: 'Rejected'
+                    })
+                });
+
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    const result = await response.text();
+                    throw new Error(result || 'Gagal menolak peminjaman');
+                }
+
+                await this.loadPeminjamanSilent();
+                this.showSuccess('Sukses', 'Peminjaman berhasil ditolak');
+            } catch (error) {
+                console.error('❌ Error rejecting loan:', error);
+                this.showError('Error', 'Gagal menolak peminjaman: ' + error.message);
+            }
+        },
+
+        async markBorrowed(id) {
+            try {
+                const response = await fetch(`${this.apiBase}/api/admin/peminjamann/${id}/status`, {
+                    method: 'PUT',
+                    headers: this.getAuthHeaders(),
+                    body: JSON.stringify({
+                        status: 'Dipinjam'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    this.handleUnauthorized(response);
+                    throw new Error(result.message || 'Gagal menandai buku sebagai dipinjam');
+                }
+
+                await this.loadPeminjamanSilent();
+                this.showSuccess('Sukses', 'Buku berhasil ditandai sebagai dipinjam');
+            } catch (error) {
+                console.error('❌ Error marking as borrowed:', error);
+                this.showError('Error', 'Gagal menandai buku sebagai dipinjam: ' + error.message);
+            }
+        },
+
         filterPeminjaman() {
             if (this.filterStatus === 'all') {
                 this.filteredPeminjaman = [...this.peminjaman];
@@ -589,12 +640,12 @@ export default {
             );
         },
 
-        showReturnModal(item) {
+        openReturnModal(item) {
             this.selectedItem = item;
             this.returnDate = new Date().toISOString().split('T')[0];
             this.keterangan = '';
             this.calculateLateDaysForReturn();
-            this.showReturnModalFlag = true;
+            this.showReturnModalVisible = true;
         },
 
         calculateLateDaysForReturn() {
@@ -648,8 +699,15 @@ export default {
 
         closeModal() {
             this.showDetailModal = false;
-            this.showReturnModalFlag = false;
+            this.showReturnModalVisible = false;
             this.selectedItem = null;
+        },
+
+        closeReturnModal() {
+            this.showReturnModalVisible = false;
+            this.selectedItem = null;
+            this.returnDate = new Date().toISOString().split('T')[0];
+            this.keterangan = '';
         },
 
         calculateLateDays(dueDate) {

@@ -1,204 +1,357 @@
 <template>
-  <div class="informasi-page">
+  <div class="min-h-screen bg-gray-50">
     <!-- Hero Section with Background Image -->
-    <section class="hero-section">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1 class="hero-title">Visi & Misi</h1>
+    <section class="relative min-h-screen flex items-center justify-center px-5 py-48 overflow-hidden">
+      <!-- Background Image -->
+      <div class="absolute inset-0 bg-cover bg-center bg-fixed" style="background-image: url('/ganesha-profile/ganesha9.jpg');"></div>
+      
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-br from-black/75 via-blue-900/65 to-slate-900/70"></div>
+      
+      <!-- Content -->
+      <div class="relative z-10 w-full max-w-6xl text-white">
+        <h1 class="text-5xl md:text-6xl font-extrabold text-center mb-20 drop-shadow-2xl tracking-tight" data-aos="fade-down" data-aos-duration="1000">
+          Visi & Misi
+        </h1>
 
-        <!-- Visi & Misi Content -->
-        <div class="container content-wrapper">
-          <div class="cards-wrapper">
-            <!-- Card Visi -->
-            <div class="info-card visi-card" :class="{ 'slide-in-left': isVisible }">
-              <div class="card-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </div>
-              <h2 class="card-title">Visi</h2>
-              <p class="card-description">
-                Terwujudnya Insan Pembelajar yang Cerdas, Berkarakter, Berwawasan Luas, dan Berbudi Pekerti Luhur dengan
-                Memberdayakan Perpustakaan.
-              </p>
+        <!-- Visi & Misi Cards -->
+        <div class="visi-misi-cards grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <!-- Card Visi -->
+          <div 
+            class="bg-white rounded-3xl p-10 shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:shadow-3xl"
+            :class="{ 'animate-slide-in-left': isVisible }"
+            data-aos="fade-right" 
+            data-aos-duration="800"
+          >
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg" style="background-color: #2C64E3; box-shadow: 0 10px 25px rgba(44, 100, 227, 0.3);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
             </div>
+            <h2 class="text-3xl font-bold mb-5" style="color: #2C64E3;">Visi</h2>
+            <p class="text-gray-800 leading-relaxed text-base font-medium">
+              Terwujudnya Insan Pembelajar yang Cerdas, Berkarakter, Berwawasan Luas, dan Berbudi Pekerti Luhur dengan
+              Memberdayakan Perpustakaan.
+            </p>
+          </div>
 
-            <!-- Card Misi -->
-            <div class="info-card misi-card" :class="{ 'slide-in-right': isVisible }">
-              <div class="card-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <circle cx="12" cy="12" r="6"></circle>
-                  <circle cx="12" cy="12" r="2"></circle>
-                </svg>
-              </div>
-              <h2 class="card-title">Misi</h2>
-              <ul class="misi-list">
-                <li><span class="bullet"></span>Mewujudkan Perpustakaan yang nyaman dan menyenangkan</li>
-                <li><span class="bullet"></span>Menyediakan Bahan Koleksi Perpustakaan yang Representatif</li>
-                <li><span class="bullet"></span>Mengembangkan Pelayanan Perpustakaan Berbasis IT</li>
-                <li><span class="bullet"></span>Mewujudkan Pemustaka yang Berprestasi</li>
-                <li><span class="bullet"></span>Mengembangkan Koleksi Perpustakaan Sesuai Kebutuhan</li>
-                <li><span class="bullet"></span>Menyediakan Pelayanan Perpustakaan dengan mengedepankan 5S</li>
-              </ul>
+          <!-- Card Misi -->
+          <div 
+            class="bg-white rounded-3xl p-10 shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:shadow-3xl"
+            :class="{ 'animate-slide-in-right': isVisible }"
+            data-aos="fade-left" 
+            data-aos-duration="800" 
+            data-aos-delay="200"
+          >
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg" style="background-color: #2C64E3; box-shadow: 0 10px 25px rgba(44, 100, 227, 0.3);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
             </div>
+            <h2 class="text-3xl font-bold mb-5" style="color: #2C64E3;">Misi</h2>
+            <ul class="space-y-3.5">
+              <li class="flex items-start gap-3 text-gray-800 text-base font-medium">
+                <span class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-md" style="background-color: #2C64E3; box-shadow: 0 4px 10px rgba(44, 100, 227, 0.4);"></span>
+                <span>Mewujudkan Perpustakaan yang nyaman dan menyenangkan</span>
+              </li>
+              <li class="flex items-start gap-3 text-gray-800 text-base font-medium">
+                <span class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-md" style="background-color: #2C64E3; box-shadow: 0 4px 10px rgba(44, 100, 227, 0.4);"></span>
+                <span>Menyediakan Bahan Koleksi Perpustakaan yang Representatif</span>
+              </li>
+              <li class="flex items-start gap-3 text-gray-800 text-base font-medium">
+                <span class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-md" style="background-color: #2C64E3; box-shadow: 0 4px 10px rgba(44, 100, 227, 0.4);"></span>
+                <span>Mengembangkan Pelayanan Perpustakaan Berbasis IT</span>
+              </li>
+              <li class="flex items-start gap-3 text-gray-800 text-base font-medium">
+                <span class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-md" style="background-color: #2C64E3; box-shadow: 0 4px 10px rgba(44, 100, 227, 0.4);"></span>
+                <span>Mewujudkan Pemustaka yang Berprestasi</span>
+              </li>
+              <li class="flex items-start gap-3 text-gray-800 text-base font-medium">
+                <span class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-md" style="background-color: #2C64E3; box-shadow: 0 4px 10px rgba(44, 100, 227, 0.4);"></span>
+                <span>Mengembangkan Koleksi Perpustakaan Sesuai Kebutuhan</span>
+              </li>
+              <li class="flex items-start gap-3 text-gray-800 text-base font-medium">
+                <span class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-md" style="background-color: #2C64E3; box-shadow: 0 4px 10px rgba(44, 100, 227, 0.4);"></span>
+                <span>Menyediakan Pelayanan Perpustakaan dengan mengedepankan 5S</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Jam Layanan -->
-    <section class="additional-info">
-      <h1 class="hero-tite">Jam Layanan</h1>
-      <div class="container">
-        <div class="info-grid">
-          <div class="info-item">
-            <h3>Senin - Kamis</h3>
-            <p><strong>Buka :</strong> 07:30</p>
-            <p><strong>Istirahat :</strong> 12.00-13.00</p>
-            <p><strong>Tutup :</strong> 15.00</p>
+    <section class="relative py-20 px-5 overflow-hidden" style="background: linear-gradient(to bottom right, #2C64E3, #1e4bb8, #2C64E3);">
+      <!-- Decorative Elements -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+      </div>
+      
+      <div class="relative max-w-6xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-white mb-4" data-aos="fade-up">
+          Jam Layanan Perpustakaan
+        </h2>
+        <p class="text-center text-blue-100 text-lg mb-16" data-aos="fade-up" data-aos-delay="100">
+          Kami siap melayani Anda sesuai jadwal di bawah ini
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Senin - Kamis -->
+          <div 
+            class="bg-white rounded-2xl p-8 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+            data-aos="zoom-in" 
+            data-aos-delay="200"
+          >
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5" style="background-color: rgba(44, 100, 227, 0.1);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2C64E3" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">Senin - Kamis</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                <span class="text-gray-600 font-medium">Buka</span>
+                <span class="font-bold text-lg" style="color: #2C64E3;">07:30</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                <span class="text-gray-600 font-medium">Istirahat</span>
+                <span class="font-bold text-lg" style="color: #2C64E3;">12:00 - 13:00</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-gray-600 font-medium">Tutup</span>
+                <span class="font-bold text-lg" style="color: #2C64E3;">15:00</span>
+              </div>
+            </div>
           </div>
 
-          <div class="info-item">
-            <h3>Jumat</h3>
-            <p><strong>Buka :</strong> 07:30</p>
-            <p><strong>Istirahat :</strong> 11.30-12.45</p>
-            <p><strong>Tutup :</strong> 13.30</p>
+          <!-- Jumat -->
+          <div 
+            class="bg-white rounded-2xl p-8 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+            data-aos="zoom-in" 
+            data-aos-delay="300"
+          >
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5" style="background-color: rgba(44, 100, 227, 0.1);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2C64E3" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">Jumat</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                <span class="text-gray-600 font-medium">Buka</span>
+                <span class="font-bold text-lg" style="color: #2C64E3;">07:30</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                <span class="text-gray-600 font-medium">Istirahat</span>
+                <span class="font-bold text-lg" style="color: #2C64E3;">11:30 - 12:45</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-gray-600 font-medium">Tutup</span>
+                <span class="font-bold text-lg" style="color: #2C64E3;">13:30</span>
+              </div>
+            </div>
           </div>
 
-          <div class="info-item">
-            <h3>Sabtu - Minggu</h3>
-            <p><strong>Tutup</strong></p>
-            <p>Libur Akhir Pekan</p>
+          <!-- Sabtu - Minggu -->
+          <div 
+            class="bg-gray-100 rounded-2xl p-8 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border-2 border-gray-300"
+            data-aos="zoom-in" 
+            data-aos-delay="400"
+          >
+            <div class="w-14 h-14 bg-gray-300 rounded-xl flex items-center justify-center mx-auto mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">Sabtu - Minggu</h3>
+            <div class="text-center py-4">
+              <p class="text-3xl font-bold text-red-600 mb-2">TUTUP</p>
+              <p class="text-gray-600 text-base">Libur Akhir Pekan</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Contact Information -->
-    <section class="info-container">
-      <!-- Kontak Kiri -->
-      <div class="contact-left">
-        <!-- Telepon / WhatsApp -->
-        <a href="https://wa.me/6285743718200" target="_blank" rel="noopener noreferrer" class="contact-item">
-          <div class="contact-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25c1.12.37 2.32.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"></path>
-            </svg>
-          </div>
-          <h3>Telepon</h3>
-          <p>+(62)812-3456-7890</p>
-        </a>
+    <section class="py-20 px-5 md:px-16 bg-gray-50">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <!-- Contact Left (2 columns) -->
+        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Telepon -->
+          <a 
+            href="https://wa.me/6285743718200" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="rounded-xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            style="background-color: rgba(44, 100, 227, 0.1);"
+            data-aos="zoom-in" 
+            data-aos-delay="100"
+          >
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md transition-all duration-300 hover:shadow-xl group" style="transition: all 0.3s ease;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="transition-colors" style="color: #2C64E3;">
+                <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25c1.12.37 2.32.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 text-lg mb-2">Telepon</h3>
+            <p class="text-gray-600 text-sm">+(62)812-3456-7890</p>
+          </a>
 
-        <!-- Instagram -->
-        <a href="https://www.instagram.com/ganeshastembayo/" target="_blank" rel="noopener noreferrer" class="contact-item">
-          <div class="contact-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-              <g fill="none">
-                <path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path>
+          <!-- Instagram -->
+          <a 
+            href="https://www.instagram.com/ganeshastembayo/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="rounded-xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            style="background-color: rgba(44, 100, 227, 0.1);"
+            data-aos="zoom-in" 
+            data-aos-delay="200"
+          >
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md transition-all duration-300 hover:shadow-xl group">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="transition-colors" style="color: #2C64E3;">
                 <path fill="currentColor" d="M16 3a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5zm-4 5a4 4 0 1 0 0 8a4 4 0 0 0 0-8m0 2a2 2 0 1 1 0 4a2 2 0 0 1 0-4m4.5-3.5a1 1 0 1 0 0 2a1 1 0 0 0 0-2"></path>
-              </g>
-            </svg>
-          </div>
-          <h3>Instagram</h3>
-          <p>@ganeshastembayo</p>
-        </a>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 text-lg mb-2">Instagram</h3>
+            <p class="text-gray-600 text-sm">@ganeshastembayo</p>
+          </a>
 
-        <!-- TikTok -->
-        <a href="https://www.tiktok.com/@ganeshastembayo" target="_blank" rel="noopener noreferrer" class="contact-item">
-          <div class="contact-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path>
-            </svg>
-          </div>
-          <h3>Tiktok</h3>
-          <p>@ganeshastembayo</p>
-        </a>
+          <!-- TikTok -->
+          <a 
+            href="https://www.tiktok.com/@ganeshastembayo" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="rounded-xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            style="background-color: rgba(44, 100, 227, 0.1);"
+            data-aos="zoom-in" 
+            data-aos-delay="300"
+          >
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md transition-all duration-300 hover:shadow-xl group">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="transition-colors" style="color: #2C64E3;">
+                <path fill="currentColor" d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6c0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64c0 3.33 2.76 5.7 5.69 5.7c3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48"></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 text-lg mb-2">Tiktok</h3>
+            <p class="text-gray-600 text-sm">@ganeshastembayo</p>
+          </a>
 
-        <!-- Email -->
-        <a href="mailto:ganeshastembayo@gmail.com" class="contact-item">
-          <div class="contact-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path>
-            </svg>
-          </div>
-          <h3>Email</h3>
-          <p>ganeshastembayo@gmail.com</p>
-        </a>
+          <!-- Email -->
+          <a 
+            href="mailto:ganeshastembayo@gmail.com" 
+            class="rounded-xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            style="background-color: rgba(44, 100, 227, 0.1);"
+            data-aos="zoom-in" 
+            data-aos-delay="400"
+          >
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md transition-all duration-300 hover:shadow-xl group">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="transition-colors" style="color: #2C64E3;">
+                <path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 text-lg mb-2">Email</h3>
+            <p class="text-gray-600 text-sm break-all">ganeshastembayo@gmail.com</p>
+          </a>
 
-        <!-- MAP - Mengambil 2 kolom penuh -->
-        <div class="map-container">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d570.7512129506578!2d110.39261118219468!3d-7.770946100676336!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8343f8a9d%3A0x56427a46a6adb1c0!2sSTM%20Pembangunan%20YOGYAKARTA!5e1!3m2!1sid!2sid!4v1760342915041!5m2!1sid!2sid"
-            width="100%"
-            height="350"
-            style="border:0; border-radius: 12px;"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
+          <!-- MAP -->
+          <div class="col-span-1 sm:col-span-2 rounded-xl overflow-hidden shadow-lg" data-aos="fade-up" data-aos-delay="500">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d570.7512129506578!2d110.39261118219468!3d-7.770946100676336!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8343f8a9d%3A0x56427a46a6adb1c0!2sSTM%20Pembangunan%20YOGYAKARTA!5e1!3m2!1sid!2sid!4v1760342915041!5m2!1sid!2sid"
+              width="100%"
+              height="300"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              class="w-full"
+            ></iframe>
+          </div>
         </div>
-      </div>
 
-      <!-- Form Hubungi Kami -->
-      <div class="contact-right">
-        <h2>Hubungi Kami</h2>
-        <p>
-          Punya pertanyaan, saran, atau ingin mengetahui lebih banyak tentang layanan perpustakaan kami?
-          Silakan isi formulir di bawah ini, dan tim perpustakaan akan segera menghubungi Anda!
-        </p>
+        <!-- Contact Right Form (3 columns) -->
+        <div class="lg:col-span-3 bg-white rounded-2xl p-8 md:p-10 shadow-xl" data-aos="fade-left" data-aos-duration="1000">
+          <h2 class="text-3xl font-bold mb-3" style="color: #2C64E3;">Hubungi Kami</h2>
+          <p class="text-gray-600 mb-8 leading-relaxed">
+            Punya pertanyaan, saran, atau ingin mengetahui lebih banyak tentang layanan perpustakaan kami?
+            Silakan isi formulir di bawah ini, dan tim perpustakaan akan segera menghubungi Anda!
+          </p>
 
-        <form class="contact-form" @submit.prevent="handleSubmit">
-          <label>Nama Lengkap</label>
-          <input 
-            type="text" 
-            placeholder="Masukkan nama lengkap Anda" 
-            v-model="form.name" 
-            required 
-            :disabled="isSubmitting"
-          />
+          <form @submit.prevent="handleSubmit" class="space-y-5">
+            <div>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Nama Lengkap</label>
+              <input 
+                type="text" 
+                placeholder="Masukkan nama lengkap Anda" 
+                v-model="form.name" 
+                required 
+                :disabled="isSubmitting"
+                class="form-input w-full px-4 py-3 border-2 border-gray-300 rounded-xl outline-none transition-all disabled:bg-gray-100 disabled:text-gray-500"
+              />
+            </div>
 
-          <label>Email</label>
-          <input 
-            type="email" 
-            placeholder="Masukkan alamat email aktif" 
-            v-model="form.email" 
-            required 
-            :disabled="isSubmitting"
-          />
+            <div>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Email</label>
+              <input 
+                type="email" 
+                placeholder="Masukkan alamat email aktif" 
+                v-model="form.email" 
+                required 
+                :disabled="isSubmitting"
+                class="form-input w-full px-4 py-3 border-2 border-gray-300 rounded-xl outline-none transition-all disabled:bg-gray-100 disabled:text-gray-500"
+              />
+            </div>
 
-          <label>Subjek</label>
-          <input 
-            type="text" 
-            placeholder="Masukkan judul subjek" 
-            v-model="form.subject" 
-            required 
-            :disabled="isSubmitting"
-          />
+            <div>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Subjek</label>
+              <input 
+                type="text" 
+                placeholder="Masukkan judul subjek" 
+                v-model="form.subject" 
+                required 
+                :disabled="isSubmitting"
+                class="form-input w-full px-4 py-3 border-2 border-gray-300 rounded-xl outline-none transition-all disabled:bg-gray-100 disabled:text-gray-500"
+              />
+            </div>
 
-          <label>Pesan</label>
-          <textarea 
-            rows="8" 
-            placeholder="Tulis pesan Anda disini.." 
-            v-model="form.message" 
-            required
-            :disabled="isSubmitting"
-          ></textarea>
+            <div>
+              <label class="block font-semibold text-gray-700 mb-2 text-sm">Pesan</label>
+              <textarea 
+                rows="6" 
+                placeholder="Tulis pesan Anda disini.." 
+                v-model="form.message" 
+                required
+                :disabled="isSubmitting"
+                class="form-input w-full px-4 py-3 border-2 border-gray-300 rounded-xl outline-none transition-all resize-y disabled:bg-gray-100 disabled:text-gray-500"
+              ></textarea>
+            </div>
 
-          <button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Mengirim...' : 'Kirim Pesan' }}
-          </button>
-        </form>
+            <button 
+              type="submit" 
+              :disabled="isSubmitting"
+              class="w-full text-white py-3.5 rounded-xl font-semibold text-base transition-all duration-300 hover:-translate-y-1 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              style="background-color: #2C64E3; box-shadow: 0 10px 25px rgba(44, 100, 227, 0.4);"
+            >
+              {{ isSubmitting ? 'Mengirim...' : 'Kirim Pesan' }}
+            </button>
+          </form>
 
-        <!-- Alert Messages -->
-        <div v-if="successMessage" class="alert alert-success">
-          ✓ {{ successMessage }}
-        </div>
-        <div v-if="errorMessage" class="alert alert-error">
-          ✗ {{ errorMessage }}
+          <!-- Alert Messages -->
+          <div v-if="successMessage" class="mt-5 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg animate-slide-up">
+            <p class="text-green-700 font-semibold text-sm">✓ {{ successMessage }}</p>
+          </div>
+          <div v-if="errorMessage" class="mt-5 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg animate-slide-up">
+            <p class="text-red-700 font-semibold text-sm">✗ {{ errorMessage }}</p>
+          </div>
         </div>
       </div>
     </section>
@@ -226,17 +379,20 @@ export default {
     if (typeof AOS !== 'undefined') {
       AOS.init({
         duration: 800,
-        once: true
+        once: true,
+        offset: 100,
+        easing: 'ease-out-cubic'
       });
     }
     window.addEventListener('scroll', this.handleScroll);
+    this.handleScroll();
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     handleScroll() {
-      const cardsWrapper = document.querySelector('.cards-wrapper');
+      const cardsWrapper = document.querySelector('.visi-misi-cards');
       if (cardsWrapper) {
         const rect = cardsWrapper.getBoundingClientRect();
         const windowHeight = window.innerHeight;
@@ -246,7 +402,6 @@ export default {
       }
     },
     handleSubmit() {
-      // Validasi form
       if (!this.form.name || !this.form.email || !this.form.subject || !this.form.message) {
         this.errorMessage = 'Semua field harus diisi!';
         setTimeout(() => {
@@ -260,7 +415,6 @@ export default {
       this.errorMessage = '';
 
       try {
-        // Format email body
         const emailBody = `Nama: ${this.form.name}
 Email: ${this.form.email}
 
@@ -270,20 +424,16 @@ ${this.form.message}
 ---
 Dikirim dari Form Hubungi Kami - Perpustakaan Ganesha STembayo`;
 
-        // Encode untuk URL
         const subject = encodeURIComponent(this.form.subject);
         const body = encodeURIComponent(emailBody);
         const recipient = 'veltrixtowin@gmail.com';
 
-        // Buat mailto link
         const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
 
-        // Buka email client
         window.location.href = mailtoLink;
 
         this.successMessage = 'Email client Anda akan terbuka. Silakan kirim email dari aplikasi email Anda.';
         
-        // Reset form setelah 2 detik
         setTimeout(() => {
           this.form = {
             name: '',
@@ -310,390 +460,35 @@ Dikirim dari Form Hubungi Kami - Perpustakaan Ganesha STembayo`;
 </script>
 
 <style scoped>
-.informasi-page {
-  min-height: 100vh;
-  background: #f9fafb;
-}
-
-/* Hero Section */
-.hero-section {
-  position: relative;
-  min-height: 100vh;
-  background-image: url('/news/background.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 200px 20px 250px;
-  overflow: hidden;
-  border: none !important;
-}
-
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(30, 60, 114, 0.6) 50%, rgba(0, 0, 0, 0.7) 100%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  color: white;
-  width: 100%;
-  max-width: 1200px;
-}
-
-.hero-title {
-  font-size: 3rem;
-  font-weight: 800;
-  text-align: center;
-  color: white;
-  margin-bottom: 80px;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.hero-tite {
-  font-size: 3rem;
-  font-weight: 800;
-  text-align: center;
-  color: var(--primary);
-  margin-bottom: 80px;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.cards-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 64px;
-}
-
-/* Card Animation */
-.info-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  transition: all 0.4s ease;
-  opacity: 0;
-  transform: translateX(0);
-}
-
-.info-card.visi-card {
-  transform: translateX(-100px);
-}
-
-.info-card.visi-card.slide-in-left {
-  animation: slideInFromLeft 0.8s ease-out forwards;
-}
-
-.info-card.misi-card {
-  transform: translateX(100px);
-}
-
-.info-card.misi-card.slide-in-right {
-  animation: slideInFromRight 0.8s ease-out forwards;
-  animation-delay: 0.2s;
-}
-
-@keyframes slideInFromLeft {
-  0% {
+/* Animation untuk slide in dari kiri */
+@keyframes slideInLeft {
+  from {
     opacity: 0;
-    transform: translateX(-100px);
+    transform: translateX(-50px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-@keyframes slideInFromRight {
-  0% {
+/* Animation untuk slide in dari kanan */
+@keyframes slideInRight {
+  from {
     opacity: 0;
-    transform: translateX(100px);
+    transform: translateX(50px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-.info-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-}
-
-.card-icon {
-  width: 64px;
-  height: 64px;
-  background: var(--primary);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-}
-
-.card-icon svg {
-  color: white;
-}
-
-.card-title {
-  text-align: left;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 16px;
-}
-
-.card-description {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: #4b5563;
-  text-align: left;
-}
-
-.misi-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: left;
-}
-
-.misi-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 14px;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #4b5563;
-}
-
-.bullet {
-  min-width: 10px;
-  width: 10px;
-  height: 10px;
-  background: var(--primary);
-  border-radius: 50%;
-  margin-top: 5px;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
-  flex-shrink: 0;
-}
-
-/* Jam Layanan */
-.additional-info {
-  background: #CDD8F1;
-  padding: 50px 20px;
-  padding-bottom: 90px;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
-}
-
-.info-item {
-  text-align: center;
-  padding: 32px;
-  background: white;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.info-item:hover {
-  transform: translateY(-5px);
-}
-
-/* Contact Section - FIXED LAYOUT */
-.info-container {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 32px;
-  padding: 80px 8%;
-  background: #f9fafb;
-  align-items: start;
-}
-
-.contact-left {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.contact-item {
-  background: #CDD8F1;
-  padding: 24px;
-  border-radius: 12px;
-  text-align: center;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.contact-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  background: #b8c5e0;
-}
-
-.contact-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  border-radius: 50%;
-  color: var(--primary);
-  transition: all 0.3s ease;
-}
-
-.contact-item:hover .contact-icon {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 12px rgba(44, 100, 227, 0.3);
-}
-
-.contact-item h3 {
-  color: #000000;
-  font-weight: 600;
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.contact-item p {
-  font-size: 15px;
-  color: #555;
-  margin: 0;
-}
-
-/* MAP - Mengambil 2 kolom penuh */
-.map-container {
-  grid-column: 1 / -1;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* Contact Right - FULL HEIGHT */
-.contact-right {
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.contact-right h2 {
-  font-size: 28px;
-  color: var(--primary);
-  margin-bottom: 12px;
-  font-weight: 700;
-}
-
-.contact-right p {
-  font-size: 15px;
-  color: #555;
-  margin-bottom: 30px;
-  line-height: 1.6;
-}
-
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  flex: 1;
-}
-
-.contact-form label {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-  margin-bottom: -8px;
-}
-
-.contact-form input,
-.contact-form textarea {
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 2px solid #e5e7eb;
-  outline: none;
-  transition: 0.3s;
-  font-family: inherit;
-  font-size: 14px;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.contact-form input:disabled,
-.contact-form textarea:disabled {
-  background: #f3f4f6;
-  color: #9ca3af;
-}
-
-.contact-form textarea {
-  resize: vertical;
-  min-height: 120px;
-  flex: 1;
-}
-
-.contact-form button {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 600;
-  font-size: 15px;
-  margin-top: 20px;
-}
-
-.contact-form button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.contact-form button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Alert Messages */
-.alert {
-  padding: 14px 16px;
-  border-radius: 10px;
-  margin-top: 16px;
-  font-size: 14px;
-  font-weight: 600;
-  animation: slideUp 0.3s ease;
-}
-
+/* Animation untuk slide up */
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -701,53 +496,111 @@ Dikirim dari Form Hubungi Kami - Perpustakaan Ganesha STembayo`;
   }
 }
 
-.alert-success {
-  background: #d1fae5;
-  color: #047857;
-  border-left: 4px solid #10b981;
+/* Kelas animasi */
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out forwards;
 }
 
-.alert-error {
-  background: #fee2e2;
-  color: #dc2626;
-  border-left: 4px solid #ef4444;
+.animate-slide-in-right {
+  animation: slideInRight 0.8s ease-out forwards;
 }
 
-/* Responsive */
-@media (max-width: 968px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
 
-  .cards-wrapper {
-    grid-template-columns: 1fr;
-  }
+/* Hover effect untuk icon contact */
+a:hover .group svg {
+  transform: scale(1.1);
+}
 
-  .info-container {
-    grid-template-columns: 1fr;
+a:hover .group {
+  background-color: #2C64E3 !important;
+}
+
+a:hover .group svg {
+  color: white !important;
+}
+
+/* Custom scrollbar untuk textarea */
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: #2C64E3;
+  border-radius: 10px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: #1e4bb8;
+}
+
+/* Shadow enhancement */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .animate-slide-in-left,
+  .animate-slide-in-right {
+    animation: slideUp 0.6s ease-out forwards;
   }
 }
 
-@media (max-width: 640px) {
-  .hero-section {
-    padding: 150px 20px 200px;
-  }
+/* Loading state untuk button */
+button:disabled {
+  cursor: not-allowed;
+  position: relative;
+}
 
-  .hero-title {
-    font-size: 2rem;
-    margin-bottom: 60px;
-  }
+button:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
 
-  .info-container {
-    padding: 40px 5%;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
+}
 
-  .contact-left {
-    grid-template-columns: 1fr;
-  }
+/* Focus visible untuk accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #2C64E3;
+  outline-offset: 2px;
+}
 
-  .contact-right {
-    padding: 24px;
-  }
+/* Form input focus styles */
+.form-input:focus {
+  border-color: #2C64E3 !important;
+  ring: 4px;
+  ring-color: rgba(44, 100, 227, 0.1);
+  box-shadow: 0 0 0 4px rgba(44, 100, 227, 0.1);
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 </style>

@@ -15,11 +15,12 @@ export default {
         'Semua untuk Masa Depanmu'
       ],
       images: [
-        'https://images.unsplash.com/photo-1508107536691-b1449928187d?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1282',
-        'https://plus.unsplash.com/premium_photo-1661963932641-3f1316d66a43?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470',
-        'https://plus.unsplash.com/premium_photo-1675369009502-4125a781576a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470',
-        'https://plus.unsplash.com/premium_photo-1661962244825-73142e2b6d93?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1936',
-        'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1920&h=1080&fit=crop'
+        '/ganesha-profile/ganesha1.jpg',
+        '/ganesha-profile/ganesha2.jpg',
+        '/ganesha-profile/ganesha3.jpg',
+        '/ganesha-profile/ganesha4.jpg',
+        '/ganesha-profile/ganesha5.jpg',
+        '/ganesha-profile/ganesha6.jpg'
       ],
       socialMedia: [
         { 

@@ -5,6 +5,104 @@
       <h1 class="text-2xl font-bold text-gray-800 mb-1">Manajemen Peminjaman Buku</h1>
       <p class="text-gray-500 text-sm">Kelola status peminjaman buku perpustakaan</p>
     </div>
+    
+    <!-- Modal Alert -->
+<div v-if="alert.show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @click="closeAlert">
+  <div @click.stop class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 animate-slide-up">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <span v-html="getAlertIcon()" class="text-xl"></span>
+        <h3 class="font-semibold text-lg">{{ alert.title }}</h3>
+      </div>
+      <button @click="closeAlert" class="text-gray-500 hover:text-gray-800 font-bold text-lg">✕</button>
+    </div>
+    <p class="text-gray-700 mb-4">{{ alert.message }}</p>
+    <div class="flex justify-end gap-2">
+      <button v-if="alert.type==='confirm'" @click="closeAlert" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Batal</button>
+      <button @click="handleAlertConfirm" :class="{
+        'bg-blue-500 text-white hover:bg-blue-600': alert.type==='alert',
+        'bg-green-500 text-white hover:bg-green-600': alert.type==='success',
+        'bg-red-500 text-white hover:bg-red-600': alert.type==='error',
+        'bg-yellow-500 text-white hover:bg-yellow-600': alert.type==='confirm'
+      }" class="px-4 py-2 rounded">
+        {{ alert.confirmText || 'OK' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pengembalian -->
+<div v-if="showReturnModalFlag" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md relative shadow-lg animate-slide-up">
+    <h2 class="text-xl font-bold mb-4">Konfirmasi Pengembalian</h2>
+    <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-lg font-bold">✕</button>
+
+    <div class="grid gap-4 text-sm text-gray-700">
+      <div>
+        <label class="font-semibold">Buku:</label>
+        <p>{{ selectedItem.judul_buku }}</p>
+      </div>
+      <div>
+        <label class="font-semibold">Tanggal Dikembalikan:</label>
+        <input type="date" v-model="returnDate" class="border px-3 py-2 rounded w-full"/>
+      </div>
+      <div>
+        <label class="font-semibold">Keterlambatan (hari):</label>
+        <p>{{ lateDays }}</p>
+      </div>
+      <div>
+        <label class="font-semibold">Denda:</label>
+        <p>Rp {{ calculateDenda().toLocaleString('id-ID') }}</p>
+      </div>
+      <div>
+        <label class="font-semibold">Keterangan:</label>
+        <input type="text" v-model="keterangan" placeholder="Opsional" class="border px-3 py-2 rounded w-full"/>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-2">
+      <button @click="closeModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Batal</button>
+      <button @click="confirmReturn" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pengembalian -->
+<div v-if="showReturnModalFlag" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md relative shadow-lg animate-slide-up">
+    <h2 class="text-xl font-bold mb-4">Konfirmasi Pengembalian</h2>
+    <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-lg font-bold">✕</button>
+
+    <div class="grid gap-4 text-sm text-gray-700">
+      <div>
+        <label class="font-semibold">Buku:</label>
+        <p>{{ selectedItem.judul_buku }}</p>
+      </div>
+      <div>
+        <label class="font-semibold">Tanggal Dikembalikan:</label>
+        <input type="date" v-model="returnDate" class="border px-3 py-2 rounded w-full"/>
+      </div>
+      <div>
+        <label class="font-semibold">Keterlambatan (hari):</label>
+        <p>{{ lateDays }}</p>
+      </div>
+      <div>
+        <label class="font-semibold">Denda:</label>
+        <p>Rp {{ calculateDenda().toLocaleString('id-ID') }}</p>
+      </div>
+      <div>
+        <label class="font-semibold">Keterangan:</label>
+        <input type="text" v-model="keterangan" placeholder="Opsional" class="border px-3 py-2 rounded w-full"/>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-2">
+      <button @click="closeModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Batal</button>
+      <button @click="confirmReturn" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
 
     <!-- Filter & Cek Terlambat -->
     <div class="flex flex-wrap items-center gap-4 bg-white p-5 rounded-lg shadow mb-6">

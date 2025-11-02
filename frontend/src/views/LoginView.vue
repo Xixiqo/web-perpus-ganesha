@@ -142,8 +142,8 @@
               <div class="option-content">
                 <h3>Hubungi via Email</h3>
                 <p>Kirim permintaan reset kata sandi Anda ke:</p>
-                <a href="mailto:info@ganeshastembayo.sch.id" class="email-link">
-                  info@ganeshastembayo.sch.id
+                <a href="mailto:ganeshastembayo@gmail.com" class="email-link">
+                  ganeshastembayo@gmail.com
                 </a>
               </div>
             </div>

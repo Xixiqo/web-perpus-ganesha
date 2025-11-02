@@ -68,9 +68,8 @@ import adminPengembalianRoutes from "./api/admin/pengembalian.js";
 import adminUsersRoutes from "./api/admin/users.js";
 import ProcessPeminjamanRoutes from "./api/peminjaman.js";
 import searchRoutes from "./api/search.js";
-import peminjamanRoutes from "./api/riwayat.js";
 import categoriesRoutes from "./api/categories.js";
-
+import articlesRoutes from "./api/articles.js";
 
 // === ADMIN ROUTES (lainnya) ===
 import adminBooksRoutes from "./api/admin/books.js";
@@ -118,6 +117,9 @@ console.log("   ✓ Registered: /api/riwayat");
 app.use("/api/categories", categoriesRoutes);
 console.log("   ✓ Registered: /api/categories");
 
+app.use("/api/articles", articlesRoutes);
+console.log("   ✓ Registered: /api/articles");
+
 // Route untuk peminjaman umum
 app.use("/api/peminjaman", ProcessPeminjamanRoutes);
 
@@ -155,7 +157,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log("   - GET    /api/categories");
   console.log("   - GET    /api/search");
   console.log("   - GET    /api/riwayat");
-  console.log("   - GET    /api/profile\n");
+  console.log("   - GET    /api/profile");
+  console.log("   - GET    /api/articles\n");
 
   console.log("   ADMIN ROUTES (NEW - double n):");
   console.log("   - GET    /api/admin/peminjamann");

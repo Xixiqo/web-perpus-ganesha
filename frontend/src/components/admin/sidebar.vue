@@ -43,6 +43,14 @@
 						<span v-if="!isCollapsed">Borrowing Records</span>
 					</router-link>
 				</li>
+				<li>
+					<router-link to="/admin/articles">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+							<path fill="currentColor" d="M4 4h16v16H4V4m2 2v12h12V6H6m2 2h8v2H8V8m0 3h8v2H8v-2m0 3h5v2H8v-2z"/>
+						</svg>
+						<span v-if="!isCollapsed">Manage Articles</span>
+					</router-link>
+				</li>
 			</ul>
 		</nav>
 

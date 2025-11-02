@@ -1,27 +1,38 @@
 <template>
-  <div class="article-page">
+  <div class="min-h-screen bg-gray-50">
     
     <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">Temukan Berita Terbaru Kami</h1>
-          <p class="hero-description">
+    <section class="bg-white py-12 border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto">
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            Temukan Berita Terbaru Kami
+          </h1>
+          <p class="text-gray-600 mb-8 leading-relaxed">
             Baca berita terkini tentang berbagai topik menarik. Dengan konten yang segar setiap hari dan artikel berkualitas yang disusun oleh tim penulis berpengalaman kami, temukan informasi yang relevan untuk meningkatkan pengalaman membaca Anda.
           </p>
           
           <!-- Search Bar -->
-          <div class="search-bar">
-            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="relative max-w-2xl mx-auto">
+            <svg 
+              class="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-blue-600 pointer-events-none" 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+            >
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
             <input
               type="text"
               v-model="searchQuery"
-              @input="goToFirstPage"
+              @input="handleSearch"
               placeholder="Cari berdasarkan judul artikel, kategori..."
-              class="search-input"
+              class="w-full border-0 outline-none bg-white py-3.5 pl-11 pr-5 rounded-xl shadow-sm text-sm text-gray-900 placeholder:text-gray-400 focus:shadow-lg focus:shadow-blue-200/50 transition-all duration-300"
             />
           </div>
         </div>
@@ -29,71 +40,182 @@
     </section>
 
     <!-- Main Content -->
-    <section class="main-content">
-      <div class="container">
-        <div class="content-layout">
+    <section class="py-12">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-8">
           
           <!-- Left Side - Featured Articles -->
-          <div class="featured-section">
-            <h2 class="section-title">
+          <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
               Disini kata-kata beristirahat, lalu bangkit menjadi sebuah inspirasi.
             </h2>
 
-              <div v-if="paginatedArticles.length > 0" class="articles-grid">
+            <!-- Loading State -->
+            <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              <div 
+                v-for="i in 6" 
+                :key="i" 
+                class="h-[400px] bg-white rounded-lg overflow-hidden relative"
+              >
+                <div class="w-full h-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]"></div>
+              </div>
+            </div>
+
+            <!-- Articles Grid -->
+            <div 
+              v-else-if="articles.length > 0" 
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+            >
               <ArticleCard 
-                v-for="article in paginatedArticles" 
+                v-for="article in articles" 
                 :key="article.id" 
                 :article="article" 
               />
             </div>
 
-            <!-- Feedback jika kosong -->
-            <div v-else class="no-results">
-              <div class="no-results-content">
-                <i class="fa-solid fa-book-open-reader"></i>
-                <h3>Artikel Tidak Ditemukan</h3>
-                <p>Maaf, kami tidak menemukan artikel yang Anda cari di koleksi kami.</p>
-                <p class="suggestion">Coba gunakan kata kunci lain atau jelajahi koleksi artikel kami.</p>
+            <!-- Empty State -->
+            <div v-else class="col-span-full flex items-center justify-center min-h-[400px] py-10 px-5">
+              <div class="text-center max-w-md">
+                <i class="fa-solid fa-book-open-reader text-6xl text-gray-400 opacity-60 mb-5"></i>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-3">
+                  Artikel Tidak Ditemukan
+                </h3>
+                <p class="text-base text-gray-500 leading-relaxed mb-2">
+                  Maaf, kami tidak menemukan artikel yang Anda cari di koleksi kami.
+                </p>
+                <p class="text-sm text-gray-400 italic">
+                  Coba gunakan kata kunci lain atau jelajahi koleksi artikel kami.
+                </p>
               </div>
             </div>
 
+            <!-- Pagination -->
             <div 
-                class="pagination"
-                :class="{ 'hidden-pagination': paginatedArticles.length === 0 }"
-                >
-                <button class="page-arrow" :disabled="currentPage === 1" @click="goToPage(1)">«</button>
-                <button class="page-arrow" :disabled="currentPage === 1" @click="prevPage">‹</button>
-                <span class="page-info">{{ currentPage }} dari {{ totalPages }}</span>
-                <button class="page-arrow" :disabled="currentPage === totalPages" @click="nextPage">›</button>
-                <button class="page-arrow" :disabled="currentPage === totalPages" @click="goToPage(totalPages)">»</button>
+              v-if="pagination.totalPages > 1"
+              class="flex items-center justify-center gap-2 mt-8 bg-white rounded-full shadow-sm py-1.5 px-3 w-fit mx-auto transition-opacity duration-300"
+            >
+              <button 
+                class="border-0 bg-transparent text-blue-600 text-lg py-1.5 px-2.5 cursor-pointer transition-opacity duration-200 disabled:opacity-30 disabled:cursor-default hover:opacity-70"
+                :disabled="pagination.page === 1" 
+                @click="goToPage(1)"
+              >
+                «
+              </button>
+              <button 
+                class="border-0 bg-transparent text-blue-600 text-lg py-1.5 px-2.5 cursor-pointer transition-opacity duration-200 disabled:opacity-30 disabled:cursor-default hover:opacity-70"
+                :disabled="pagination.page === 1" 
+                @click="goToPage(pagination.page - 1)"
+              >
+                ‹
+              </button>
+              <span class="font-semibold text-gray-900 px-2">
+                {{ pagination.page }} dari {{ pagination.totalPages }}
+              </span>
+              <button 
+                class="border-0 bg-transparent text-blue-600 text-lg py-1.5 px-2.5 cursor-pointer transition-opacity duration-200 disabled:opacity-30 disabled:cursor-default hover:opacity-70"
+                :disabled="pagination.page === pagination.totalPages" 
+                @click="goToPage(pagination.page + 1)"
+              >
+                ›
+              </button>
+              <button 
+                class="border-0 bg-transparent text-blue-600 text-lg py-1.5 px-2.5 cursor-pointer transition-opacity duration-200 disabled:opacity-30 disabled:cursor-default hover:opacity-70"
+                :disabled="pagination.page === pagination.totalPages" 
+                @click="goToPage(pagination.totalPages)"
+              >
+                »
+              </button>
             </div>
           </div>
 
 
           <!-- Sidebar -->
-          <aside class="sidebar">
-            <!-- Santren Section -->
-            <div class="sidebar-section">
-              <h3 class="sidebar-title">Sorotan</h3>
-              <div class="sidebar-articles">
+          <aside class="w-full lg:w-[350px] flex-shrink-0">
+            <!-- Recent Articles Section -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-4">
+                Artikel Terbaru
+              </h3>
+              <div v-if="loadingSidebar" class="flex flex-col gap-4">
+                <div 
+                  v-for="i in 3" 
+                  :key="i"
+                  class="h-20 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-[shimmer_1.5s_infinite] rounded"
+                ></div>
+              </div>
+              <div v-else class="flex flex-col">
                 <ArticleListItem 
-                  v-for="article in santrenArticles" 
+                  v-for="article in recentArticles" 
                   :key="article.id"
                   :article="article"
                 />
+                <p v-if="recentArticles.length === 0" class="text-gray-500 text-sm text-center py-4">
+                  Belum ada artikel
+                </p>
               </div>
             </div>
 
-            <!-- Bidang Hits Section -->
-            <div class="sidebar-section">
-              <h3 class="sidebar-title">Bidang Hits</h3>
-              <div class="sidebar-articles">
+            <!-- Popular Articles Section -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-4">
+                Paling Populer
+              </h3>
+              <div v-if="loadingSidebar" class="flex flex-col gap-4">
+                <div 
+                  v-for="i in 3" 
+                  :key="i"
+                  class="h-20 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-[shimmer_1.5s_infinite] rounded"
+                ></div>
+              </div>
+              <div v-else class="flex flex-col">
                 <ArticleListItem 
-                  v-for="article in bidangHitsArticles" 
+                  v-for="article in popularArticles" 
                   :key="article.id"
                   :article="article"
                 />
+                <p v-if="popularArticles.length === 0" class="text-gray-500 text-sm text-center py-4">
+                  Belum ada artikel
+                </p>
               </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-4">
+                Kategori
+              </h3>
+              <div v-if="loadingSidebar" class="flex flex-col gap-2">
+                <div 
+                  v-for="i in 5" 
+                  :key="i"
+                  class="h-8 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-[shimmer_1.5s_infinite] rounded"
+                ></div>
+              </div>
+              <div v-else-if="categories.length > 0" class="flex flex-wrap gap-2">
+                <button
+                  v-for="cat in categories"
+                  :key="cat.category"
+                  @click="filterByCategory(cat.category)"
+                  :class="[
+                    'px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+                    selectedCategory === cat.category
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ]"
+                >
+                  {{ cat.category }} ({{ cat.count }})
+                </button>
+                <button
+                  v-if="selectedCategory"
+                  @click="clearCategoryFilter"
+                  class="px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                >
+                  Clear Filter
+                </button>
+              </div>
+              <p v-else class="text-gray-500 text-sm text-center py-4">
+                Belum ada kategori
+              </p>
             </div>
           </aside>
 
@@ -104,414 +226,213 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import ArticleCard from '@/components/users/ArticleCard.vue'
 import ArticleListItem from '@/components/users/ArticleListItem.vue'
 
-const searchQuery = ref('')
-const currentPage = ref(1)
-const itemsPerPage = 6
-
-const featuredArticles = ref([
-  { 
-    id: 1, 
-    title: 'Perpustakaan Sekolah Luncurkan Pojok Baca Digital', 
-    excerpt: 'Siswa kini dapat mengakses ribuan e-book dan jurnal akademik melalui platform digital perpustakaan.', 
-    image: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800', 
-    category: 'Koleksi Baru',
-    date: '2025-10-10'
-  },
-  { 
-    id: 2, 
-    title: 'Tips Menumbuhkan Minat Baca pada Generasi Z', 
-    excerpt: 'Strategi efektif untuk membuat siswa lebih tertarik membaca di tengah gempuran media sosial.', 
-    image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800', 
-    category: 'Literasi',
-    date: '2025-10-08'
-  },
-  { 
-    id: 3, 
-    title: 'Mengenal Sistem Katalog Digital Perpustakaan', 
-    excerpt: 'Panduan lengkap menggunakan OPAC untuk pencarian buku yang lebih mudah dan cepat.', 
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800', 
-    category: 'Edukasi',
-    date: '2025-10-05'
-  },
-  { 
-    id: 4, 
-    title: '10 Buku Wajib untuk Persiapan UTBK 2026', 
-    excerpt: 'Rekomendasi buku pendamping yang telah terbukti membantu ribuan siswa lolos PTN impian.', 
-    image: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800', 
-    category: 'Review',
-    date: '2025-10-01'
-  },
-  { 
-    id: 5, 
-    title: 'Klub Literasi Sekolah Raih Juara Nasional', 
-    excerpt: 'Prestasi membanggakan siswa dalam kompetisi bedah buku tingkat nasional 2025.', 
-    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800', 
-    category: 'Prestasi',
-    date: '2025-09-28'
-  },
-  { 
-    id: 6, 
-    title: 'Cara Efektif Membuat Catatan Membaca', 
-    excerpt: 'Teknik note-taking yang terbukti meningkatkan pemahaman dan daya ingat dari buku yang dibaca.', 
-    image: 'https://images.unsplash.com/photo-1519682577862-22b62b24e493?w=800', 
-    category: 'Tips',
-    date: '2025-09-25'
-  },
-  { 
-    id: 7, 
-    title: 'Perpustakaan Resmikan Ruang Diskusi Kolaboratif', 
-    excerpt: 'Fasilitas baru untuk mendukung pembelajaran kelompok dan presentasi siswa.', 
-    image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800', 
-    category: 'Fasilitas',
-    date: '2025-09-20'
-  },
-  { 
-    id: 8, 
-    title: 'Novel Karya Siswa Resmi Masuk Koleksi Perpustakaan', 
-    excerpt: 'Karya kreatif siswa kelas XII berhasil diterbitkan dan menjadi inspirasi bagi adik tingkat.', 
-    image: 'https://images.unsplash.com/photo-1491841573634-28140fc7ced7?w=800', 
-    category: 'Inspirasi',
-    date: '2025-09-15'
-  },
-  { 
-    id: 9, 
-    title: 'Panduan Memilih Buku Sesuai Minat dan Bakat', 
-    excerpt: 'Kenali jenis bacaan yang tepat untuk mengembangkan potensi diri sejak dini.', 
-    image: 'https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=800', 
-    category: 'Panduan',
-    date: '2025-09-12'
-  },
-  { 
-    id: 10, 
-    title: 'Program Satu Siswa Satu Buku Dimulai', 
-    excerpt: 'Gerakan literasi sekolah mendorong setiap siswa menuntaskan minimal satu buku per bulan.', 
-    image: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=800', 
-    category: 'Program',
-    date: '2025-09-08'
-  },
-  { 
-    id: 11, 
-    title: 'Koleksi Komik Edukatif Hadir di Perpustakaan', 
-    excerpt: 'Alternatif bacaan menarik untuk meningkatkan literasi visual siswa.', 
-    image: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800', 
-    category: 'Koleksi Baru',
-    date: '2025-09-05'
-  },
-  { 
-    id: 12, 
-    title: 'Workshop Menulis Kreatif untuk Siswa', 
-    excerpt: 'Mengasah kemampuan menulis melalui bimbingan penulis profesional.', 
-    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800', 
-    category: 'Acara',
-    date: '2025-09-01'
-  },
-  { 
-    id: 13, 
-    title: 'Workshop Menulis Kreatif untuk Siswa', 
-    excerpt: 'Mengasah kemampuan menulis melalui bimbingan penulis profesional.', 
-    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800', 
-    category: 'Acara',
-    date: '2025-09-01'
-  }
-])
-
-const filteredArticles = computed(() => {
-  const q = searchQuery.value.toLowerCase()
-  return featuredArticles.value.filter(
-    (a) =>
-      a.title.toLowerCase().includes(q) ||
-      a.excerpt.toLowerCase().includes(q)
-  )
-})
-
-const totalPages = computed(() =>
-  Math.ceil(filteredArticles.value.length / itemsPerPage)
+// API Configuration
+let base = import.meta.env.VITE_API_BASE_URL || (
+  import.meta.env.DEV 
+    ? 'http://localhost:5000/api'
+    : '/api'
 )
 
-const paginatedArticles = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  return filteredArticles.value.slice(start, start + itemsPerPage)
+// Pastikan selalu diakhiri dengan /articles
+if (!base.endsWith('/articles')) {
+  base = base.replace(/\/$/, '') + '/articles'
+}
+
+const API_BASE = base
+
+// State Management
+const searchQuery = ref('')
+const selectedCategory = ref(null)
+const loading = ref(true)
+const loadingSidebar = ref(true)
+
+// Data
+const articles = ref([])
+const recentArticles = ref([])
+const popularArticles = ref([])
+const categories = ref([])
+const pagination = ref({
+  page: 1,
+  limit: 6,
+  total: 0,
+  totalPages: 0
 })
 
-function nextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++
-}
-function prevPage() {
-  if (currentPage.value > 1) currentPage.value--
-}
-function goToPage(page) {
-  currentPage.value = page
-}
-function goToFirstPage() {
-  currentPage.value = 1
+// Debounce timer
+let searchTimeout = null
+
+// Fetch main articles with filters
+const fetchArticles = async () => {
+  loading.value = true
+  
+  try {
+    const params = new URLSearchParams({
+      page: pagination.value.page,
+      limit: pagination.value.limit,
+      sort: 'created_at',
+      order: 'DESC',
+      is_published: '1'
+    })
+
+    if (searchQuery.value.trim()) {
+      params.append('search', searchQuery.value.trim())
+    }
+
+    if (selectedCategory.value) {
+      params.append('category', selectedCategory.value)
+    }
+
+    const response = await fetch(`${API_BASE}?${params}`)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    
+    if (data.success) {
+      articles.value = data.data || []
+      
+      // Update pagination info from response
+      if (data.pagination) {
+        pagination.value = {
+          page: data.pagination.page,
+          limit: data.pagination.limit,
+          total: data.pagination.total,
+          totalPages: data.pagination.totalPages
+        }
+      }
+    } else {
+      console.error('API returned error:', data.message)
+      articles.value = []
+    }
+  } catch (error) {
+    console.error('Error fetching articles:', error)
+    articles.value = []
+    pagination.value.total = 0
+    pagination.value.totalPages = 0
+  } finally {
+    loading.value = false
+  }
 }
 
-/* Sidebar dummy data */
-const santrenArticles = ref(featuredArticles.value.slice(0, 3))
-const bidangHitsArticles = ref(featuredArticles.value.slice(3, 6))
+// Fetch sidebar data (recent, popular, categories)
+const fetchSidebarData = async () => {
+  loadingSidebar.value = true
+  
+  try {
+    // Fetch all sidebar data in parallel
+    const [recentRes, popularRes, categoriesRes] = await Promise.allSettled([
+      fetch(`${API_BASE}/recent?limit=3`),
+      fetch(`${API_BASE}/popular?limit=3`),
+      fetch(`${API_BASE}/categories`)
+    ])
+
+    // Process recent articles
+    if (recentRes.status === 'fulfilled' && recentRes.value.ok) {
+      const recentData = await recentRes.value.json()
+      if (recentData.success) {
+        recentArticles.value = recentData.data || []
+      }
+    } else {
+      console.error('Failed to fetch recent articles:', recentRes)
+    }
+
+    // Process popular articles
+    if (popularRes.status === 'fulfilled' && popularRes.value.ok) {
+      const popularData = await popularRes.value.json()
+      if (popularData.success) {
+        popularArticles.value = popularData.data || []
+      }
+    } else {
+      console.error('Failed to fetch popular articles:', popularRes)
+    }
+
+    // Process categories
+    if (categoriesRes.status === 'fulfilled' && categoriesRes.value.ok) {
+      const categoriesData = await categoriesRes.value.json()
+      if (categoriesData.success) {
+        categories.value = categoriesData.data || []
+      }
+    } else {
+      console.error('Failed to fetch categories:', categoriesRes)
+    }
+  } catch (error) {
+    console.error('Error fetching sidebar data:', error)
+  } finally {
+    loadingSidebar.value = false
+  }
+}
+
+// Search handler with debounce (500ms)
+const handleSearch = () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+  
+  searchTimeout = setTimeout(() => {
+    pagination.value.page = 1
+    fetchArticles()
+  }, 500)
+}
+
+// Filter by category
+const filterByCategory = (category) => {
+  if (selectedCategory.value === category) {
+    // Toggle off if clicking same category
+    clearCategoryFilter()
+  } else {
+    selectedCategory.value = category
+    pagination.value.page = 1
+    fetchArticles()
+  }
+}
+
+// Clear category filter
+const clearCategoryFilter = () => {
+  selectedCategory.value = null
+  pagination.value.page = 1
+  fetchArticles()
+}
+
+// Go to specific page
+const goToPage = (page) => {
+  if (page >= 1 && page <= pagination.value.totalPages && page !== pagination.value.page) {
+    pagination.value.page = page
+    fetchArticles()
+    
+    // Smooth scroll to top
+    window.scrollTo({ 
+      top: 0, 
+      behavior: 'smooth' 
+    })
+  }
+}
+
+// Watch for category changes (in case it's changed programmatically)
+watch(selectedCategory, (newVal, oldVal) => {
+  if (newVal !== oldVal && oldVal !== null) {
+    pagination.value.page = 1
+    fetchArticles()
+  }
+})
+
+// Initialize on component mount
+onMounted(async () => {
+  await Promise.all([
+    fetchArticles(),
+    fetchSidebarData()
+  ])
+})
 </script>
 
 <style scoped>
-.article-page {
-  min-height: 100vh;
-  background-color: #f9fafb;
-}
-
-.container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Hero Section */
-.hero-section {
-  background-color: white;
-  padding: 48px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.hero-content {
-  text-align: center;
-  max-width: 768px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: 36px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 16px;
-}
-
-.hero-description {
-  color: #4b5563;
-  margin-bottom: 32px;
-  line-height: 1.6;
-}
-
-/* 🔍 Search Bar */
-.search-bar {
-  position: relative;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.search-input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: #fff;
-  padding: 14px 20px 14px 45px;
-  border-radius: 12px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  color: #333;
-  transition: all 0.3s ease;
-}
-
-.search-input::placeholder {
-  color: #9ca3af;
-}
-
-.search-input:focus {
-  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2);
-}
-
-.search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary);
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
-}
-
-/* Main Content */
-.main-content {
-  padding: 48px 0;
-}
-
-.content-layout {
-  display: flex;
-  gap: 32px;
-}
-
-.featured-section {
-    flex: 1;
-    min-width: 0;
-}
-
-.section-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 24px;
-}
-
-.no-results {
-  grid-column: 1 / -1; /* Memenuhi seluruh grid */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  padding: 40px 20px;
-}
-
-.no-results-content {
-  text-align: center;
-  max-width: 400px;
-}
-
-.no-results-content i {
-  font-size: 4rem;
-  color: #9ca3af;
-  margin-bottom: 20px;
-  opacity: 0.6;
-}
-
-.no-results-content h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 12px;
-}
-
-.no-results-content p {
-  font-size: 1rem;
-  color: #6b7280;
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
-
-.no-results-content .suggestion {
-  font-size: 0.9rem;
-  color: #9ca3af;
-  font-style: italic;
-}
-
-.articles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-/* Pagination Styling */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 32px;
-    background: white;
-    border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 6px 12px;
-    width: fit-content;
-    margin-inline: auto;
-}
-
-.hidden-pagination {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.page-arrow {
-  border: none;
-  background: transparent;
-  color: var(--primary);
-  font-size: 18px;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.page-arrow:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.page-info {
-  font-weight: 600;
-  color: #111827;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 350px;
-  flex-shrink: 0;
-}
-
-.sidebar-section {
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  margin-bottom: 24px;
-}
-
-.sidebar-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 16px;
-}
-
-.sidebar-articles {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .content-layout {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  .articles-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 28px;
-  }
-
-  .section-title {
-    font-size: 20px;
-  }
-
-  .articles-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .search-input {
-    padding-right: 20px;
-  }
-
-  .search-button {
-    position: static;
-    transform: none;
-    width: 100%;
-    margin-top: 12px;
-  }
-
-  .search-container {
-    display: flex;
-    flex-direction: column;
-  }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 </style>

@@ -1,16 +1,25 @@
 <template>
   <nav class="bg-white sticky top-0 z-[1000] shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-24 lg:h-[70px]">
+      <div class="flex items-center justify-between h-16 sm:h-20 lg:h-[70px]">
         <!-- Mobile Menu Button -->
         <button 
           @click="toggleMenu"
           class="lg:hidden flex flex-col justify-between w-6 h-[18px] p-0 border-0 bg-transparent cursor-pointer"
           aria-label="Toggle menu"
         >
-          <span class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300" />
-          <span class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300" />
-          <span class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300" />
+          <span 
+            class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300"
+            :class="{ 'rotate-45 translate-y-2': menuOpen }"
+          />
+          <span 
+            class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300"
+            :class="{ 'opacity-0': menuOpen }"
+          />
+          <span 
+            class="h-0.5 w-full bg-gray-700 rounded-full transition-all duration-300"
+            :class="{ '-rotate-45 -translate-y-2': menuOpen }"
+          />
         </button>
         
         <!-- Brand Logo -->
@@ -18,7 +27,7 @@
           <img 
             src="@/../public/logo.png" 
             alt="Logo Ganesha" 
-            class="w-9 h-9 sm:w-10 sm:h-10 lg:w-[45px] lg:h-[45px] object-contain"
+            class="w-8 h-8 sm:w-10 sm:h-10 lg:w-[45px] lg:h-[45px] object-contain"
           />
           <h2 class="text-gray-900 font-bold text-sm sm:text-base lg:text-lg m-0 whitespace-nowrap">
             Ganesha Stembayo
@@ -29,28 +38,33 @@
         <div class="hidden lg:flex items-center gap-4">
           <RouterLink 
             to="/" 
-            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            exact
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100"
+            :class="{ 'text-blue-600 font-bold after:w-full after:opacity-100': $route.path === '/' }"
             @click="closeMenu"
           >
             Beranda
           </RouterLink>
           <RouterLink 
             to="/informasi" 
-            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100"
+            :class="{ 'text-blue-600 font-bold after:w-full after:opacity-100': $route.path === '/informasi' }"
             @click="closeMenu"
           >
             Informasi
           </RouterLink>
           <RouterLink 
             to="/cari" 
-            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100"
+            :class="{ 'text-blue-600 font-bold after:w-full after:opacity-100': $route.path === '/cari' }"
             @click="closeMenu"
           >
             Pencarian
           </RouterLink>
           <RouterLink 
             to="/article" 
-            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100 router-link-exact-active:text-blue-600 router-link-exact-active:after:w-full router-link-exact-active:after:opacity-100"
+            class="relative text-gray-600 font-medium px-4 py-2 transition-colors duration-300 hover:text-blue-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 after:transition-all after:duration-300 after:opacity-0 hover:after:w-full hover:after:opacity-100"
+            :class="{ 'text-blue-600 font-bold after:w-full after:opacity-100': $route.path === '/article' }"
             @click="closeMenu"
           >
             Artikel
@@ -59,7 +73,7 @@
         
         <!-- Right Section: Dyslexia Toggle & User Menu -->
         <div class="flex items-center gap-2 sm:gap-3">
-          <!-- Dyslexia Toggle - Hidden on small mobile, visible on sm+ -->
+          <!-- Dyslexia Toggle - Always visible on sm+ screens -->
           <div class="hidden sm:block">
             <DyslexiaToggle />
           </div>
@@ -119,6 +133,7 @@
                 <RouterLink 
                   to="/profil" 
                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                  :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/profil' }"
                   @click="closeUserMenu"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -133,6 +148,7 @@
                   v-if="getUserRole() === 'siswa'"
                   to="/riwayat"
                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                  :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/riwayat' }"
                   @click="closeUserMenu"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -145,6 +161,7 @@
                   v-else-if="getUserRole() === 'pustakawan'"
                   to="/admin"
                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                  :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/admin' }"
                   @click="closeUserMenu"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -152,11 +169,6 @@
                   </svg>
                   Admin Panel
                 </RouterLink>
-                
-                <!-- Dyslexia Toggle in Dropdown - Only on small mobile -->
-                <div class="sm:hidden px-4 py-3">
-                  <DyslexiaToggle />
-                </div>
                 
                 <div class="h-px bg-gray-200 my-2"></div>
                 
@@ -193,34 +205,39 @@
           <div class="py-4 space-y-1">
             <RouterLink 
               to="/" 
-              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              exact
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200 rounded-lg mx-2"
+              :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/' }"
               @click="closeMenu"
             >
               Beranda
             </RouterLink>
             <RouterLink 
               to="/informasi" 
-              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200 rounded-lg mx-2"
+              :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/informasi' }"
               @click="closeMenu"
             >
               Informasi
             </RouterLink>
             <RouterLink 
               to="/cari" 
-              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200 rounded-lg mx-2"
+              :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/cari' }"
               @click="closeMenu"
             >
               Pencarian
             </RouterLink>
             <RouterLink 
               to="/article" 
-              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200"
+              class="block px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 font-medium transition-colors duration-200 rounded-lg mx-2"
+              :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/article' }"
               @click="closeMenu"
             >
               Artikel
             </RouterLink>
             
-            <!-- Dyslexia Toggle in Mobile Menu - Only on small mobile -->
+            <!-- Dyslexia Toggle in Mobile Menu - Always visible on small screens -->
             <div class="sm:hidden px-4 py-3">
               <DyslexiaToggle />
             </div>
@@ -289,12 +306,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import DyslexiaToggle from '@/components/DyslexiaToggle.vue'
 import axios from 'axios'
 
 const router = useRouter()
+const route = useRoute()
 const menuOpen = ref(false)
 const userMenuOpen = ref(false)
 const isLoggedIn = ref(false)
@@ -302,6 +320,11 @@ const user = ref(null)
 const showLogoutModal = ref(false)
 const isLoggingOut = ref(false)
 const avatarError = ref(false)
+
+// Watch for route changes and scroll to top
+watch(() => route.path, () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
 
 onMounted(() => {
   checkLoginStatus()

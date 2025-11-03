@@ -60,6 +60,12 @@ const routes = [
         name: 'riwayat',
         component: () => import('../views/users/RiwayatView.vue'),
         meta: { requiresAuth: true },
+      },
+      {
+        path: 'notifikasi',
+        name: 'notifikasi',
+        component: () => import('../views/users/NotificationView.vue'),
+        meta: { requiresAuth: true },
       }
     ],
   },

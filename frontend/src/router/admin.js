@@ -26,11 +26,11 @@ const adminRoutes = [
         name: 'AdminBorrowings',
         component: () => import('@/views/admin/PinjamView.vue'),
       },
-      {
-        path: 'articles',
-        name: 'AdminArticles',
-        component: () => import('@/views/admin/ArticleView.vue'),
-      },
+      // {
+      //   path: 'articles',
+      //   name: 'AdminArticles',
+      //   component: () => import('@/views/admin/ArticleView.vue'),
+      // },
     ],
   },
 ]

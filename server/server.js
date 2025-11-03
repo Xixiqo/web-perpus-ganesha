@@ -70,6 +70,7 @@ import ProcessPeminjamanRoutes from "./api/peminjaman.js";
 import searchRoutes from "./api/search.js";
 import categoriesRoutes from "./api/categories.js";
 import articlesRoutes from "./api/articles.js";
+import notificationRoutes from "./api/notification.js";
 
 // === ADMIN ROUTES (lainnya) ===
 import adminBooksRoutes from "./api/admin/books.js";
@@ -119,6 +120,9 @@ console.log("   ✓ Registered: /api/categories");
 
 app.use("/api/articles", articlesRoutes);
 console.log("   ✓ Registered: /api/articles");
+
+app.use("/api/notification", notificationRoutes);
+console.log("   ✓ Registered: /api/notification");
 
 // Route untuk peminjaman umum
 app.use("/api/peminjaman", ProcessPeminjamanRoutes);

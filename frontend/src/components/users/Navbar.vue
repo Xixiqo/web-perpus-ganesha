@@ -71,7 +71,7 @@
           </RouterLink>
         </div>
         
-        <!-- Right Section: Dyslexia Toggle & User Menu -->
+        <!-- Right Section: Dyslexia Toggle, Notification Bell & User Menu -->
         <div class="flex items-center gap-2 sm:gap-3">
           <!-- Dyslexia Toggle - Always visible on sm+ screens -->
           <div class="hidden sm:block">
@@ -87,105 +87,140 @@
             Login
           </RouterLink>
           
-          <!-- User Menu (Logged In) -->
-          <div v-else class="relative">
-            <button
-              @click="toggleUserMenu"
-              class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 rounded-full px-2 sm:px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <img
-                :src="getAvatarUrl()"
-                :alt="getUserName()"
-                @error="handleAvatarError"
-                class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white object-cover"
-              />
-              <span class="hidden sm:inline text-gray-900 font-semibold text-sm max-w-[100px] lg:max-w-[150px] truncate">
-                {{ getUserName() }}
-              </span>
-              <svg 
-                class="hidden sm:block w-4 h-4 transition-transform duration-300 flex-shrink-0"
-                :class="{ 'rotate-180': userMenuOpen }"
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                stroke-width="2" 
-                stroke-linecap="round" 
-                stroke-linejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
-            
-            <!-- Dropdown Menu -->
-            <Transition
-              enter-active-class="transition duration-200 ease-out"
-              enter-from-class="opacity-0 -translate-y-2"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 -translate-y-2"
-            >
-              <div 
-                v-if="userMenuOpen" 
-                class="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl p-2 z-50"
-              >
-                <RouterLink 
-                  to="/profil" 
-                  class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
-                  :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/profil' }"
-                  @click="closeUserMenu"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
-                  Profil Saya
-                </RouterLink>
-                
-                <!-- Role-based Menu Item -->
-                <RouterLink
-                  v-if="getUserRole() === 'siswa'"
-                  to="/riwayat"
-                  class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
-                  :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/riwayat' }"
-                  @click="closeUserMenu"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
-                  </svg>
-                  Riwayat Peminjaman
-                </RouterLink>
+          <!-- Notification Bell & User Menu (Logged In) -->
+          <template v-else>
+            <!-- Notification Bell - Desktop Only -->
+            <div class="hidden lg:block">
+              <NotificationModal ref="notificationModalRef" />
+            </div>
 
-                <RouterLink
-                  v-else-if="getUserRole() === 'pustakawan'"
-                  to="/admin"
-                  class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
-                  :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/admin' }"
-                  @click="closeUserMenu"
+            <!-- User Menu -->
+            <div class="relative" ref="userMenuRef">
+              <button
+                @click="toggleUserMenu"
+                class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 rounded-full px-2 sm:px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <img
+                  :src="getAvatarUrl()"
+                  :alt="getUserName()"
+                  @error="handleAvatarError"
+                  class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white object-cover"
+                />
+                <span class="hidden sm:inline text-gray-900 font-semibold text-sm max-w-[100px] lg:max-w-[150px] truncate">
+                  {{ getUserName() }}
+                </span>
+                <svg 
+                  class="hidden sm:block w-4 h-4 transition-transform duration-300 flex-shrink-0"
+                  :class="{ 'rotate-180': userMenuOpen }"
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  stroke-width="2" 
+                  stroke-linecap="round" 
+                  stroke-linejoin="round"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12h18M3 6h18M3 18h18"></path>
-                  </svg>
-                  Admin Panel
-                </RouterLink>
-                
-                <div class="h-px bg-gray-200 my-2"></div>
-                
-                <button 
-                  @click="openLogoutModal"
-                  class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium w-full text-left"
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-2"
+              >
+                <div 
+                  v-if="userMenuOpen" 
+                  class="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl p-2 z-50"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                  </svg>
-                  Keluar
-                </button>
-              </div>
-            </Transition>
-          </div>
+                  <RouterLink 
+                    to="/profil" 
+                    class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                    :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/profil' }"
+                    @click="closeUserMenu"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profil Saya
+                  </RouterLink>
+
+                  <!-- Notification Menu Item - Mobile Only -->
+                  <RouterLink
+                    to="/notifikasi"
+                    class="lg:hidden flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium relative"
+                    :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/notifikasi' }"
+                    @click="closeUserMenu"
+                  >
+                    <div class="relative">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                      <!-- Red dot for unread notifications -->
+                      <span
+                        v-if="unreadCount > 0"
+                        class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"
+                      ></span>
+                    </div>
+                    <span class="flex-1">Notifikasi</span>
+                    <span
+                      v-if="unreadCount > 0"
+                      class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center"
+                    >
+                      {{ unreadCount > 99 ? '99+' : unreadCount }}
+                    </span>
+                  </RouterLink>
+                  
+                  <!-- Role-based Menu Item -->
+                  <RouterLink
+                    v-if="getUserRole() === 'siswa'"
+                    to="/riwayat"
+                    class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                    :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/riwayat' }"
+                    @click="closeUserMenu"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
+                    </svg>
+                    Riwayat Peminjaman
+                  </RouterLink>
+
+                  <RouterLink
+                    v-else-if="getUserRole() === 'pustakawan'"
+                    to="/admin"
+                    class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition-all duration-200 font-medium"
+                    :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/admin' }"
+                    @click="closeUserMenu"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 12h18M3 6h18M3 18h18"></path>
+                    </svg>
+                    Admin Panel
+                  </RouterLink>
+                  
+                  <div class="h-px bg-gray-200 my-2"></div>
+                  
+                  <button 
+                    @click="openLogoutModal"
+                    class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium w-full text-left"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                      <polyline points="16 17 21 12 16 7"></polyline>
+                      <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Keluar
+                  </button>
+                </div>
+              </Transition>
+            </div>
+          </template>
         </div>
       </div>
       
@@ -306,9 +341,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import DyslexiaToggle from '@/components/DyslexiaToggle.vue'
+import NotificationModal from '@/components/users/NotificationModal.vue'
 import axios from 'axios'
 
 const router = useRouter()
@@ -320,6 +356,16 @@ const user = ref(null)
 const showLogoutModal = ref(false)
 const isLoggingOut = ref(false)
 const avatarError = ref(false)
+const userMenuRef = ref(null)
+const notificationModalRef = ref(null)
+
+// Get unread count from NotificationModal component
+const unreadCount = computed(() => {
+  return notificationModalRef.value?.unreadCount || 0
+})
+
+// API Base
+const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
 
 // Watch for route changes and scroll to top
 watch(() => route.path, () => {
@@ -448,8 +494,8 @@ const closeUserMenu = () => {
 }
 
 const handleClickOutside = (e) => {
-  const menu = document.querySelector('.relative')
-  if (menu && !menu.contains(e.target)) {
+  // Check if click is outside user menu
+  if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
     userMenuOpen.value = false
   }
 }

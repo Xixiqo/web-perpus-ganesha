@@ -6,13 +6,25 @@
     <!-- Thumbnail -->
     <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
       <img 
-        v-if="imageLoaded"
         :src="imageUrl" 
         :alt="article.title"
-        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+        :class="[
+          'w-full h-full object-cover transition-all duration-[600ms] ease-out',
+          imageLoaded ? 'opacity-100' : 'opacity-0',
+          'group-hover:scale-110'
+        ]"
         @error="handleImageError"
-        @load="imageLoaded = true"
+        @load="handleImageLoad"
       />
+      <div 
+        v-if="!imageLoaded"
+        class="absolute inset-0 w-full h-full flex items-center justify-center bg-gray-100"
+      >
+        <svg class="w-16 h-16 text-gray-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+
       <div 
         v-else 
         class="w-full h-full flex items-center justify-center bg-gray-100"
@@ -69,43 +81,60 @@ const props = defineProps({
 
 // Image state
 const imageLoaded = ref(false)
+const imageError = ref(false)
 const imageUrl = ref('')
 const fallbackImage = '/placeholder-cover.svg'
 
-// Initialize image URL
+// Initialize image URL and start loading
 onMounted(() => {
   imageUrl.value = getImageUrl(props.article.cover_image)
+  
+  // Pre-check if image exists (optional optimization)
+  if (imageUrl.value && imageUrl.value !== fallbackImage) {
+    // Image will load via @load event
+  } else {
+    // No valid image, show placeholder immediately
+    imageLoaded.value = true
+  }
 })
 
-// Helper to get image URL from database
+// Helper function to get image URL from database
 const getImageUrl = (imagePath) => {
   if (!imagePath) {
     return fallbackImage
   }
   
-  // Full URL (http:// or https://)
+  // If it's already a full URL (http:// or https://)
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath
   }
   
-  // Path starts with /uploads/ (from API)
+  // If path starts with /uploads/ (already correct format from API)
   if (imagePath.startsWith('/uploads/')) {
     return imagePath
   }
   
-  // Just filename
+  // If it's just a filename without path
   if (!imagePath.includes('/')) {
     return `/uploads/articles/${imagePath}`
   }
   
+  // Default: assume it's already a valid path
   return imagePath
 }
 
 // Handle image loading error
 const handleImageError = (e) => {
-  console.warn('Failed to load image:', imageUrl.value)
+  console.error('Failed to load image:', imageUrl.value)
+  imageError.value = true
+  imageLoaded.value = true // Still set to true to hide loading state
   e.target.src = fallbackImage
+}
+
+// Handle successful image load
+const handleImageLoad = () => {
   imageLoaded.value = true
+  imageError.value = false
 }
 
 // Format views count (compact format)

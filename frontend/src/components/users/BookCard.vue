@@ -39,7 +39,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   book: {
@@ -50,6 +51,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['click', 'book-selected'])
+const router = useRouter()
 
 // Flag untuk menandai apakah error sudah terjadi
 const imageErrorHandled = ref(false)
@@ -57,13 +59,20 @@ const imageErrorHandled = ref(false)
 const handleClick = () => {
   emit('click', props.book)
   emit('book-selected', props.book)
+  
+  // Navigate menggunakan slug
+  if (props.book.slug) {
+    router.push(`/buku/${props.book.slug}`)
+  } else {
+    console.error('Book slug not found:', props.book)
+  }
 }
 
 const handleImageError = (e) => {
   if (imageErrorHandled.value) return
   imageErrorHandled.value = true
   e.target.onerror = null
-  e.target.src = '/default_cover.png'  // langsung dari public
+  e.target.src = '/default_cover.png'
 }
 
 const getCoverUrl = (filename) => {

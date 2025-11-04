@@ -170,8 +170,8 @@
           <div v-else-if="relatedBooks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <div 
               v-for="relatedBook in relatedBooks" 
-              :key="relatedBook.id" 
-              @click="goToBook(relatedBook.id)"
+              :key="relatedBook.slug" 
+              @click="goToBook(relatedBook.slug)"
               class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-[0_8px_16px_rgba(0,0,0,0.1)] hover:border-[#2C64F9]"
             >
               <img 
@@ -515,15 +515,16 @@ const getCoverUrl = (filename) => {
   return `${base}/uploads/${filename}`
 }
 
-const fetchBookDetails = async (id) => {
+const fetchBookDetails = async (slug) => {
   try {
     const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
-    const res = await fetch(`${apiBase}/api/books/${id}`)
+    const res = await fetch(`${apiBase}/api/books/${slug}`)
 
     if (res.ok) {
       const data = await res.json()
       book.value = {  
         id: data.id,
+        slug: data.slug,
         title: data.judul || data.title || '',
         author: data.pembuat || data.author || '',
         publishDate: data.tahun_rilis || data.publishDate || '',
@@ -563,6 +564,7 @@ const fetchRelatedBooks = async () => {
       
       relatedBooks.value = shuffled.slice(0, 4).map(b => ({
         id: b.id,
+        slug: b.slug,
         title: b.judul || b.title || '',
         author: b.pembuat || b.author || '',
         year: b.tahun_rilis || '',
@@ -638,7 +640,7 @@ const confirmBorrow = async () => {
       showModal.value = false
       showConfirmation.value = true
       selectedBook.value = null
-      await fetchBookDetails(book.value.id)
+      await fetchBookDetails(book.value.slug)
       showAlert('success', result.message || 'Peminjaman berhasil diajukan!')
     } else {
       showAlert('error', result.message || 'Gagal mengajukan peminjaman')
@@ -668,13 +670,13 @@ const goBack = () => {
   router.push('/cari')
 }
 
-const goToBook = (id) => {
-  router.push(`/buku/${id}`)
+const goToBook = (slug) => {
+  router.push(`/buku/${slug}`)
   window.scrollTo({ top: 0, behavior: 'smooth' })
   
   isLoading.value = true
   isLoadingRelated.value = true
-  fetchBookDetails(id).then(() => {
+  fetchBookDetails(slug).then(() => {
     if (book.value) {
       fetchRelatedBooks()
     }
@@ -716,9 +718,9 @@ const showAlert = (type, message) => {
 onMounted(async () => {
   await fetchCurrentUser()
   
-  const id = route.params.id
-  if (id) {
-    await fetchBookDetails(id)
+  const slug = route.params.slug
+  if (slug) {
+    await fetchBookDetails(slug)
     if (book.value) {
       await fetchRelatedBooks()
     }

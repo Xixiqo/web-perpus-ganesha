@@ -128,6 +128,7 @@ const getCoverUrl = (filename) => {
 const topBooks = computed(() => {
   return books.value.slice(0, 10).map(book => ({
     id: book.id,
+    slug: book.slug,
     title: book.judul || book.title,
     author: book.penulis || book.author,
     rating: book.rating || 0,
@@ -179,11 +180,11 @@ const updateCategoryCount = (booksData) => {
 
 // Event handlers
 const handleViewBook = (book) => {
-  if (book.id) router.push(`/buku/${book.id}`)
+  if (book.slug) router.push(`/buku/${book.slug}`)
 }
 
 const handleBookClick = (book) => {
-  if (book.id) router.push(`/buku/${book.id}`)
+  if (book.slug) router.push(`/buku/${book.slug}`)
 }
 
 const scrollToNextSection = () => {

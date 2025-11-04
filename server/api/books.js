@@ -3,6 +3,20 @@ import pool from "../config/db.js";
 
 const router = express.Router();
 
+// 🔧 Helper function untuk generate slug
+function generateSlug(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/&/g, 'dan')           // Replace & with 'dan'
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+}
+
 // 📚 Ambil semua buku
 router.get("/", async (req, res) => {
   try {
@@ -11,6 +25,7 @@ router.get("/", async (req, res) => {
         id,
         kode_buku,
         judul,
+        slug,
         pembuat,
         penerbit,
         bahasa_buku,
@@ -78,28 +93,29 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-// 📖 Detail buku berdasarkan ID - PENTING: Harus di paling bawah!
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+// 📖 Detail buku berdasarkan SLUG - PENTING: Harus di paling bawah!
+router.get("/:slug", async (req, res) => {
+  const { slug } = req.params;
   
-  console.log('📖 Fetching book detail for ID:', id);
+  console.log('📖 Fetching book detail for slug:', slug);
   
-  // Validasi ID harus berupa angka
-  if (!/^\d+$/.test(id)) {
-    console.log('❌ Invalid ID format:', id);
+  // Validasi slug tidak boleh kosong
+  if (!slug || slug.trim() === '') {
+    console.log('❌ Invalid slug:', slug);
     return res.status(400).json({ 
       success: false,
-      message: "ID buku tidak valid" 
+      message: "Slug buku tidak valid" 
     });
   }
   
   try {
-    // Ambil data buku utama
+    // Ambil data buku utama berdasarkan slug
     const [books] = await pool.query(
       `SELECT 
         id,
         kode_buku,
         judul,
+        slug,
         pembuat,
         penerbit,
         bahasa_buku,
@@ -114,12 +130,12 @@ router.get("/:id", async (req, res) => {
         created_at,
         updated_at
       FROM books 
-      WHERE id = ?`,
-      [id]
+      WHERE slug = ?`,
+      [slug]
     );
 
     if (books.length === 0) {
-      console.log('❌ Book not found with ID:', id);
+      console.log('❌ Book not found with slug:', slug);
       return res.status(404).json({ 
         success: false,
         message: "Buku tidak ditemukan" 
@@ -134,6 +150,7 @@ router.get("/:id", async (req, res) => {
       `SELECT 
         id,
         judul,
+        slug,
         pembuat,
         tahun_rilis,
         cover
@@ -141,7 +158,7 @@ router.get("/:id", async (req, res) => {
       WHERE (kategori = ? OR pembuat = ?) 
         AND id != ? 
       LIMIT 4`,
-      [book.kategori, book.pembuat, id]
+      [book.kategori, book.pembuat, book.id]
     );
 
     console.log('📚 Related books found:', relatedBooks.length);
@@ -149,6 +166,7 @@ router.get("/:id", async (req, res) => {
     // Transform related books
     const transformedRelated = relatedBooks.map(rb => ({
       id: rb.id,
+      slug: rb.slug,
       title: rb.judul,
       author: rb.pembuat,
       year: rb.tahun_rilis,
@@ -159,6 +177,7 @@ router.get("/:id", async (req, res) => {
     // Transform main book data
     const transformedBook = {
       id: book.id,
+      slug: book.slug,
       title: book.judul,
       author: book.pembuat,
       publishDate: book.tahun_rilis,
@@ -175,7 +194,7 @@ router.get("/:id", async (req, res) => {
       isFirstRead: false,
       isBestOfMonth: Math.random() > 0.5,
       isReaderChoice: Math.random() > 0.5,
-      bookLink: `#/buku/${book.id}`,
+      bookLink: `#/buku/${book.slug}`,
       authorLink: `#/author/${encodeURIComponent(book.pembuat)}`,
       stok: Number(book.stok) || 0,
       relatedBooks: transformedRelated,
@@ -198,6 +217,40 @@ router.get("/:id", async (req, res) => {
       success: false,
       message: "Terjadi kesalahan saat mengambil detail buku" 
     });
+  }
+});
+
+// 📝 Tambah buku baru (POST)
+router.post("/", async (req, res) => {
+  try {
+    const { judul, ...otherData } = req.body;
+    const slug = generateSlug(judul);
+    
+    // Cek apakah slug sudah ada
+    const [existing] = await pool.query(
+      "SELECT id FROM books WHERE slug = ?",
+      [slug]
+    );
+    
+    if (existing.length > 0) {
+      // Tambahkan timestamp untuk membuat slug unik
+      const uniqueSlug = `${slug}-${Date.now()}`;
+      const [result] = await pool.query(
+        "INSERT INTO books (judul, slug, ...) VALUES (?, ?, ...)",
+        [judul, uniqueSlug, ...Object.values(otherData)]
+      );
+      return res.json({ success: true, id: result.insertId, slug: uniqueSlug });
+    }
+    
+    const [result] = await pool.query(
+      "INSERT INTO books (judul, slug, ...) VALUES (?, ?, ...)",
+      [judul, slug, ...Object.values(otherData)]
+    );
+    
+    res.json({ success: true, id: result.insertId, slug });
+  } catch (error) {
+    console.error("Error creating book:", error);
+    res.status(500).json({ success: false, message: "Error creating book" });
   }
 });
 

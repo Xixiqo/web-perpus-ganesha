@@ -50,7 +50,7 @@ const routes = [
         component: () => import('../views/users/KategoriView.vue'),
       },
       {
-        path: 'buku/:id',
+        path: 'buku/:slug',
         name: 'BookDetail',
         component: () => import('../views/users/DetailView.vue'),
         meta: { requiresAuth: false },

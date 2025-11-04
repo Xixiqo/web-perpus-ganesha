@@ -3,6 +3,16 @@ import usersRoutes from './user.js'
 import adminRoutes from './admin.js'
 import LoginView from '@/views/LoginView.vue'
 import NotFound from '@/views/NotFound.vue'
+import PenyusupView from '@/views/PenyusupView.vue'
+// Fungsi untuk generate random path
+function generateRandomPath() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  let path = ''
+  for (let i = 0; i < 16; i++) {
+    path += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return `/intruder-${path}`
+}
 
 const routes = [
   ...usersRoutes,
@@ -30,15 +40,26 @@ router.beforeEach((to, from, next) => {
   const userData = localStorage.getItem('user')
   const user = userData ? JSON.parse(userData) : null
 
+  // 🔹 Cek akses ke panel admin
+  if (to.path.startsWith('/admin')) {
+    // Jika bukan pustakawan, redirect ke halaman ancaman dengan path random
+    if (user?.role !== 'pustakawan') {
+      const randomPath = generateRandomPath()
+      
+      // Tambahkan route dinamis untuk path random ini
+      router.addRoute({
+        path: randomPath,
+        name: `intruder-${Date.now()}`,
+        component: PenyusupView,
+      })
+      
+      return next(randomPath)
+    }
+  }
+
   // 🔹 Cegah akses halaman yang butuh login tanpa token
   if (to.meta.requiresAuth && !token) {
     return next({ path: '/login', query: { redirect: to.fullPath } })
-  }
-
-  // 🔹 Cegah akses ke panel admin jika bukan pustakawan
-  if (to.path.startsWith('/admin') && user?.role !== 'pustakawan') {
-    alert('❌ Akses ditolak. Hanya pustakawan yang dapat mengakses panel admin.')
-    return next('/')
   }
 
   next()

@@ -573,6 +573,7 @@ export default {
 
         this.allBooks = booksData.map(book => ({
           id: book.id,
+          slug: book.slug,
           kode_buku: book.kode_buku,
           judul: book.judul,
           pembuat: book.pembuat,
@@ -623,7 +624,8 @@ export default {
 
     onBookSelected(book) {
       console.log('Selected book:', book)
-      this.$router.push(`/buku/${book.id}`)
+      const identifier = book.slug
+      this.$router.push(`/buku/${identifier}`)
     },
 
     nextPage() {

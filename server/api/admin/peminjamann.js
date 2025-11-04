@@ -106,7 +106,7 @@ router.put("/:id/status", async (req, res) => {
         icon = "📚";
         break;
       case "Dikembalikan":
-        tipe = "peminjaman_rejected"; // kalau kamu punya tipe khusus "peminjaman_dikembalikan", ganti di sini
+        tipe = "peminjaman_rejected"; // atau buat tipe baru "peminjaman_dikembalikan" di ENUM
         judul = "Buku Dikembalikan";
         pesan = `Terima kasih sudah mengembalikan buku "${judul_buku}".`;
         icon = "📗";
@@ -119,16 +119,24 @@ router.put("/:id/status", async (req, res) => {
         break;
     }
 
-    // 🔹 Kirim notifikasi ke user
+    // 🔹 Kirim notifikasi ke user - DIPERBAIKI: panggil dengan cara yang benar
     if (tipe) {
-      await createNotification({
+      console.log(`📢 Sending notification to user ${id_anggota}: ${judul}`);
+      
+      const notifSent = await createNotification(
         id_anggota,
-        id_peminjaman: id,
+        id,           // id_peminjaman
         tipe,
         judul,
         pesan,
         icon
-      });
+      );
+      
+      if (notifSent) {
+        console.log('✅ Notification sent successfully');
+      } else {
+        console.error('❌ Failed to send notification');
+      }
     }
 
     res.json({
@@ -136,7 +144,7 @@ router.put("/:id/status", async (req, res) => {
       tanggal_kembali
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error in status update:', err);
     res.status(500).json({ message: "Gagal memperbarui status peminjaman." });
   }
 });
@@ -150,14 +158,26 @@ router.put("/:id/return", async (req, res) => {
   if (!tanggal_dikembalikan) return res.status(400).json({ message: "Tanggal dikembalikan harus diisi." });
 
   try {
-    // 1️⃣ Update status di tabel peminjaman
+    // 1️⃣ Ambil data peminjaman untuk notifikasi
+    const [peminjamanRows] = await connection.query(
+      "SELECT p.id_anggota, b.judul AS judul_buku FROM peminjaman p JOIN books b ON p.id_buku = b.id WHERE p.id_peminjaman = ?",
+      [id]
+    );
+    
+    if (peminjamanRows.length === 0) {
+      return res.status(404).json({ message: "Peminjaman tidak ditemukan." });
+    }
+    
+    const { id_anggota, judul_buku } = peminjamanRows[0];
+
+    // 2️⃣ Update status di tabel peminjaman
     const [updateResult] = await connection.query(
       "UPDATE peminjaman SET status='Dikembalikan' WHERE id_peminjaman=?",
       [id]
     );
     if (updateResult.affectedRows === 0) return res.status(404).json({ message: "Peminjaman tidak ditemukan." });
 
-    // 2️⃣ Insert atau update data pengembalian
+    // 3️⃣ Insert atau update data pengembalian
     await connection.query(`
       INSERT INTO pengembalian (id_peminjaman, tanggal_dikembalikan, denda, keterangan)
       VALUES (?, ?, ?, ?)
@@ -166,6 +186,16 @@ router.put("/:id/return", async (req, res) => {
         denda = VALUES(denda),
         keterangan = VALUES(keterangan)
     `, [id, tanggal_dikembalikan, denda || 0, keterangan || ""]);
+
+    // 4️⃣ Kirim notifikasi pengembalian
+    await createNotification(
+      id_anggota,
+      id,
+      "peminjaman_rejected", // atau buat tipe "peminjaman_dikembalikan" di ENUM
+      "Buku Dikembalikan",
+      `Terima kasih sudah mengembalikan buku "${judul_buku}"${denda > 0 ? ` dengan denda Rp ${denda.toLocaleString('id-ID')}` : ''}.`,
+      "📗"
+    );
 
     res.json({
       message: "Buku berhasil dikembalikan",
@@ -181,7 +211,7 @@ router.put("/:id/return", async (req, res) => {
 router.get("/check/late", async (req, res) => {
   try {
     const [rows] = await connection.query(
-      "SELECT id_peminjaman, tanggal_kembali FROM peminjaman WHERE status='Dipinjam'"
+      "SELECT id_peminjaman, id_anggota, tanggal_kembali FROM peminjaman WHERE status='Dipinjam'"
     );
     const today = new Date();
     let updated = 0;
@@ -190,6 +220,24 @@ router.get("/check/late", async (req, res) => {
       const dueDate = new Date(row.tanggal_kembali);
       if (today > dueDate) {
         await connection.query("UPDATE peminjaman SET status='Terlambat' WHERE id_peminjaman=?", [row.id_peminjaman]);
+        
+        // Kirim notifikasi keterlambatan
+        const [bookInfo] = await connection.query(
+          "SELECT b.judul FROM books b JOIN peminjaman p ON b.id = p.id_buku WHERE p.id_peminjaman = ?",
+          [row.id_peminjaman]
+        );
+        
+        if (bookInfo.length > 0) {
+          await createNotification(
+            row.id_anggota,
+            row.id_peminjaman,
+            "peminjaman_terlambat",
+            "Peminjaman Terlambat",
+            `Peminjaman buku "${bookInfo[0].judul}" sudah melewati batas waktu. Harap segera dikembalikan.`,
+            "⏰"
+          );
+        }
+        
         updated++;
       }
     }

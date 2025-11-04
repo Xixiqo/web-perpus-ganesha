@@ -21,7 +21,7 @@
         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
       </svg>
       
-      <!-- Badge notif belum dibaca -->
+      <!-- Badge notif belum dibaca - Desktop & Mobile -->
       <span
         v-if="unreadCount > 0"
         class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full min-w-[20px]"
@@ -35,7 +35,7 @@
       <div
         v-if="showDropdown"
         ref="dropdownRef"
-        class="absolute right-0 mt-2 w-[380px] max-h-[500px] bg-white rounded-lg shadow-lg border border-gray-200 z-50 flex flex-col"
+        class="absolute right-0 mt-2 w-[380px] max-w-[calc(100vw-2rem)] max-h-[500px] bg-white rounded-lg shadow-lg border border-gray-200 z-50 flex flex-col"
       >
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-gray-200">
@@ -147,7 +147,7 @@ const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
 
 // Toggle dropdown
 const toggleDropdown = () => {
-  console.log('Toggle clicked, current state:', showDropdown.value) // Debug log
+  console.log('Toggle clicked, current state:', showDropdown.value)
   showDropdown.value = !showDropdown.value
   if (showDropdown.value) {
     fetchNotifications()
@@ -187,7 +187,7 @@ const fetchNotifications = async () => {
       const data = await res.json()
       notifications.value = data.notifications || []
       unreadCount.value = data.unreadCount || 0
-      console.log('Notifications fetched:', notifications.value.length) // Debug log
+      console.log('Notifications fetched:', notifications.value.length)
     } else {
       console.error('Failed to fetch notifications:', res.status)
     }
@@ -321,5 +321,13 @@ onUnmounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .dropdown-enter-active,
+  .dropdown-leave-active {
+    transition: all 0.3s ease;
+  }
 }
 </style>

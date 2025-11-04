@@ -261,24 +261,32 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 // Function to create notification (called from other routes)
 export async function createNotification(id_anggota, id_peminjaman, tipe, judul, pesan, icon = '📚') {
   try {
+    // Validasi tipe notifikasi
+    const validTypes = [
+      'peminjaman_pending',
+      'peminjaman_approved', 
+      'peminjaman_rejected',
+      'peminjaman_dipinjam',
+      'peminjaman_terlambat',
+      'broadcast'
+    ];
+    
+    let validType = tipe;
+    if (!validTypes.includes(tipe)) {
+      console.warn(`⚠️ Invalid notification type: ${tipe}, using default`);
+      validType = 'peminjaman_pending';
+    }
 
-      if (tipe?.includes('approved')) validType = 'peminjaman_approved'
-      else if (tipe?.includes('rejected')) validType = 'peminjaman_rejected'
-      else if (tipe?.includes('dipinjam')) validType = 'peminjaman_dipinjam'
-      else if (tipe?.includes('terlambat')) validType = 'peminjaman_terlambat'
-      else if (tipe === 'broadcast') validType = 'broadcast'
-
-      await db.query(`
-        INSERT INTO notifikasi 
-        (id_anggota, id_peminjaman, tipe, judul, pesan, icon, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, CONVERT_TZ(NOW(), '+00:00', '+07:00'))
-      `, [id_anggota, id_peminjaman, validType, judul, pesan, icon])
-      ;
+    await db.query(`
+      INSERT INTO notifikasi 
+      (id_anggota, id_peminjaman, tipe, judul, pesan, icon, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, CONVERT_TZ(NOW(), '+00:00', '+07:00'))
+    `, [id_anggota, id_peminjaman, validType, judul, pesan, icon]);
     
     console.log(`✅ Notifikasi created for user ${id_anggota}: ${judul}`);
     return true;
   } catch (error) {
-    console.error('Error creating notification:', error);
+    console.error('❌ Error creating notification:', error);
     return false;
   }
 }

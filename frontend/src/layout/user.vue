@@ -2,14 +2,14 @@
   <div class="cursor"></div>
   <div id="app">
     <!-- Navbar hanya muncul jika BUKAN di halaman login atau profil -->
-    <Navbar v-if="!isLoginPage && !isProfil" />
+    <Navbar v-if="!isLoginPage && !isProfil && !isNotif" />
     
     <main class="main-content">
       <RouterView />
     </main>
     
     <!-- Footer hanya muncul jika BUKAN di halaman login -->
-    <Footer v-if="!isLoginPage && !isProfil" />
+    <Footer v-if="!isLoginPage && !isProfil && !isNotif" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ const route = useRoute()
 // Computed property untuk cek apakah di halaman login
 const isLoginPage = computed(() => route.path === '/login')
 const isProfil = computed(() => route.path === '/profil')
+const isNotif = computed(() => route.path === '/notifikasi')
 
 onMounted(() => {
   const cursor = document.querySelector(".cursor");

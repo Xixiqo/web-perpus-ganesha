@@ -100,6 +100,46 @@ function formatImagePath(image, req) {
 // Specific routes MUST come BEFORE dynamic /:id route
 // ============================================
 
+// POST /api/articles/upload - Upload single image (NEW)
+router.post('/upload', (req, res) => {
+  const singleUpload = upload.single('image');
+  
+  singleUpload(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ 
+            success: false, 
+            message: 'Ukuran file melebihi 5MB' 
+          });
+        }
+      }
+      return res.status(400).json({ 
+        success: false, 
+        message: err.message || 'Gagal mengupload image' 
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Tidak ada file yang diupload' 
+      });
+    }
+
+    const imageUrl = formatImagePath(req.file.filename, req);
+
+    res.json({ 
+      success: true, 
+      message: 'Image berhasil diupload',
+      data: {
+        filename: req.file.filename,
+        url: imageUrl
+      }
+    });
+  });
+});
+
 // GET /api/articles/recent - MUST BE BEFORE /:identifier
 router.get('/recent', async (req, res) => {
   try {
@@ -256,6 +296,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// POST /api/articles/:identifier/view
 router.post('/:identifier/view', async (req, res) => {
   try {
     const { identifier } = req.params;

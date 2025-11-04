@@ -30,7 +30,7 @@
       <h1 class="text-2xl text-gray-800">Kelola Anggota</h1>
           <button 
           @click="openAddModal()"
-          class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg cursor-pointer text-sm flex items-center gap-2 font-medium shadow-green-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+          class="bg-[#2C64F9] text-white px-6 py-3 rounded-lg cursor-pointer text-sm flex items-center gap-2 font-medium shadow-green-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
         >
           <span class="text-lg font-bold">+</span>
           Tambah Anggota
@@ -44,9 +44,21 @@
           type="text"
           v-model="searchQuery"
           placeholder="Cari anggota..."
-          class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+          class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64F9] focus:ring-3 focus:ring-[#2C64F9]"
         >
-        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-lg">🔍</span>
+        <svg 
+          class="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-blue-600 pointer-events-none" 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          stroke-width="2" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
       </div>
 
       <div class="flex flex-wrap gap-4 items-end">
@@ -54,7 +66,7 @@
           <label class="text-sm text-gray-600 font-medium">Status</label>
           <select 
             v-model="filterStatus"
-            class="py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm bg-white cursor-pointer min-w-[180px] transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+            class="py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm bg-white cursor-pointer min-w-[180px] transition-all focus:outline-none focus:border-[#2C64F9] focus:ring-3 focus:ring-[#2C64F9]"
           >
             <option value="">Semua Status</option>
             <option value="active">Aktif</option>
@@ -66,7 +78,7 @@
           <label class="text-sm text-gray-600 font-medium">Role</label>
           <select 
             v-model="filterRole"
-            class="py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm bg-white cursor-pointer min-w-[180px] transition-all focus:outline-none focus:border-green-500 focus:ring-3 focus:ring-green-100"
+            class="py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm bg-white cursor-pointer min-w-[180px] transition-all focus:outline-none focus:border-[#2C64F9] focus:ring-3 focus:ring-[#2C64F9]"
           >
             <option value="">Semua Role</option>
             <option value="superadmin">Super Admin</option>
@@ -94,7 +106,7 @@
       <table class="w-full">
         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
           <tr>
-            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">ID</th>
+            <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm text-center">No.</th>
             <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Nama/NIS-NIP</th>
             <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Username/Institusi</th>
             <th class="py-4 px-4 text-left font-semibold text-gray-600 text-sm">Role</th>
@@ -103,8 +115,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in filteredUsers" :key="user.id" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-            <td class="py-4 px-4 text-sm text-gray-600">{{ user.id }}</td>
+        <tr v-for="(user, index) in filteredUsers" :key="user.id" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+          <td class="py-4 px-4 text-sm text-gray-600 text-center">{{ index + 1 }}</td>
             <td class="py-4 px-4">
               <div class="text-sm text-gray-900 font-medium">{{ user.nama }}</div>
               <div class="text-xs text-gray-500">{{ user.nis_nip }}</div>
@@ -143,18 +155,33 @@
             </td>
             <td class="py-4 px-4">
               <div class="flex gap-2">
-                <button 
-                  @click="openEditModal(user)"
-                  class="w-9 h-9 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
-                >
-                  ✎
-                </button>
-                <button 
-                  @click="deleteUser(user.id)"
-                  class="w-9 h-9 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-200 shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
-                >
-                  ×
-                </button>
+                <button
+                      @click="openEditModal(user)"
+                      class="p-2 text-[#2C64F9]  hover:bg-green-50 rounded-lg transition"
+                      title="Edit"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                  </button>
+                  <button
+                    @click="deleteUser(user.id)"
+                    class="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                    </svg>
+                  </button>
               </div>
             </td>
           </tr>

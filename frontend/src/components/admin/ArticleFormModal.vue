@@ -1,23 +1,17 @@
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-scale-in">
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 animate-fade-in z-[100]">
+    <div class="bg-white rounded-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-scale-in transition-all duration-300"
+         :class="sidebarOpen ? 'max-w-3xl lg:ml-64' : 'max-w-4xl'">
+      
       <!-- Header -->
       <div class="px-6 py-4 border-b flex items-center justify-between bg-gradient-to-r from-[#2C64F9] to-[#1e4fd6]">
-        <h2 class="text-2xl font-bold text-white">
+        <h2 class="text-xl md:text-2xl font-bold text-white">
           {{ isEdit ? 'Edit Article' : 'Create New Article' }}
         </h2>
-        <button
-          @click="$emit('close')"
-          class="w-8 h-8 rounded-lg hover:bg-white/20 flex items-center justify-center transition text-white"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
 
       <!-- Form -->
-      <form @submit.prevent="handleSubmit" class="flex-1 overflow-y-auto p-6 space-y-6">
+      <form @submit.prevent="handleSubmit" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6">
         <!-- Title -->
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -27,6 +21,7 @@
             v-model="form.title"
             type="text"
             required
+            @input="hasChanges = true"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2C64F9] focus:border-transparent transition"
             placeholder="Enter article title"
           />
@@ -41,6 +36,7 @@
             <select
               v-model="form.category"
               required
+              @change="hasChanges = true"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2C64F9] focus:border-transparent transition"
             >
               <option value="">Select category</option>
@@ -61,6 +57,7 @@
               type="number"
               min="1"
               max="60"
+              @input="hasChanges = true"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2C64F9] focus:border-transparent transition"
               placeholder="5"
             />
@@ -75,6 +72,7 @@
           <input
             v-model="form.author_name"
             type="text"
+            @input="hasChanges = true"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2C64F9] focus:border-transparent transition"
             placeholder="Admin"
           />
@@ -86,7 +84,7 @@
             Cover Image <span class="text-red-500">*</span>
           </label>
           <div class="space-y-3">
-            <div v-if="coverImagePreview" class="relative rounded-lg overflow-hidden">
+            <div v-if="coverImagePreview" class="relative rounded-lg overflow-hidden border-2 border-gray-200">
               <img
                 :src="coverImagePreview"
                 class="w-full h-48 object-cover"
@@ -95,9 +93,9 @@
               <button
                 type="button"
                 @click="removeCoverImage"
-                class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition shadow-lg"
+                class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition shadow-lg flex items-center justify-center"
               >
-                <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -114,7 +112,7 @@
                 type="button"
                 @click="$refs.coverInput.click()"
                 :disabled="uploading.cover"
-                class="w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition text-gray-600 hover:text-[#2C64F9] flex flex-col items-center justify-center space-y-2"
+                class="w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition text-gray-600 hover:text-[#2C64F9] flex flex-col items-center justify-center space-y-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div v-if="uploading.cover" class="w-8 h-8 border-2 border-[#2C64F9] border-t-transparent rounded-full animate-spin"></div>
                 <svg v-else class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,6 +134,7 @@
             v-model="form.content"
             required
             rows="12"
+            @input="hasChanges = true"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2C64F9] focus:border-transparent font-mono text-sm transition"
             placeholder="Write your article content here...
 
@@ -159,20 +158,16 @@ Separate paragraphs with double line breaks."
             Additional Images (Optional - max 3)
           </label>
           <p class="text-xs text-gray-500 mb-3">These images will be displayed within the article content</p>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <!-- Image 1 -->
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-2">Image 1</label>
-              <div v-if="image1Preview" class="relative mb-2 rounded-lg overflow-hidden">
-                <img
-                  :src="image1Preview"
-                  class="w-full h-32 object-cover"
-                  alt="Image 1"
-                />
+              <div v-if="image1Preview" class="relative mb-2 rounded-lg overflow-hidden border-2 border-gray-200">
+                <img :src="image1Preview" class="w-full h-32 object-cover" alt="Image 1" />
                 <button
                   type="button"
                   @click="removeImage(1)"
-                  class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-xs shadow"
+                  class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-xs shadow flex items-center justify-center"
                 >
                   ×
                 </button>
@@ -182,14 +177,14 @@ Separate paragraphs with double line breaks."
                   ref="image1Input"
                   type="file"
                   accept="image/*"
-                  @change="handleImageUpload(1)"
+                  @change="(e) => handleImageUpload(1, e)"
                   class="hidden"
                 />
                 <button
                   type="button"
                   @click="$refs.image1Input.click()"
                   :disabled="uploading.image_1"
-                  class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition flex flex-col items-center justify-center space-y-1"
+                  class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div v-if="uploading.image_1" class="w-6 h-6 border-2 border-[#2C64F9] border-t-transparent rounded-full animate-spin"></div>
                   <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,16 +198,12 @@ Separate paragraphs with double line breaks."
             <!-- Image 2 -->
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-2">Image 2</label>
-              <div v-if="image2Preview" class="relative mb-2 rounded-lg overflow-hidden">
-                <img
-                  :src="image2Preview"
-                  class="w-full h-32 object-cover"
-                  alt="Image 2"
-                />
+              <div v-if="image2Preview" class="relative mb-2 rounded-lg overflow-hidden border-2 border-gray-200">
+                <img :src="image2Preview" class="w-full h-32 object-cover" alt="Image 2" />
                 <button
                   type="button"
                   @click="removeImage(2)"
-                  class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-xs shadow"
+                  class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-xs shadow flex items-center justify-center"
                 >
                   ×
                 </button>
@@ -222,14 +213,14 @@ Separate paragraphs with double line breaks."
                   ref="image2Input"
                   type="file"
                   accept="image/*"
-                  @change="handleImageUpload(2)"
+                  @change="(e) => handleImageUpload(2, e)"
                   class="hidden"
                 />
                 <button
                   type="button"
                   @click="$refs.image2Input.click()"
                   :disabled="uploading.image_2"
-                  class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition flex flex-col items-center justify-center space-y-1"
+                  class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div v-if="uploading.image_2" class="w-6 h-6 border-2 border-[#2C64F9] border-t-transparent rounded-full animate-spin"></div>
                   <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,16 +234,12 @@ Separate paragraphs with double line breaks."
             <!-- Image 3 -->
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-2">Image 3</label>
-              <div v-if="image3Preview" class="relative mb-2 rounded-lg overflow-hidden">
-                <img
-                  :src="image3Preview"
-                  class="w-full h-32 object-cover"
-                  alt="Image 3"
-                />
+              <div v-if="image3Preview" class="relative mb-2 rounded-lg overflow-hidden border-2 border-gray-200">
+                <img :src="image3Preview" class="w-full h-32 object-cover" alt="Image 3" />
                 <button
                   type="button"
                   @click="removeImage(3)"
-                  class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-xs shadow"
+                  class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition text-xs shadow flex items-center justify-center"
                 >
                   ×
                 </button>
@@ -262,14 +249,14 @@ Separate paragraphs with double line breaks."
                   ref="image3Input"
                   type="file"
                   accept="image/*"
-                  @change="handleImageUpload(3)"
+                  @change="(e) => handleImageUpload(3, e)"
                   class="hidden"
                 />
                 <button
                   type="button"
                   @click="$refs.image3Input.click()"
                   :disabled="uploading.image_3"
-                  class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition flex flex-col items-center justify-center space-y-1"
+                  class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2C64F9] transition flex flex-col items-center justify-center space-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div v-if="uploading.image_3" class="w-6 h-6 border-2 border-[#2C64F9] border-t-transparent rounded-full animate-spin"></div>
                   <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,6 +275,7 @@ Separate paragraphs with double line breaks."
             v-model="form.is_published"
             type="checkbox"
             id="publish"
+            @change="hasChanges = true"
             class="w-5 h-5 text-[#2C64F9] border-gray-300 rounded focus:ring-[#2C64F9]"
           />
           <label for="publish" class="text-sm font-semibold text-gray-700 cursor-pointer">
@@ -297,29 +285,87 @@ Separate paragraphs with double line breaks."
       </form>
 
       <!-- Footer -->
-      <div class="px-6 py-4 border-t bg-gray-50 flex items-center justify-end space-x-3">
+      <div class="px-4 md:px-6 py-4 border-t bg-gray-50 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
         <button
           type="button"
-          @click="$emit('close')"
+          @click="handleClose"
           class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
         >
           Cancel
         </button>
         <button
           @click="handleSubmit"
-          :disabled="saving || !form.cover_image"
-          class="px-6 py-2 bg-[#2C64F9] text-white rounded-lg hover:bg-[#1e4fd6] transition flex items-center space-x-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="saving || !canSubmit"
+          class="px-6 py-2 bg-[#2C64F9] text-white rounded-lg hover:bg-[#1e4fd6] transition flex items-center justify-center space-x-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           <span>{{ saving ? 'Saving...' : (isEdit ? 'Update Article' : 'Create Article') }}</span>
         </button>
       </div>
     </div>
+
+    <!-- Notifications -->
+    <transition name="notification">
+      <div v-if="notification.show" class="fixed top-4 right-4 z-[200] max-w-sm animate-slide-in">
+        <div 
+          :class="[
+            'px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3',
+            notification.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+          ]"
+        >
+          <svg v-if="notification.type === 'success'" class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <svg v-else class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span class="flex-1 font-medium text-sm">{{ notification.message }}</span>
+          <button @click="notification.show = false" class="flex-shrink-0 hover:bg-white/20 rounded p-1 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Unsaved Changes Modal -->
+    <transition name="modal">
+      <div v-if="showUnsavedModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[150] p-4">
+        <div class="bg-white rounded-xl max-w-md w-full shadow-2xl animate-scale-in">
+          <div class="p-6">
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900">Unsaved Changes</h3>
+            </div>
+            <p class="text-gray-600 mb-6">You have unsaved changes. Are you sure you want to close? All changes will be lost.</p>
+            <div class="flex space-x-3">
+              <button
+                @click="showUnsavedModal = false"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+              >
+                Keep Editing
+              </button>
+              <button
+                @click="forceClose"
+                class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+              >
+                Discard Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -327,6 +373,10 @@ const props = defineProps({
   article: {
     type: Object,
     default: null
+  },
+  sidebarOpen: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -355,12 +405,75 @@ const uploading = ref({
 })
 
 const saving = ref(false)
+const hasChanges = ref(false)
+const showUnsavedModal = ref(false)
 
 // Image previews
 const coverImagePreview = ref('')
 const image1Preview = ref('')
 const image2Preview = ref('')
 const image3Preview = ref('')
+
+// Notification
+const notification = ref({
+  show: false,
+  type: 'success',
+  message: ''
+})
+
+const canSubmit = computed(() => {
+  return form.value.title && 
+         form.value.category && 
+         form.value.content && 
+         form.value.cover_image
+})
+
+// Show notification
+const showNotification = (type, message) => {
+  notification.value = { show: true, type, message }
+  setTimeout(() => {
+    notification.value.show = false
+  }, 3000)
+}
+
+// Prevent closing with unsaved changes
+const handleClose = () => {
+  if (hasChanges.value) {
+    showUnsavedModal.value = true
+  } else {
+    emit('close')
+  }
+}
+
+const forceClose = async () => {
+  showUnsavedModal.value = false
+  hasChanges.value = false
+  await nextTick() // pastikan modal di-hide dulu sebelum emit
+  emit('close')
+}
+
+// Keyboard shortcuts
+const handleKeyPress = (e) => {
+  // Ctrl/Cmd + S to save
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    if (canSubmit.value && !saving.value) {
+      handleSubmit()
+    }
+  }
+  // Escape to close
+  if (e.key === 'Escape' && !showUnsavedModal.value) {
+    handleClose()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyPress)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyPress)
+})
 
 // Load article data if editing
 watch(() => props.article, (article) => {
@@ -380,44 +493,51 @@ watch(() => props.article, (article) => {
     
     // Set preview images
     if (article.cover_image) {
-      coverImagePreview.value = article.cover_image.startsWith('http') 
-        ? article.cover_image 
-        : `${API_BASE_URL}${article.cover_image}`
+      coverImagePreview.value = article.cover_image
     }
     if (article.image_1) {
-      image1Preview.value = article.image_1.startsWith('http') 
-        ? article.image_1 
-        : `${API_BASE_URL}${article.image_1}`
+      image1Preview.value = article.image_1
     }
     if (article.image_2) {
-      image2Preview.value = article.image_2.startsWith('http') 
-        ? article.image_2 
-        : `${API_BASE_URL}${article.image_2}`
+      image2Preview.value = article.image_2
     }
     if (article.image_3) {
-      image3Preview.value = article.image_3.startsWith('http') 
-        ? article.image_3 
-        : `${API_BASE_URL}${article.image_3}`
+      image3Preview.value = article.image_3
     }
+
+    hasChanges.value = false
   }
 }, { immediate: true })
+
+// Validate file size
+const validateFileSize = (file) => {
+  const maxSize = 5 * 1024 * 1024 // 5MB
+  if (file.size > maxSize) {
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2)
+    showNotification('error', `File size (${sizeMB}MB) exceeds the maximum limit of 5MB`)
+    return false
+  }
+  return true
+}
 
 // Upload cover image
 const handleCoverUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // Validate file size (5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('File size must be less than 5MB')
+  if (!validateFileSize(file)) {
+    event.target.value = ''
     return
   }
 
   uploading.value.cover = true
+  hasChanges.value = true
 
   try {
     const formData = new FormData()
-    formData.append('cover_image', file)
+    formData.append('image', file)
+
+    console.log('Uploading cover image...')
 
     const response = await fetch(`${API_BASE_URL}/api/articles/upload`, {
       method: 'POST',
@@ -425,39 +545,43 @@ const handleCoverUpload = async (event) => {
     })
 
     const data = await response.json()
+    console.log('Upload response:', data)
 
     if (data.success) {
       form.value.cover_image = data.data.filename
-      coverImagePreview.value = `${API_BASE_URL}/uploads/articles/${data.data.filename}`
+      coverImagePreview.value = data.data.url
+      showNotification('success', 'Cover image uploaded successfully')
     } else {
-      alert('Failed to upload image: ' + (data.message || 'Unknown error'))
+      showNotification('error', data.message || 'Failed to upload image')
     }
   } catch (error) {
     console.error('Upload error:', error)
-    alert('Failed to upload image')
+    showNotification('error', 'Failed to upload image. Please try again.')
   } finally {
     uploading.value.cover = false
+    event.target.value = ''
   }
 }
 
 // Upload additional images
-const handleImageUpload = async (imageNumber) => {
-  const inputRef = `image${imageNumber}Input`
-  const file = eval(`$refs.${inputRef}`)?.files[0]
+const handleImageUpload = async (imageNumber, event) => {
+  const file = event.target.files[0]
   if (!file) return
 
-  // Validate file size (5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('File size must be less than 5MB')
+  if (!validateFileSize(file)) {
+    event.target.value = ''
     return
   }
 
   const fieldName = `image_${imageNumber}`
   uploading.value[fieldName] = true
+  hasChanges.value = true
 
   try {
     const formData = new FormData()
-    formData.append(fieldName, file)
+    formData.append('image', file)
+
+    console.log(`Uploading image ${imageNumber}...`)
 
     const response = await fetch(`${API_BASE_URL}/api/articles/upload`, {
       method: 'POST',
@@ -465,22 +589,25 @@ const handleImageUpload = async (imageNumber) => {
     })
 
     const data = await response.json()
+    console.log(`Upload response for image ${imageNumber}:`, data)
 
     if (data.success) {
       form.value[fieldName] = data.data.filename
       
-      const previewUrl = `${API_BASE_URL}/uploads/articles/${data.data.filename}`
-      if (imageNumber === 1) image1Preview.value = previewUrl
-      if (imageNumber === 2) image2Preview.value = previewUrl
-      if (imageNumber === 3) image3Preview.value = previewUrl
+      if (imageNumber === 1) image1Preview.value = data.data.url
+      if (imageNumber === 2) image2Preview.value = data.data.url
+      if (imageNumber === 3) image3Preview.value = data.data.url
+
+      showNotification('success', `Image ${imageNumber} uploaded successfully`)
     } else {
-      alert('Failed to upload image: ' + (data.message || 'Unknown error'))
+      showNotification('error', data.message || 'Failed to upload image')
     }
   } catch (error) {
     console.error('Upload error:', error)
-    alert('Failed to upload image')
+    showNotification('error', 'Failed to upload image. Please try again.')
   } finally {
     uploading.value[fieldName] = false
+    event.target.value = ''
   }
 }
 
@@ -488,6 +615,7 @@ const handleImageUpload = async (imageNumber) => {
 const removeCoverImage = () => {
   form.value.cover_image = ''
   coverImagePreview.value = ''
+  hasChanges.value = true
 }
 
 const removeImage = (imageNumber) => {
@@ -497,12 +625,14 @@ const removeImage = (imageNumber) => {
   if (imageNumber === 1) image1Preview.value = ''
   if (imageNumber === 2) image2Preview.value = ''
   if (imageNumber === 3) image3Preview.value = ''
+  
+  hasChanges.value = true
 }
 
 // Submit form
 const handleSubmit = async () => {
-  if (!form.value.title || !form.value.category || !form.value.content || !form.value.cover_image) {
-    alert('Please fill in all required fields (Title, Category, Content, Cover Image)')
+  if (!canSubmit.value) {
+    showNotification('error', 'Please fill in all required fields')
     return
   }
 
@@ -523,7 +653,7 @@ const handleSubmit = async () => {
     formData.append('content', form.value.content)
     formData.append('is_published', form.value.is_published ? 1 : 0)
     
-    // Only send image paths (filenames), not full URLs
+    // Only send image filenames
     if (form.value.cover_image) {
       formData.append('cover_image_url', form.value.cover_image)
     }
@@ -537,7 +667,7 @@ const handleSubmit = async () => {
       formData.append('image_3_url', form.value.image_3)
     }
 
-    console.log('Submitting:', method, url)
+    console.log('Submitting article:', method, url)
 
     const response = await fetch(url, {
       method,
@@ -545,17 +675,20 @@ const handleSubmit = async () => {
     })
 
     const data = await response.json()
-    console.log('Response:', data)
+    console.log('Submit response:', data)
 
     if (data.success) {
-      alert(isEdit.value ? 'Article updated successfully!' : 'Article created successfully!')
-      emit('saved')
+      showNotification('success', isEdit.value ? 'Article updated successfully!' : 'Article created successfully!')
+      hasChanges.value = false
+      setTimeout(() => {
+        emit('saved')
+      }, 1000)
     } else {
-      alert(data.message || 'Failed to save article')
+      showNotification('error', data.message || 'Failed to save article')
     }
   } catch (error) {
     console.error('Save error:', error)
-    alert('Failed to save article: ' + error.message)
+    showNotification('error', 'Failed to save article. Please try again.')
   } finally {
     saving.value = false
   }
@@ -564,22 +697,29 @@ const handleSubmit = async () => {
 
 <style scoped>
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes scale-in {
-  from {
+  from { 
     opacity: 0;
     transform: scale(0.95);
   }
-  to {
+  to { 
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -589,6 +729,40 @@ const handleSubmit = async () => {
 
 .animate-scale-in {
   animation: scale-in 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.notification-enter-active,
+.notification-leave-active {
+  transition: all 0.3s ease;
+}
+
+.notification-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.notification-leave-to {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: all 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .bg-white,
+.modal-leave-to .bg-white {
+  transform: scale(0.95);
 }
 
 code {

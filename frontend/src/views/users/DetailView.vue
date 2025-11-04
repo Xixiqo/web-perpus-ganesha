@@ -665,7 +665,7 @@ const closeMemberModal = () => {
 }
 
 const goBack = () => {
-  router.push('/')
+  router.push('/cari')
 }
 
 const goToBook = (id) => {

@@ -18,183 +18,30 @@
       <p class="text-gray-700">{{ modal.message }}</p>
     </BaseModal>
 
+    <!-- Book Form Modal -->
+    <BookFormModal
+      v-if="showBookForm"
+      :book-data="currentBook"
+      :is-edit="editMode"
+      @close="closeBookForm"
+      @submit="submitBookForm"
+    />
+
     <!-- Header -->
-    <div class="bg-gradient-to-r from-[#2C64E3] to-[#1e4bb8] text-white rounded-xl p-6 mb-8">
-      <h1 class="text-3xl font-bold mb-2">📚 Manajemen Buku</h1>
-      <p class="text-white/80">Kelola koleksi buku perpustakaan Anda</p>
-    </div>
-
-    <!-- Form Tambah / Edit Buku -->
-    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-      <div class="border-b pb-4 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-          {{ editMode ? '✏️ Edit Buku' : '📖 Tambah Buku Baru' }}
-        </h2>
+    <div class="bg-white rounded-xl p-6 mb-8 shadow-md border border-gray-100">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold mb-2 text-gray-800">📚 Manajemen Buku</h1>
+          <p class="text-gray-600">Kelola koleksi buku perpustakaan Anda</p>
+        </div>
+        <button
+          @click="openAddBookForm"
+          class="px-6 py-3 bg-[#2C64F9] text-white rounded-lg text-sm font-bold hover:bg-[#1e4fd6] shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2 self-start md:self-auto"
+        >
+          <span class="text-lg">+</span>
+          Tambah Buku Baru
+        </button>
       </div>
-      
-      <form @submit.prevent="submitForm" class="space-y-8">
-        <!-- Informasi Dasar -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-[#2C64E3]">
-            Informasi Dasar
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">
-                Kode Buku <span class="text-red-500">*</span>
-              </label>
-              <input 
-                v-model="form.kode_buku" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Masukkan kode buku" 
-                required 
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">
-                Judul <span class="text-red-500">*</span>
-              </label>
-              <input 
-                v-model="form.judul" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Masukkan judul buku" 
-                required 
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">
-                Penulis <span class="text-red-500">*</span>
-              </label>
-              <input 
-                v-model="form.pembuat" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Nama penulis" 
-                required 
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Detail Publikasi -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-[#2C64E3]">
-            Detail Publikasi
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">Penerbit</label>
-              <input 
-                v-model="form.penerbit" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Nama penerbit" 
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">Bahasa</label>
-              <input 
-                v-model="form.bahasa_buku" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Bahasa buku" 
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">Tahun Rilis</label>
-              <input 
-                v-model="form.tahun_rilis" 
-                type="number" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="YYYY" 
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Klasifikasi -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-[#2C64E3]">
-            Klasifikasi
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">ISBN / ISSN</label>
-              <input 
-                v-model="form.isbn_issn" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Nomor ISBN/ISSN" 
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">Kategori</label>
-              <input 
-                v-model="form.kategori" 
-                type="text" 
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-                placeholder="Kategori buku" 
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Sinopsis -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700">Sinopsis</label>
-          <textarea 
-            v-model="form.sinopsis" 
-            rows="4" 
-            class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100 resize-y"
-            placeholder="Deskripsi singkat tentang buku ini..."
-          ></textarea>
-        </div>
-
-        <!-- Stok dan Cover -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Stok</label>
-            <input 
-              v-model="form.stok" 
-              type="number" 
-              class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-lg text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100"
-              placeholder="Jumlah stok" 
-              min="0" 
-            />
-          </div>
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700">Cover Buku</label>
-            <input 
-              type="file" 
-              @change="handleFileUpload" 
-              accept="image/*"
-              class="w-full py-2 px-4 border-2 border-gray-200 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-[#2C64E3] hover:file:bg-blue-100 transition-all cursor-pointer"
-            />
-          </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
-          <button 
-            type="button" 
-            v-if="editMode" 
-            @click="cancelEdit" 
-            class="px-6 py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50 transition-all flex items-center gap-2"
-          >
-            <span class="text-lg">✕</span>
-            Batal
-          </button>
-          <button 
-            type="submit" 
-            class="px-6 py-2.5 bg-[#2C64E3] text-white rounded-lg text-sm font-medium hover:bg-[#1e4bb8] shadow-blue-100 shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2"
-          >
-            <span class="text-lg">{{ editMode ? '✓' : '+' }}</span>
-            {{ editMode ? 'Update Buku' : 'Tambah Buku' }}
-          </button>
-        </div>
-      </form>
     </div>
 
     <!-- Tabel Buku -->
@@ -220,14 +67,20 @@
               placeholder="Cari buku..."
               class="w-full py-2.5 pl-4 pr-12 border-2 border-gray-200 rounded-full text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100 focus:shadow-md"
             />
-            <button 
-              class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-gradient-to-r from-[#2C64E3] to-[#1e4bb8] rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
-            >
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
-                <path d="m21 21-4.35-4.35" stroke-width="2" stroke-linecap="round"></path>
-              </svg>
-            </button>
+<svg 
+  class="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-blue-600 pointer-events-none" 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 24 24" 
+  fill="none" 
+  stroke="currentColor" 
+  stroke-width="2" 
+  stroke-linecap="round" 
+  stroke-linejoin="round"
+>
+  <circle cx="11" cy="11" r="8"></circle>
+  <path d="m21 21-4.35-4.35"></path>
+</svg>
+
           </div>
         </div>
       </div>
@@ -236,21 +89,18 @@
         <table class="w-full">
          <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Buku</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penulis</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerbit</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bahasa</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="book in filteredBooks" :key="book.id" class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">{{ book.id }}</span>
-              </td>
               <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ book.kode_buku }}</td>
               <td class="px-6 py-4">
                 <div class="text-gray-900 font-medium">{{ book.judul }}</div>
@@ -258,6 +108,11 @@
               <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ book.pembuat }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ book.penerbit }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ book.kategori || '-' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-medium">
+                  {{ book.bahasa_buku || '-' }}
+                </span>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="[
                   'px-3 py-1 rounded-full text-sm font-medium',
@@ -266,18 +121,41 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex gap-2">
-                  <button @click="editBook(book)" class="p-2 bg-[#2C64E3] text-white rounded-lg hover:bg-[#1e4bb8] transition-all" title="Edit">✎</button>
-                  <button @click="confirmDelete(book.id)" class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all" title="Hapus">🗑</button>
+                  <button
+                    @click="editBook(book)"
+                    class="p-2 text-[#2C64F9] hover:bg-blue-50 rounded-lg transition"
+                    title="Edit"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="confirmDelete(book.id)"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    title="Hapus"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
                 </div>
               </td>
             </tr>
             <tr v-if="filteredBooks.length === 0">
-              <td colspan="8" class="px-6 py-16 text-center">
+              <td colspan="9" class="px-6 py-16 text-center">
                 <div class="flex flex-col items-center gap-4">
                   <span class="text-5xl opacity-20">📚</span>
                   <p class="text-gray-500 font-medium">
                     {{ searchQuery ? 'Tidak ada buku yang ditemukan' : 'Belum ada data buku' }}
                   </p>
+                  <button
+                    v-if="!searchQuery"
+                    @click="openAddBookForm"
+                    class="px-6 py-2 bg-[#2C64F9] text-white rounded-lg text-sm font-medium hover:bg-[#1e4fd6] transition"
+                  >
+                    + Tambah Buku Pertama
+                  </button>
                 </div>
               </td>
             </tr>
@@ -293,26 +171,13 @@ import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import BaseModal from '@/components/admin/BaseModal.vue';
 import BaseAlert from '@/components/admin/BaseAlert.vue';
+import BookFormModal from '@/components/admin/BookFormModal.vue';
 
 const books = ref([]);
 const searchQuery = ref("");
 const editMode = ref(false);
-const currentId = ref(null);
-const pendingCallback = ref(null);
-
-const form = ref({
-  kode_buku: "",
-  judul: "",
-  pembuat: "",
-  penerbit: "",
-  bahasa_buku: "",
-  tahun_rilis: "",
-  isbn_issn: "",
-  kategori: "",
-  sinopsis: "",
-  stok: 0,
-  cover: null,
-});
+const currentBook = ref(null);
+const showBookForm = ref(false);
 
 const alert = ref({
   show: false,
@@ -344,7 +209,9 @@ const filteredBooks = computed(() => {
       book.judul?.toLowerCase().includes(query) ||
       book.pembuat?.toLowerCase().includes(query) ||
       book.penerbit?.toLowerCase().includes(query) ||
-      book.kategori?.toLowerCase().includes(query)
+      book.kategori?.toLowerCase().includes(query) ||
+      book.bahasa_buku?.toLowerCase().includes(query) ||
+      book.slug?.toLowerCase().includes(query)
     );
   });
 });
@@ -373,7 +240,6 @@ const showAlert = (message, type = 'info') => {
 
 const showSuccess = (message) => showAlert(message, 'success');
 const showError = (message) => showAlert(message, 'error');
-const showWarning = (message) => showAlert(message, 'warning');
 
 // Modal Functions
 const showConfirmModal = (title, message, onConfirm) => {
@@ -387,28 +253,6 @@ const showConfirmModal = (title, message, onConfirm) => {
   };
 };
 
-const getModalIcon = () => {
-  const icons = {
-    'alert': 'ℹ️',
-    'success': '✓',
-    'error': '✕',
-    'confirm': '❓'
-  };
-  return icons[modal.value.type] || 'ℹ️';
-};
-
-const closeModal = () => {
-  modal.value.show = false;
-  pendingCallback.value = null;
-};
-
-const handleConfirm = () => {
-  if (modal.value.type === 'confirm' && pendingCallback.value) {
-    pendingCallback.value();
-  }
-  closeModal();
-};
-
 // Fetch data buku
 const fetchBooks = async () => {
   try {
@@ -418,140 +262,98 @@ const fetchBooks = async () => {
     console.error('❌ Error fetching books:', err);
     if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.removeItem('token');
-      showError('Error', 'Session expired. Please login again.');
+      showError('Session expired. Please login again.');
     }
   }
 };
 
 onMounted(fetchBooks);
 
-const handleFileUpload = (event) => {
-  form.value.cover = event.target.files[0];
+// Open add book form
+const openAddBookForm = () => {
+  editMode.value = false;
+  currentBook.value = null;
+  showBookForm.value = true;
 };
 
-// Function untuk edit buku dengan scroll ke atas
+// Edit book
 const editBook = (book) => {
   editMode.value = true;
-  currentId.value = book.id;
-  Object.assign(form.value, book);
-  
-  // Smooth scroll ke atas halaman
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+  currentBook.value = { ...book };
+  showBookForm.value = true;
 };
 
-// Function submit form dengan konfirmasi untuk update
-const submitForm = async () => {
-  // Kalau mode edit, tampilkan konfirmasi dulu
-  if (editMode.value) {
-    modal.value = {
-      show: true,
-      title: 'Update Buku',
-      message: 'Apakah Anda yakin ingin mengupdate data buku ini?',
-      confirmText: 'Konfirmasi',
-      cancelText: 'Batal',
-      onConfirm: async () => {
-        await processSubmit();
-      }
-    };
-  } else {
-    // Kalau tambah buku baru, langsung proses tanpa konfirmasi
-    await processSubmit();
-  }
+// Close book form
+const closeBookForm = () => {
+  showBookForm.value = false;
+  editMode.value = false;
+  currentBook.value = null;
 };
 
-// Function untuk proses submit (dipanggil setelah konfirmasi)
-const processSubmit = async () => {
+// Submit book form
+const submitBookForm = async (formData) => {
   try {
-    const formData = new FormData();
-    Object.keys(form.value).forEach((key) => {
-      formData.append(key, form.value[key]);
+    const data = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        data.append(key, formData[key]);
+      }
     });
 
     const config = getAuthConfig({ "Content-Type": "multipart/form-data" });
 
     if (editMode.value) {
       await axios.put(
-        `${apiBase}/api/admin/books/${currentId.value}`,
-        formData,
+        `${apiBase}/api/admin/books/${currentBook.value.id}`,
+        data,
         config
       );
-      modal.value.show = false; // Tutup modal
       showSuccess('Buku berhasil diperbarui!');
     } else {
-      await axios.post(`${apiBase}/api/admin/books`, formData, config);
+      await axios.post(`${apiBase}/api/admin/books`, data, config);
       showSuccess('Buku berhasil ditambahkan!');
     }
 
     await fetchBooks();
-    cancelEdit();
+    closeBookForm();
   } catch (err) {
     console.error('❌ Error submitting form:', err);
-    modal.value.show = false; // Tutup modal meskipun error
     if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.removeItem('token');
       showError('Unauthorized access');
     } else {
-      showError('Gagal menyimpan data buku');
+      showError(err.response?.data?.message || 'Gagal menyimpan data buku');
     }
+    throw err; // Re-throw to keep modal open
   }
 };
 
-const cancelEdit = () => {
-  editMode.value = false;
-  currentId.value = null;
-  form.value = {
-    kode_buku: "",
-    judul: "",
-    pembuat: "",
-    penerbit: "",
-    bahasa_buku: "",
-    tahun_rilis: "",
-    isbn_issn: "",
-    kategori: "",
-    sinopsis: "",
-    stok: 0,
-    cover: null,
-  };
-};
-
+// Confirm delete
 const confirmDelete = (id) => {
-  showConfirmModal('Hapus Buku', 'Apakah Anda yakin ingin menghapus buku ini?', () => {
+  showConfirmModal('Hapus Buku', 'Apakah Anda yakin ingin menghapus buku ini? Data yang dihapus tidak dapat dikembalikan.', () => {
     deleteBook(id);
   });
 };
 
+// Delete book
 const deleteBook = async (id) => {
   try {
     await axios.delete(`${apiBase}/api/admin/books/${id}`, getAuthConfig());
-    showSuccess('Sukses', 'Buku berhasil dihapus!');
+    showSuccess('Buku berhasil dihapus!');
     fetchBooks();
   } catch (err) {
     console.error('❌ Error deleting book:', err);
     if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.removeItem('token');
-      showError('Error', 'Unauthorized access');
+      showError('Unauthorized access');
     } else {
-      showError('Error', 'Gagal menghapus buku');
+      showError('Gagal menghapus buku');
     }
   }
 };
 </script>
 
 <style scoped>
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateY(-20px);
-  opacity: 0;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

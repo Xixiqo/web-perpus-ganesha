@@ -43,14 +43,22 @@
 						<span v-if="!isCollapsed">Borrowing Records</span>
 					</router-link>
 				</li>
-				<!-- <li>
+				<li>
 					<router-link to="/admin/articles">
 						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
 							<path fill="currentColor" d="M4 4h16v16H4V4m2 2v12h12V6H6m2 2h8v2H8V8m0 3h8v2H8v-2m0 3h5v2H8v-2z"/>
 						</svg>
 						<span v-if="!isCollapsed">Manage Articles</span>
 					</router-link>
-				</li> -->
+				</li>
+				<li>
+					<router-link to="/admin/broadcasts">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+							<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 0 1-3.417.592l-2.147-6.15M18 13a3 3 0 1 0 0-6M5.436 13.683A4 4 0 0 1 7 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a4 4 0 0 1-1.564-.317"/>
+						</svg>
+						<span v-if="!isCollapsed">Broadcasts</span>
+					</router-link>
+				</li>
 			</ul>
 		</nav>
 

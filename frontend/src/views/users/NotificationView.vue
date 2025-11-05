@@ -116,6 +116,7 @@
               <div
                 v-if="notif.judul_buku"
                 class="mt-3 p-3 bg-gray-100 rounded-lg flex items-center gap-3"
+                @click="goToBook(notif.id_buku)"
               >
                 <div class="w-10 h-10 bg-blue-500 rounded flex items-center justify-center text-white font-bold text-sm">
                   📚
@@ -128,7 +129,6 @@
                 </div>
                 <button
                   v-if="notif.id_buku"
-                  @click="goToBook(notif.id_buku)"
                   class="flex-shrink-0 text-blue-600 hover:text-blue-700 p-2"
                 >
                   <svg
@@ -431,7 +431,7 @@ const goBack = () => {
 }
 
 const goToBook = (bookId) => {
-  router.push(`/buku/${bookId}`)
+  router.push(`/riwayat`)
 }
 
 onMounted(() => {

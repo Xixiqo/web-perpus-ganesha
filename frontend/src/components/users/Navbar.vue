@@ -100,6 +100,11 @@
                 @click="toggleUserMenu"
                 class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 rounded-full px-2 sm:px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5"
               >
+                <!-- Red dot indicator saat dropdown tertutup - Mobile only -->
+                  <span
+                    v-if="!userMenuOpen && unreadCount > 0"
+                    class="lg:hidden absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"
+                  ></span>
                 <img
                   :src="getAvatarUrl()"
                   :alt="getUserName()"
@@ -157,18 +162,12 @@
                     :class="{ 'bg-blue-50 text-blue-600 font-bold': $route.path === '/notifikasi' }"
                     @click="closeUserMenu"
                   >
-                    <div class="relative">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                      </svg>
-                      <!-- Red dot for unread notifications -->
-                      <span
-                        v-if="unreadCount > 0"
-                        class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"
-                      ></span>
-                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
                     <span class="flex-1">Notifikasi</span>
+                    <!-- Badge dengan angka saat dropdown terbuka -->
                     <span
                       v-if="unreadCount > 0"
                       class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center"
@@ -358,11 +357,42 @@ const isLoggingOut = ref(false)
 const avatarError = ref(false)
 const userMenuRef = ref(null)
 const notificationModalRef = ref(null)
+const unreadCount = ref(0)
 
-// Get unread count from NotificationModal component
-const unreadCount = computed(() => {
-  return notificationModalRef.value?.unreadCount || 0
-})
+// Fetch unread notification count
+const fetchUnreadCount = async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+
+  try {
+    const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+    const res = await axios.get(`${apiBase}/api/notification`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    if (res.data && res.data.unreadCount !== undefined) {
+      unreadCount.value = res.data.unreadCount
+    }
+  } catch (error) {
+    console.error('Error fetching unread count:', error)
+  }
+}
+
+// Polling untuk update unread count
+let notificationInterval = null
+
+const startNotificationPolling = () => {
+  fetchUnreadCount()
+  notificationInterval = setInterval(fetchUnreadCount, 30000) // Setiap 30 detik
+}
+
+const stopNotificationPolling = () => {
+  if (notificationInterval) {
+    clearInterval(notificationInterval)
+  }
+}
 
 // API Base
 const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
@@ -375,10 +405,17 @@ watch(() => route.path, () => {
 onMounted(() => {
   checkLoginStatus()
   document.addEventListener('click', handleClickOutside)
+
+    // Start polling untuk notifikasi jika user sudah login
+  if (isLoggedIn.value) {
+    startNotificationPolling()
+  }
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+
+  stopNotificationPolling()
 })
 
 const checkLoginStatus = async () => {
@@ -397,6 +434,9 @@ const checkLoginStatus = async () => {
         user.value = response.data.data
         localStorage.setItem('user', JSON.stringify(response.data.data))
         console.log('User data loaded:', user.value)
+        
+        // Start polling notifikasi setelah login berhasil
+        startNotificationPolling()
       } else {
         throw new Error('Failed to fetch profile')
       }
@@ -409,6 +449,9 @@ const checkLoginStatus = async () => {
           isLoggedIn.value = true
           user.value = parsedUser
           console.log('User data from cache:', user.value)
+          
+          // Start polling notifikasi
+          startNotificationPolling()
         } catch (e) {
           console.error('Error parsing user data:', e)
           isLoggedIn.value = false
@@ -515,10 +558,14 @@ const confirmLogout = async () => {
   try {
     await new Promise(resolve => setTimeout(resolve, 500))
     
+    // Stop polling notifikasi
+    stopNotificationPolling()
+    
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     isLoggedIn.value = false
     user.value = null
+    unreadCount.value = 0
     userMenuOpen.value = false
     showLogoutModal.value = false
     

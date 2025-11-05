@@ -1,104 +1,139 @@
 <template>
-  <div class="peminjaman-page">
-    <!-- Login Warning -->
-    <div v-if="!isLoggedIn" class="login-warning">
-      <h2>⚠️ Harap login terlebih dahulu</h2>
-      <p>Silakan login untuk melihat data peminjaman Anda.</p>
-      <router-link to="/login" class="login-link">Klik di sini untuk login</router-link>
-    </div>
-
-    <!-- Jika sudah login -->
-    <div v-else>
-      <!-- Loading -->
-      <div v-if="loading" class="loading-overlay">
-        <div class="spinner"></div>
-        <p>Memuat data...</p>
-      </div>
-
-      <!-- Summary Cards -->
-      <div v-else class="summary-cards">
-        <div class="summary-card card-blue">
-          <div class="card-header">
-            <span class="card-title">Total Buku</span>
-            <span class="card-icon">📚</span>
-          </div>
-          <div class="card-number">{{ totalBuku }}</div>
-          <div class="card-subtitle">Koleksi Buku</div>
-          <div class="card-footer">Buku pernah dipinjam</div>
-        </div>
-
-        <div class="summary-card card-yellow">
-          <div class="card-header">
-            <span class="card-title">Total Peminjaman</span>
-            <span class="card-icon">📋</span>
-          </div>
-          <div class="card-number">{{ totalPinjam }}</div>
-          <div class="card-subtitle">Buku sedang dipinjam</div>
-          <div class="card-footer">Peminjaman aktif</div>
-        </div>
-
-        <div class="summary-card card-red">
-          <div class="card-header">
-            <span class="card-title">Total Terlambat</span>
-            <span class="card-icon">⚠️</span>
-          </div>
-          <div class="card-number">{{ totalTerlambat }}</div>
-          <div class="card-subtitle">Buku terlambat dikembalikan</div>
-          <div class="card-footer">Segera dikembalikan</div>
+  <div class="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Login Warning -->
+      <div v-if="!isLoggedIn" class="max-w-2xl mx-auto mt-20">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
+          <svg class="w-16 h-16 text-amber-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <h2 class="text-2xl font-bold text-amber-800 mb-2">Harap login terlebih dahulu</h2>
+          <p class="text-amber-700 mb-4">Silakan login untuk melihat data peminjaman Anda.</p>
+          <router-link to="/login" class="inline-block text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            Klik di sini untuk login
+          </router-link>
         </div>
       </div>
 
-      <!-- Books Management Section -->
-      <div class="books-management">
-        <div class="section-header">
-          <div class="header-left">
-            <span class="section-icon">📖</span>
-            <h2>Buku Pinjaman Anda</h2>
+      <!-- Jika sudah login -->
+      <div v-else>
+        <!-- Loading -->
+        <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p class="mt-4 text-gray-600">Memuat data...</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+          <!-- Total Buku Card -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl p-6 border border-blue-200/50">
+            <div class="flex items-start justify-between mb-4">
+              <span class="text-sm font-medium text-blue-700">Total Buku</span>
+              <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
+            <div class="text-4xl font-bold text-blue-900 mb-2">{{ totalBuku }}</div>
+            <div class="text-base font-semibold text-blue-800 mb-1">Koleksi Buku</div>
+            <div class="text-sm text-blue-600">Buku pernah dipinjam</div>
           </div>
 
-          <div class="header-right">
-            <!-- Search Bar -->
-            <div class="search-box">
-              <span class="search-icon">🔍</span>
-              <input
-                type="text"
-                v-model="searchQuery"
-                placeholder="Cari judul buku atau penulis"
-              />
+          <!-- Total Peminjaman Card -->
+          <div class="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-xl p-6 border border-amber-200/50">
+            <div class="flex items-start justify-between mb-4">
+              <span class="text-sm font-medium text-amber-700">Total Peminjaman</span>
+              <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div class="text-4xl font-bold text-amber-900 mb-2">{{ totalPinjam }}</div>
+            <div class="text-base font-semibold text-amber-800 mb-1">Buku sedang dipinjam</div>
+            <div class="text-sm text-amber-600">Peminjaman aktif</div>
+          </div>
+
+          <!-- Total Terlambat Card -->
+          <div class="bg-gradient-to-br from-red-50 to-red-100/50 rounded-xl p-6 border border-red-200/50">
+            <div class="flex items-start justify-between mb-4">
+              <span class="text-sm font-medium text-red-700">Total Terlambat</span>
+              <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="text-4xl font-bold text-red-900 mb-2">{{ totalTerlambat }}</div>
+            <div class="text-base font-semibold text-red-800 mb-1">Buku terlambat dikembalikan</div>
+            <div class="text-sm text-red-600">Segera dikembalikan</div>
+          </div>
+        </div>
+
+        <!-- Books Management Section -->
+        <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div class="flex items-center gap-3">
+              <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              <h2 class="text-xl font-semibold text-gray-900">Buku Pinjaman Anda</h2>
             </div>
 
-            <!-- Dropdown Filter -->
-            <div class="dropdown-wrapper">
-              <button class="status-filter" @click="toggleDropdown">
-                <span>{{ selectedStatusLabel }}</span>
-                <span class="dropdown-icon">▾</span>
-              </button>
-              <ul v-if="showDropdown" class="dropdown-menu">
-                <li
-                  v-for="option in statusOptions"
-                  :key="option.value"
-                  :class="{ active: selectedStatus === option.value }"
-                  @click="selectStatus(option.value)"
+            <div class="flex flex-col sm:flex-row gap-3">
+              <!-- Search Bar -->
+              <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg flex-1 sm:flex-initial">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input
+                  type="text"
+                  v-model="searchQuery"
+                  placeholder="Cari judul buku atau penulis"
+                  class="bg-transparent border-none outline-none flex-1 text-sm text-gray-700 placeholder-gray-400"
+                />
+              </div>
+
+              <!-- Dropdown Filter -->
+              <div class="relative">
+                <button 
+                  @click="toggleDropdown"
+                  class="w-full sm:w-auto flex items-center justify-between gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  {{ option.label }}
-                </li>
-              </ul>
+                  <span>{{ selectedStatusLabel }}</span>
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <ul 
+                  v-if="showDropdown" 
+                  class="absolute right-0 mt-2 w-full sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1"
+                >
+                  <li
+                    v-for="option in statusOptions"
+                    :key="option.value"
+                    @click="selectStatus(option.value)"
+                    class="px-4 py-2 text-sm cursor-pointer transition-colors"
+                    :class="selectedStatus === option.value ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50'"
+                  >
+                    {{ option.label }}
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Books Grid -->
-        <div v-if="filteredBooks.length > 0" class="books-grid">
-          <BookCard
-            v-for="book in filteredBooks"
-            :key="book.id_peminjaman"
-            :book="book"
-          />
-        </div>
+          <!-- Books Grid -->
+          <div v-if="filteredBooks.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <BookCard
+              v-for="book in filteredBooks"
+              :key="book.id_peminjaman"
+              :book="book"
+            />
+          </div>
 
-        <!-- Empty State -->
-        <div v-else class="empty-state">
-          <p>Tidak ada buku yang ditemukan</p>
+          <!-- Empty State -->
+          <div v-else class="text-center py-16">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-gray-500">Tidak ada buku yang ditemukan</p>
+          </div>
         </div>
       </div>
     </div>
@@ -189,9 +224,7 @@ const fetchRiwayat = async () => {
       actual_return_date: b.actual_return_date,
       denda: b.denda,
       keterangan: b.keterangan,
-    }));
-
-
+    }))
   } catch (err) {
     console.error("Gagal memuat riwayat:", err)
   } finally {
@@ -202,6 +235,7 @@ const fetchRiwayat = async () => {
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value
 }
+
 const selectStatus = (value) => {
   selectedStatus.value = value
   showDropdown.value = false
@@ -211,188 +245,3 @@ onMounted(() => {
   fetchRiwayat()
 })
 </script>
-
-
-
-<style scoped>
-/* ===== Login Warning ===== */
-.login-warning {
-  text-align: center;
-  margin: 100px auto;
-  background: #fff3cd;
-  border: 1px solid #ffeeba;
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 600px;
-  color: #856404;
-}
-.login-link {
-  display: inline-block;
-  margin-top: 10px;
-  text-decoration: none;
-  color: #007bff;
-  font-weight: 500;
-}
-.login-link:hover {
-  text-decoration: underline;
-}
-
-/* ===== Page Container ===== */
-.peminjaman-page {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: #f9fafb;
-  min-height: 100vh;
-}
-
-/* ===== Summary Cards ===== */
-.summary-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 32px;
-  padding: 10px;
-}
-
-.summary-card {
-  padding: 20px;
-  border-radius: 12px;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.card-blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-.card-yellow {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-}
-.card-red {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.card-title { font-size: 14px; font-weight: 500; opacity: 0.9; }
-.card-icon { font-size: 24px; }
-.card-number { font-size: 48px; font-weight: 700; margin-bottom: 8px; }
-.card-subtitle { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-.card-footer { font-size: 13px; opacity: 0.85; }
-
-/* ===== Books Management Section ===== */
-.books-management {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.header-left h2 { margin: 0; font-size: 1.3rem; font-weight: 600; }
-.section-icon { font-size: 24px; }
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-/* ===== Search Box ===== */
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-}
-.search-box input {
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 14px;
-  background: transparent;
-}
-
-/* ===== Dropdown ===== */
-.dropdown-wrapper { position: relative; display: inline-block; }
-.status-filter {
-  background: white;
-  border: 1px solid #d1d5db;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.status-filter:hover { background: #f3f4f6; border-color: #9ca3af; }
-
-.dropdown-menu {
-  position: absolute;
-  top: 110%;
-  right: 0;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  min-width: 180px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  z-index: 20;
-  margin-top: 4px;
-  padding: 6px 0;
-  list-style: none;
-}
-.dropdown-menu li {
-  padding: 8px 14px;
-  cursor: pointer;
-}
-.dropdown-menu li:hover,
-.dropdown-menu li.active { background-color: #f9fafb; }
-
-/* ===== Books Grid ===== */
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-  gap: 20px;
-}
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #9ca3af;
-  font-size: 16px;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .peminjaman-page { padding: 16px; }
-  .summary-cards { grid-template-columns: 1fr; }
-  .section-header { flex-direction: column; align-items: stretch; }
-  .header-left, .header-right { width: 100%; }
-  .header-right { flex-direction: column; gap: 8px; }
-  .search-box, .status-filter { width: 100%; justify-content: center; }
-  .dropdown-menu { width: 100%; left: 0; right: auto; }
-  .books-grid { grid-template-columns: 1fr; }
-}
-</style>

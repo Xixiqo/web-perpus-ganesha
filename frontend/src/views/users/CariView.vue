@@ -60,27 +60,62 @@
             <div class="filter-options">
               <label :class="{ active: sortBy === 'newest' }">
                 <input v-model="sortBy" type="radio" value="newest">
-                <span>🆕 Terbaru</span>
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m0 0l-4-4m4 4l4-4" />
+                  </svg>
+                  Terbaru
+                </span>
               </label>
+
               <label :class="{ active: sortBy === 'oldest' }">
                 <input v-model="sortBy" type="radio" value="oldest">
-                <span>📅 Terlama</span>
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16V8m0 0l-4 4m4-4l4 4" />
+                  </svg>
+                  Terlama
+                </span>
               </label>
+
               <label :class="{ active: sortBy === 'title-asc' }">
                 <input v-model="sortBy" type="radio" value="title-asc">
-                <span>🔤 Judul A-Z</span>
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 16h10" />
+                  </svg>
+                  Judul A–Z
+                </span>
               </label>
+
               <label :class="{ active: sortBy === 'title-desc' }">
                 <input v-model="sortBy" type="radio" value="title-desc">
-                <span>🔡 Judul Z-A</span>
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 16h10" />
+                  </svg>
+                  Judul Z–A
+                </span>
               </label>
+
               <label :class="{ active: sortBy === 'stock-high' }">
                 <input v-model="sortBy" type="radio" value="stock-high">
-                <span>📊 Stok Terbanyak</span>
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 14h4v6H4v-6zm6-4h4v10h-4V10zm6-6h4v16h-4V4z" />
+                  </svg>
+                  Stok Terbanyak
+                </span>
               </label>
+
               <label :class="{ active: sortBy === 'stock-low' }">
                 <input v-model="sortBy" type="radio" value="stock-low">
-                <span>📉 Stok Tersedikit</span>
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 18h4v2H4v-2zm6-6h4v8h-4v-8zm6-8h4v16h-4V4z" />
+                  </svg>
+                  Stok Tersedikit
+                </span>
               </label>
             </div>
           </div>
@@ -208,29 +243,66 @@
       <div class="container">
         <!-- Active Filters Info -->
         <div v-if="hasActiveFilters" class="search-info">
-          <div class="active-filters">
-            <span class="filter-label-inline">Filter Aktif:</span>
-            <span v-if="searchQuery" class="filter-tag">
-              🔍 "{{ searchQuery }}"
-              <button @click="clearSearch" class="remove-filter">×</button>
+          <div class="active-filters flex flex-wrap items-center gap-2">
+            <span class="filter-label-inline text-gray-700 font-medium">Filter Aktif:</span>
+
+            <!-- 🔍 Search Filter -->
+            <span v-if="searchQuery" class="filter-tag flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              "{{ searchQuery }}"
+              <button @click="clearSearch" class="remove-filter text-gray-400 hover:text-red-500">×</button>
             </span>
-            <span v-if="selectedCategory" class="filter-tag">
-              📁 {{ getCategoryName(selectedCategory) }}
-              <button @click="selectedCategory = ''" class="remove-filter">×</button>
+
+            <!-- 📁 Category Filter -->
+            <span v-if="selectedCategory" class="filter-tag flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h5l2 2h11v10a2 2 0 01-2 2H3V7z" />
+              </svg>
+              {{ getCategoryName(selectedCategory) }}
+              <button @click="selectedCategory = ''" class="remove-filter text-gray-400 hover:text-red-500">×</button>
             </span>
-            <span v-if="selectedLanguage" class="filter-tag">
-              🌐 {{ selectedLanguage }}
-              <button @click="selectedLanguage = ''" class="remove-filter">×</button>
+
+            <!-- 🌐 Language Filter -->
+            <span v-if="selectedLanguage" class="filter-tag flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <circle cx="12" cy="12" r="10" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+              </svg>
+              {{ selectedLanguage }}
+              <button @click="selectedLanguage = ''" class="remove-filter text-gray-400 hover:text-red-500">×</button>
             </span>
-            <span v-if="isYearRangeActive" class="filter-tag">
-              📅 {{ selectedYearRange[0] }} - {{ selectedYearRange[1] }}
-              <button @click="resetYearRange" class="remove-filter">×</button>
+
+            <!-- 📅 Year Range Filter -->
+            <span v-if="isYearRangeActive" class="filter-tag flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              {{ selectedYearRange[0] }} - {{ selectedYearRange[1] }}
+              <button @click="resetYearRange" class="remove-filter text-gray-400 hover:text-red-500">×</button>
             </span>
-            <span v-if="selectedPublisher" class="filter-tag">
-              📚 {{ selectedPublisher }}
-              <button @click="selectedPublisher = ''" class="remove-filter">×</button>
+
+            <!-- 📚 Publisher Filter -->
+            <span v-if="selectedPublisher" class="filter-tag flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white " fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 19h16M4 5h16M8 5v14m8-14v14" />
+              </svg>
+              {{ selectedPublisher }}
+              <button @click="selectedPublisher = ''" class="remove-filter text-gray-400 hover:text-red-500">×</button>
             </span>
-            <button @click="clearAllFilters" class="clear-all-btn">Hapus Semua</button>
+
+            <!-- Clear All -->
+            <button @click="clearAllFilters"
+              class="clear-all-btn text-sm text-red-600 hover:text-red-700 font-medium ml-2">
+              Hapus Semua
+            </button>
           </div>
           <p class="results-count">
             Menampilkan <strong>{{ filteredBooks.length }}</strong> dari <strong>{{ allBooks.length }}</strong> buku

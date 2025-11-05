@@ -39,9 +39,10 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const userData = localStorage.getItem('user')
   const user = userData ? JSON.parse(userData) : null
+  const protectedPaths = ['/admin', '/pustakawan']
 
   // 🔹 Cek akses ke panel admin
-  if (to.path.startsWith('/admin')) {
+  if (protectedPaths.some(prefix => to.path.startsWith(prefix))){
     // Jika bukan pustakawan, redirect ke halaman ancaman dengan path random
     if (user?.role !== 'pustakawan') {
       const randomPath = generateRandomPath()

@@ -336,6 +336,55 @@
         </Transition>
       </div>
     </Transition>
+
+    <!-- Success Message Modal -->
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div 
+        v-if="showSuccessMessage" 
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-[2100] px-4"
+      >
+        <Transition
+          enter-active-class="transition duration-300 ease-out"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition duration-200 ease-in"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
+        >
+          <div 
+            v-if="showSuccessMessage"
+            class="bg-white rounded-xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center"
+          >
+            <!-- Success Icon -->
+            <div class="mx-auto flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full mb-4">
+              <svg class="w-8 h-8 sm:w-10 sm:h-10 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              Berhasil Logout!
+            </h2>
+            <p class="text-gray-600 text-sm sm:text-base mb-1">
+              Terima kasih telah menggunakan layanan
+            </p>
+            <p class="text-blue-600 font-semibold text-base sm:text-lg">
+              Perpustakaan Ganesha Stembayo
+            </p>
+            <p class="text-gray-500 text-xs sm:text-sm mt-3">
+              Sampai jumpa kembali! 📚
+            </p>
+          </div>
+        </Transition>
+      </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -354,6 +403,7 @@ const isLoggedIn = ref(false)
 const user = ref(null)
 const showLogoutModal = ref(false)
 const isLoggingOut = ref(false)
+const showSuccessMessage = ref(false)
 const avatarError = ref(false)
 const userMenuRef = ref(null)
 const notificationModalRef = ref(null)
@@ -569,7 +619,14 @@ const confirmLogout = async () => {
     userMenuOpen.value = false
     showLogoutModal.value = false
     
-    router.push('/')
+    // Tampilkan success message
+    showSuccessMessage.value = true
+    
+    // Auto hide success message dan redirect setelah 2.5 detik
+    setTimeout(() => {
+      showSuccessMessage.value = false
+      router.push('/')
+    }, 2500)
   } catch (error) {
     console.error('Error during logout:', error)
   } finally {

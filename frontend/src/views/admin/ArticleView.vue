@@ -235,6 +235,37 @@
       </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+<div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+    <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+      <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+    
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Delete Article</h3>
+    <p class="text-gray-600 text-center mb-6">
+      Are you sure you want to delete <span class="font-semibold">"{{ articleToDelete?.title }}"</span>? This action cannot be undone.
+    </p>
+    
+    <div class="flex space-x-3">
+      <button
+        @click="cancelDelete"
+        class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+      >
+        Cancel
+      </button>
+      <button
+        @click="confirmDelete"
+        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
     <!-- Create/Edit Modal -->
       <ArticleFormModal
         v-if="showModal"
@@ -359,20 +390,27 @@ const viewArticle = (slug) => {
   router.push(`/articles/${slug}`)
 }
 
-const deleteArticle = async (article) => {
-  if (!confirm(`Are you sure you want to delete "${article.title}"?`)) {
-    return
-  }
+const showDeleteModal = ref(false)
+const articleToDelete = ref(null)
+
+const deleteArticle = (article) => {
+  articleToDelete.value = article
+  showDeleteModal.value = true
+}
+
+const confirmDelete = async () => {
+  if (!articleToDelete.value) return
   
   try {
-    const response = await fetch(`${API_BASE_URL}/api/articles/${article.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/articles/${articleToDelete.value.id}`, {
       method: 'DELETE'
     })
     
     const data = await response.json()
     
     if (data.success) {
-      alert('Article deleted successfully')
+      showDeleteModal.value = false
+      articleToDelete.value = null
       fetchArticles()
     } else {
       alert(data.message || 'Failed to delete article')
@@ -381,6 +419,11 @@ const deleteArticle = async (article) => {
     console.error('Error deleting article:', error)
     alert('Failed to delete article')
   }
+}
+
+const cancelDelete = () => {
+  showDeleteModal.value = false
+  articleToDelete.value = null
 }
 
 // Format helpers

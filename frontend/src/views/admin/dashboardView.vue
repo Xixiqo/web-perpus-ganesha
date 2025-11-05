@@ -469,7 +469,10 @@ const createTransactionChart = () => {
           pointHoverRadius: 7,
           pointBackgroundColor: '#F4C430',
           pointBorderColor: '#fff',
-          pointBorderWidth: 2
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#F4C430',
+          pointHoverBorderWidth: 3
         },
         {
           label: 'Kembali',
@@ -482,7 +485,10 @@ const createTransactionChart = () => {
           pointHoverRadius: 7,
           pointBackgroundColor: '#00BCD4',
           pointBorderColor: '#fff',
-          pointBorderWidth: 2
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#00BCD4',
+          pointHoverBorderWidth: 3
         },
         {
           label: 'Perpanjang',
@@ -495,38 +501,120 @@ const createTransactionChart = () => {
           pointHoverRadius: 7,
           pointBackgroundColor: '#9C27B0',
           pointBorderColor: '#fff',
-          pointBorderWidth: 2
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#9C27B0',
+          pointHoverBorderWidth: 3
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: { display: false },
         tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
           titleColor: '#fff',
           bodyColor: '#fff',
-          borderColor: '#333',
-          borderWidth: 1
+          borderColor: '#e5e7eb',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: true,
+          boxWidth: 10,
+          boxHeight: 10,
+          usePointStyle: true,
+          callbacks: {
+            title: (context) => context[0].label,
+            label: (context) => {
+              return `${context.dataset.label}: ${context.parsed.y} transaksi`
+            }
+          }
         }
       },
       scales: {
         x: {
-          grid: { display: false },
-          ticks: { color: '#6b7280' }
+          grid: { 
+            display: false,
+            drawBorder: false
+          },
+          ticks: { 
+            color: '#6b7280',
+            font: {
+              size: 11
+            },
+            maxRotation: 45,
+            minRotation: 45
+          }
         },
         y: {
           beginAtZero: true,
-          grid: { color: '#f0f0f0' },
-          ticks: { color: '#6b7280', stepSize: 1 }
+          grid: { 
+            color: '#f3f4f6',
+            drawBorder: false
+          },
+          ticks: { 
+            color: '#6b7280',
+            stepSize: 1,
+            font: {
+              size: 12
+            }
+          }
         }
       },
       animation: {
-        duration: 2000,
-        easing: 'easeInOutQuart'
+        duration: 5000, // 5 detik
+        easing: 'easeInOutQuart',
+        // Animasi X - Line drawing dari kiri ke kanan
+        x: {
+          type: 'number',
+          easing: 'easeInOutQuart',
+          duration: 5000,
+          from: (ctx) => {
+            if (ctx.type === 'data') {
+              const chart = ctx.chart
+              const meta = chart.getDatasetMeta(ctx.datasetIndex)
+              if (!meta.data.length) return 0
+              return chart.scales.x.left
+            }
+          }
+        },
+        // Animasi Y - Data point naik/turun dari baseline
+        y: {
+          type: 'number',
+          easing: 'easeInOutQuart',
+          duration: 5000,
+          from: (ctx) => {
+            if (ctx.type === 'data') {
+              return ctx.chart.scales.y.getPixelForValue(0)
+            }
+          }
+        },
+        // Delay progresif untuk setiap data point (efek real-time)
+        delay: (context) => {
+          let delay = 0
+          if (context.type === 'data' && context.mode === 'default') {
+            delay = context.dataIndex * 150 // Setiap point delay 150ms
+          }
+          return delay
+        },
+        // Callback saat animasi selesai
+        onComplete: () => {
+          console.log('Chart animation completed!')
+        }
+      },
+      // Animasi saat hover
+      hover: {
+        mode: 'index',
+        intersect: false,
+        animationDuration: 400
       }
     }
   });

@@ -45,10 +45,10 @@
               Batal
             </button>
             <button @click="handleAlertConfirm" :class="{
-              'bg-blue-500 hover:bg-blue-600': alert.type==='alert',
+              'bg-blue-500 hover:bg-yellow-600': alert.type==='alert',
               'bg-green-500 hover:bg-green-600': alert.type==='success',
               'bg-red-500 hover:bg-red-600': alert.type==='error',
-              'bg-yellow-500 hover:bg-yellow-600': alert.type==='confirm'
+              'bg-[#2C64F9] hover:bg-blue-700 ': alert.type==='confirm'
             }" class="px-4 py-2 rounded-lg text-white transition font-medium text-sm">
               {{ alert.confirmText || 'OK' }}
             </button>

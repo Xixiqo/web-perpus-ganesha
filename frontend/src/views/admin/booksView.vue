@@ -59,37 +59,54 @@
             </div>
           </div>
 
-          <!-- Search Bar -->
-          <div class="relative w-full md:w-80">
-            <input 
-              v-model="searchQuery"
-              type="text" 
-              placeholder="Cari buku..."
-              class="w-full py-2.5 pl-4 pr-12 border-2 border-gray-200 rounded-full text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100 focus:shadow-md"
-            />
-<svg 
-  class="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-blue-600 pointer-events-none" 
-  xmlns="http://www.w3.org/2000/svg" 
-  viewBox="0 0 24 24" 
-  fill="none" 
-  stroke="currentColor" 
-  stroke-width="2" 
-  stroke-linecap="round" 
-  stroke-linejoin="round"
->
-  <circle cx="11" cy="11" r="8"></circle>
-  <path d="m21 21-4.35-4.35"></path>
-</svg>
+          <div class="flex items-center gap-3">
+            <!-- Items Per Page -->
+            <div class="flex items-center gap-2">
+              <label class="text-sm text-gray-600">Tampilkan:</label>
+              <select 
+                v-model="itemsPerPage"
+                @change="changeItemsPerPage(itemsPerPage)"
+                class="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#2C64E3] focus:ring-2 focus:ring-blue-100"
+              >
+                <option :value="10">10</option>
+                <option :value="25">25</option>
+                <option :value="50">50</option>
+                <option :value="100">100</option>
+              </select>
+            </div>
 
+            <!-- Search Bar -->
+            <div class="relative w-full md:w-80">
+              <input 
+                v-model="searchQuery"
+                type="text" 
+                placeholder="Cari buku..."
+                class="w-full py-2.5 pl-4 pr-12 border-2 border-gray-200 rounded-full text-sm transition-all focus:outline-none focus:border-[#2C64E3] focus:ring-3 focus:ring-blue-100 focus:shadow-md"
+              />
+              <svg 
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-blue-600 pointer-events-none" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full">
-         <thead class="bg-gray-50 border-b border-gray-200">
+          <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode Buku</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cover</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penulis</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerbit</th>
@@ -100,8 +117,24 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="book in filteredBooks" :key="book.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="book in paginatedBooks" :key="book.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ book.kode_buku }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="w-12 h-16 flex items-center justify-center">
+                  <img 
+                    v-if="book.cover"
+                    :src="getCoverUrl(book.cover)" 
+                    :alt="book.judul"
+                    class="w-full h-full object-cover rounded shadow-sm"
+                    @error="handleImageError"
+                  />
+                  <div v-else class="w-full h-full bg-gray-100 rounded flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                  </div>
+                </div>
+              </td>
               <td class="px-6 py-4">
                 <div class="text-gray-900 font-medium">{{ book.judul }}</div>
               </td>
@@ -142,7 +175,7 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="filteredBooks.length === 0">
+            <tr v-if="paginatedBooks.length === 0">
               <td colspan="9" class="px-6 py-16 text-center">
                 <div class="flex flex-col items-center gap-4">
                   <span class="text-5xl opacity-20">📚</span>
@@ -162,6 +195,49 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination -->
+      <div v-if="filteredBooks.length > 0" class="px-6 py-4 border-t bg-gray-50 flex items-center justify-between">
+        <p class="text-sm text-gray-600">
+          Menampilkan {{ paginationInfo.start }} - {{ paginationInfo.end }} dari {{ paginationInfo.total }} buku
+        </p>
+        <div class="flex items-center space-x-2">
+          <button
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage === 1"
+            :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200'"
+            class="px-4 py-2 border rounded-lg transition"
+          >
+            Previous
+          </button>
+          
+          <!-- Page Numbers -->
+          <div class="flex items-center space-x-1">
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              @click="changePage(page)"
+              :class="[
+                'px-3 py-2 rounded-lg transition',
+                page === currentPage 
+                  ? 'bg-[#2C64F9] text-white font-medium' 
+                  : 'hover:bg-gray-200 text-gray-700'
+              ]"
+            >
+              {{ page }}
+            </button>
+          </div>
+
+          <button
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= totalPages"
+            :class="currentPage >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200'"
+            class="px-4 py-2 border rounded-lg transition"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -178,6 +254,8 @@ const searchQuery = ref("");
 const editMode = ref(false);
 const currentBook = ref(null);
 const showBookForm = ref(false);
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
 
 const alert = ref({
   show: false,
@@ -195,6 +273,19 @@ const modal = ref({
 });
 
 const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
+// Helper function untuk mendapatkan URL cover
+const getCoverUrl = (filename) => {
+  if (!filename) return '/default_cover.png';
+  if (/^https?:\/\//i.test(filename)) return filename;
+  return `${apiBase}/uploads/${filename}`;
+};
+
+// Handle image error
+const handleImageError = (e) => {
+  e.target.onerror = null;
+  e.target.src = '/default_cover.png';
+};
 
 // Computed property untuk filter buku berdasarkan search
 const filteredBooks = computed(() => {
@@ -215,6 +306,53 @@ const filteredBooks = computed(() => {
     );
   });
 });
+
+// Pagination computed properties
+const totalPages = computed(() => {
+  return Math.ceil(filteredBooks.value.length / itemsPerPage.value);
+});
+
+const paginatedBooks = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredBooks.value.slice(start, end);
+});
+
+const paginationInfo = computed(() => {
+  const start = filteredBooks.value.length === 0 ? 0 : (currentPage.value - 1) * itemsPerPage.value + 1;
+  const end = Math.min(currentPage.value * itemsPerPage.value, filteredBooks.value.length);
+  const total = filteredBooks.value.length;
+  return { start, end, total };
+});
+
+const visiblePages = computed(() => {
+  const pages = [];
+  const maxVisible = 5;
+  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
+  let end = Math.min(totalPages.value, start + maxVisible - 1);
+  
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1);
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+});
+
+// Pagination functions
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const changeItemsPerPage = (value) => {
+  itemsPerPage.value = parseInt(value);
+  currentPage.value = 1; // Reset ke halaman pertama
+};
 
 const getAuthConfig = (additionalHeaders = {}) => {
   const token = localStorage.getItem('token');
@@ -341,6 +479,8 @@ const deleteBook = async (id) => {
     await axios.delete(`${apiBase}/api/admin/books/${id}`, getAuthConfig());
     showSuccess('Buku berhasil dihapus!');
     fetchBooks();
+
+    modal.value.show = false;
   } catch (err) {
     console.error('❌ Error deleting book:', err);
     if (err.response?.status === 401 || err.response?.status === 403) {
@@ -349,6 +489,8 @@ const deleteBook = async (id) => {
     } else {
       showError('Gagal menghapus buku');
     }
+
+    modal.value.show = false;
   }
 };
 </script>

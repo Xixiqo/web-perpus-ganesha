@@ -177,10 +177,6 @@ For detailed API documentation, refer to the server source code.
 
 This project is licensed under the **ISC License**. See the [LICENSE](./LICENSE) file for details.
 
-## 👥 Authors
-
-**Ganesha Dev Team**
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
